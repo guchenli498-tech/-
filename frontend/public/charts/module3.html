@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>模块三</title>
+  <style>
+    :root {
+      --bg: #E8E6E1;
+      --panel: #FCFCFC;
+      --ink: #4A4A48;
+      --muted: #8EB8B7;
+      --border: #F2EFE9;
+      --accent: #F25C33;
+    }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      overflow-x: hidden;
+    }
+    header {
+      padding: 18px 16px 10px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: 2px;
+    }
+    .hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 25px 45px -20px rgba(74,74,72,0.20);
+      overflow: hidden;
+    }
+    .panel-title {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(242,239,233,0.9);
+      background: rgba(242, 239, 233, 0.8);
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+    .panel-body iframe {
+      width: 100%;
+      border: 0;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>模块三 · 三雕介绍卡片 + 旭日图（现有 iframe 嵌入版）</h1>
+    <div class="hint">当前仓库里发现了 `科学家著作家卡片.html` 和 `三雕旭日图.html`，先把它们嵌入模块三入口；后续如果补齐玫瑰图/散点联动 HTML，我会再继续接上。</div>
+  </header>
+
+  <div class="main">
+    <section class="panel">
+      <div class="panel-title">营造学脉卡片区（科学家 / 著作）</div>
+      <div class="panel-body">
+        <iframe
+          title="科学家著作家卡片"
+          src="./科学家著作家卡片.html"
+          loading="lazy"
+          style="height: 640px;"
+          referrerpolicy="no-referrer"
+        ></iframe>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">徽派三雕 · 旭日图</div>
+      <div class="panel-body">
+        <iframe
+          title="三雕旭日图"
+          src="./三雕旭日图.html"
+          loading="lazy"
+          style="height: 850px;"
+          referrerpolicy="no-referrer"
+        ></iframe>
+      </div>
+    </section>
+  </div>
+  <script>
+    // 预留：后续可在这里做“卡片点击 -> 联动图表”的跨 iframe 通信。
+  </script>
+</body>
+</html>
+

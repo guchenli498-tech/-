@@ -1,0 +1,63 @@
+[
+  {
+    "cityId": "hangzhou",
+    "cityName": "杭州",
+    "series": [
+      { "dynasty": "宋", "count": 18 },
+      { "dynasty": "元", "count": 12 },
+      { "dynasty": "明", "count": 36 },
+      { "dynasty": "清", "count": 29 }
+    ]
+  },
+  {
+    "cityId": "ningbo",
+    "cityName": "宁波",
+    "series": [
+      { "dynasty": "宋", "count": 10 },
+      { "dynasty": "元", "count": 7 },
+      { "dynasty": "明", "count": 24 },
+      { "dynasty": "清", "count": 17 }
+    ]
+  },
+  {
+    "cityId": "hefei",
+    "cityName": "合肥",
+    "series": [
+      { "dynasty": "宋", "count": 15 },
+      { "dynasty": "元", "count": 10 },
+      { "dynasty": "明", "count": 28 },
+      { "dynasty": "清", "count": 22 }
+    ]
+  },
+  {
+    "cityId": "huangshan",
+    "cityName": "黄山",
+    "series": [
+      { "dynasty": "宋", "count": 12 },
+      { "dynasty": "元", "count": 8 },
+      { "dynasty": "明", "count": 24 },
+      { "dynasty": "清", "count": 20 }
+    ]
+  },
+  {
+    "cityId": "nanchang",
+    "cityName": "南昌",
+    "series": [
+      { "dynasty": "宋", "count": 11 },
+      { "dynasty": "元", "count": 9 },
+      { "dynasty": "明", "count": 23 },
+      { "dynasty": "清", "count": 18 }
+    ]
+  },
+  {
+    "cityId": "shangrao",
+    "cityName": "上饶",
+    "series": [
+      { "dynasty": "宋", "count": 9 },
+      { "dynasty": "元", "count": 6 },
+      { "dynasty": "明", "count": 19 },
+      { "dynasty": "清", "count": 14 }
+    ]
+  }
+]
+

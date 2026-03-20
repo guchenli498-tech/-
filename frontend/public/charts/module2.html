@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>模块二</title>
+    <style>
+      :root {
+        --bg: #e8e6e1;
+        --panel: #fcfcfc;
+        --ink: #4a4a48;
+        --muted: #8eb8b7;
+        --border: #f2efe9;
+        --accent: #f25c33;
+        --shadow: rgba(74, 74, 72, 0.18);
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: Georgia, 'KaiTi', '楷体', '华文楷体', STKaiti, serif;
+        overflow: hidden; /* iframe 内部不让滚动影响外部排版 */
+      }
+
+      .canvas {
+        height: 100%;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 33% 67%;
+        /* 右上为主图，左下为切换器；右下为并排副图区 */
+        grid-template-rows: 32% 68%;
+        gap: 12px;
+        padding: 12px;
+        box-sizing: border-box;
+      }
+
+      /* mtq 参考图：保留扇形切换器，但调整整体比例更贴近 */
+      .canvas.mode-mtq {
+        grid-template-rows: 36% 64%;
+        gap: 10px;
+        padding: 10px;
+      }
+
+      .canvas.mode-mtq .fanSeg {
+        width: 92px;
+        height: 92px;
+        border-radius: 22px;
+        box-shadow: 0 16px 34px -18px rgba(74, 74, 72, 0.40);
+      }
+
+      .canvas.mode-mtq .fanSeg .thumb {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+      }
+
+      .canvas.mode-mtq .fanSeg small {
+        font-size: 13px;
+      }
+
+      .canvas.mode-mtq .bottomRight {
+        grid-template-columns: 36% 64%;
+        gap: 10px;
+      }
+
+      .canvas.mode-mtq .fanRing {
+        opacity: 0.45;
+        width: 100%;
+        height: 100%;
+        left: 50%;
+        bottom: 10%;
+      }
+
+      .canvas.mode-mtq .fanSeg:hover {
+        transform: none;
+        border-color: rgba(242, 92, 51, 0.22);
+      }
+
+      .canvas.mode-mtq .fanSeg.active {
+        transform: scale(1.7);
+        box-shadow: 0 22px 44px -18px rgba(242, 92, 51, 0.22);
+        border-color: rgba(242, 92, 51, 0.40);
+      }
+
+      .canvas.mode-mtq #bcCaption,
+      .canvas.mode-mtq #brCaption {
+        display: none;
+      }
+
+      /* 让“缩略图”不是纯色块：用纹样/图形做轻量意象图 */
+      .canvas.mode-mtq .fanSeg[data-key="mtq"] .thumb {
+        background: linear-gradient(145deg, rgba(242, 92, 51, 0.92), rgba(242, 92, 51, 0.08)),
+          radial-gradient(circle at 50% 78%, rgba(74, 74, 72, 0.18) 0 18%, transparent 19%),
+          linear-gradient(180deg, rgba(142, 184, 183, 0.25), rgba(142, 184, 183, 0));
+      }
+
+      .canvas.mode-mtq .fanSeg[data-key="tj"] .thumb {
+        background: radial-gradient(circle at 50% 55%, rgba(142, 184, 183, 0.95) 0 24%, transparent 25%),
+          linear-gradient(180deg, rgba(184, 216, 215, 0.55), rgba(184, 216, 215, 0));
+      }
+
+      .canvas.mode-mtq .fanSeg[data-key="fq"] .thumb {
+        background:
+          repeating-linear-gradient(0deg, rgba(74, 74, 72, 0.10) 0 4px, rgba(242, 239, 233, 0) 4px 10px),
+          repeating-linear-gradient(90deg, rgba(242, 92, 51, 0.18) 0 5px, rgba(242, 239, 233, 0) 5px 12px),
+          linear-gradient(145deg, rgba(242, 239, 233, 0.85), rgba(242, 239, 233, 0.15));
+      }
+
+      .canvas.mode-mtq .fanSeg[data-key="wd"] .thumb {
+        background:
+          linear-gradient(135deg, rgba(169, 193, 192, 0.95) 0 40%, rgba(169, 193, 192, 0) 40%),
+          radial-gradient(circle at 62% 72%, rgba(247, 160, 114, 0.45) 0 18%, transparent 19%),
+          linear-gradient(180deg, rgba(169, 193, 192, 0.25), rgba(169, 193, 192, 0));
+      }
+
+      .canvas.mode-mtq .fanSeg[data-key="sz"] .thumb {
+        background:
+          repeating-linear-gradient(135deg, rgba(119, 172, 169, 0.55) 0 6px, rgba(119, 172, 169, 0) 6px 12px),
+          radial-gradient(circle at 50% 62%, rgba(184, 216, 215, 0.60) 0 24%, transparent 25%),
+          linear-gradient(145deg, rgba(184, 216, 215, 0.30), rgba(184, 216, 215, 0));
+      }
+
+      .slot {
+        background: rgba(252, 252, 252, 0.75);
+        border: 1px solid rgba(242, 239, 233, 0.95);
+        border-radius: 18px;
+        box-shadow: 0 25px 45px -20px var(--shadow);
+        overflow: hidden;
+        position: relative;
+      }
+
+      .slot iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+      }
+
+      .tl {
+        grid-column: 1;
+        grid-row: 1;
+      }
+      .tr {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      .fanWrap {
+        grid-column: 1;
+        grid-row: 2;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        border-radius: 18px;
+        position: relative;
+        overflow: visible;
+      }
+
+      .bottomRight {
+        grid-column: 2;
+        grid-row: 2;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 100%;
+        gap: 12px;
+      }
+
+      /* 左下大扇形切换器 */
+      .fanSwitch {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .fanRing {
+        position: absolute;
+        left: 50%;
+        bottom: 8%;
+        width: 112%;
+        height: 112%;
+        transform: translateX(-50%);
+        border: 1px dashed rgba(119, 172, 169, 0.55);
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 35% 85%,
+          rgba(119, 172, 169, 0.18),
+          rgba(119, 172, 169, 0) 55%
+        );
+        pointer-events: none;
+      }
+
+      .fanSeg {
+        position: absolute;
+        width: 92px;
+        height: 92px;
+        border-radius: 22px;
+        border: 1px solid rgba(242, 239, 233, 0.95);
+        background: rgba(252, 252, 252, 0.88);
+        box-shadow: 0 16px 34px -18px rgba(74, 74, 72, 0.42);
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        user-select: none;
+        transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+        overflow: hidden;
+        padding: 0;
+      }
+
+      .fanSeg:hover {
+        transform: translateY(-4px) scale(1.03);
+        border-color: rgba(242, 92, 51, 0.25);
+      }
+
+      .fanSeg .thumb {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: linear-gradient(
+          145deg,
+          rgba(119, 172, 169, 0.25),
+          rgba(242, 92, 51, 0.1)
+        );
+        border: 1px solid rgba(242, 239, 233, 0.95);
+      }
+
+      .fanSeg small {
+        font-size: 12px;
+        color: rgba(74, 74, 72, 0.92);
+        letter-spacing: 1px;
+        white-space: nowrap;
+        line-height: 1;
+      }
+
+      .fanSeg.active {
+        border-color: rgba(242, 92, 51, 0.35);
+        box-shadow: 0 22px 44px -18px rgba(242, 92, 51, 0.18);
+        transform: scale(1.14);
+      }
+
+      .caption {
+        position: absolute;
+        left: 16px;
+        top: 14px;
+        font-size: 12px;
+        color: rgba(110, 110, 107, 1);
+        pointer-events: none;
+        letter-spacing: 1px;
+        z-index: 2;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="canvas" id="canvas">
+      <div class="slot tl" id="slotTL">
+        <div class="caption" id="tlCaption">当前构件信息</div>
+      </div>
+      <div class="slot tr" id="slotTR">
+        <div class="caption" id="trCaption">Sankey</div>
+      </div>
+
+      <div class="fanWrap" id="fanWrap">
+        <div class="fanSwitch" id="fanSwitch" aria-label="模块二构件切换器">
+          <div class="fanRing"></div>
+          <button class="fanSeg" data-key="mtq" title="马头墙">
+            <div class="thumb"></div>
+            <small>马头墙</small>
+          </button>
+          <button class="fanSeg" data-key="tj" title="天井">
+            <div class="thumb"></div>
+            <small>天井</small>
+          </button>
+          <button class="fanSeg" data-key="fq" title="粉墙">
+            <div class="thumb"></div>
+            <small>粉墙</small>
+          </button>
+          <button class="fanSeg" data-key="wd" title="屋顶">
+            <div class="thumb"></div>
+            <small>屋顶</small>
+          </button>
+          <button class="fanSeg" data-key="sz" title="水圳系统">
+            <div class="thumb"></div>
+            <small>水圳系统</small>
+          </button>
+        </div>
+      </div>
+
+      <div class="bottomRight">
+        <div class="slot bc" id="slotBC">
+          <div class="caption" id="bcCaption">副图</div>
+        </div>
+        <div class="slot br" id="slotBR">
+          <div class="caption" id="brCaption">词云</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const mapping = {
+          mtq: {
+            tr: './马头墙桑葚图.html',
+            bc: './马头墙花纹样式旭日图.html',
+            br: './词云图.html#mtq',
+            // 左上“波浪曲线概览”（匹配参考截图的左上视觉结构）
+            tlSrc: './马头墙波浪概览图.html',
+            tl: '马头墙：概览',
+          },
+          tj: {
+            tr: './天井桑葚图.html',
+            bc: './天井弦图.html',
+            br: './词云图.html#tj',
+            tlSrc: './天井桑葚图.html',
+            tl: '天井：功能链路概览',
+          },
+          fq: {
+            tr: './粉墙桑葚图.html',
+            bc: './粉墙雷达图.html',
+            br: './词云图.html#fq',
+            tlSrc: './粉墙雷达图.html',
+            tl: '粉墙：装饰构成概览',
+          },
+          wd: {
+            tr: './屋顶桑葚图.html',
+            bc: './屋顶半环图.html',
+            br: './词云图.html#wd',
+            tlSrc: './屋顶桑葚图.html',
+            tl: '屋顶：空间适配概览',
+          },
+          sz: {
+            tr: './水圳系统桑葚图.html',
+            bc: './水圳系统桑葚图.html',
+            br: './水圳词云图.html',
+            tlSrc: './水圳系统桑葚图.html',
+            tl: '水圳系统：结构构成概览',
+          },
+        }
+
+        const slotTL = document.getElementById('slotTL')
+        const slotTR = document.getElementById('slotTR')
+        const slotBC = document.getElementById('slotBC')
+        const slotBR = document.getElementById('slotBR')
+
+        const tlCaption = document.getElementById('tlCaption')
+        const trCaption = document.getElementById('trCaption')
+        const bcCaption = document.getElementById('bcCaption')
+        const brCaption = document.getElementById('brCaption')
+
+        const canvasEl = document.getElementById('canvas')
+
+        const fanSwitch = document.getElementById('fanSwitch')
+        const segs = Array.from(fanSwitch.querySelectorAll('.fanSeg'))
+        const CENTER_INDEX = 2
+
+        const keys = segs.map((s) => s.dataset.key)
+        let posKeys = [keys[0], keys[1], keys[2], keys[3], keys[4]]
+        let currentKey = 'mtq'
+
+        function setCenterKey(key) {
+          const idx = posKeys.indexOf(key)
+          if (idx === -1) return
+          const centerKey = posKeys[CENTER_INDEX]
+          posKeys[idx] = centerKey
+          posKeys[CENTER_INDEX] = key
+        }
+
+        function renderIFrame(slotEl, src, scale) {
+          slotEl.querySelectorAll('iframe').forEach((x) => x.remove())
+          const iframe = document.createElement('iframe')
+          iframe.src = src
+          iframe.loading = 'eager'
+          iframe.referrerPolicy = 'no-referrer'
+          if (typeof scale === 'number') {
+            iframe.style.transform = `scale(${scale})`
+            iframe.style.transformOrigin = 'top left'
+          }
+          slotEl.appendChild(iframe)
+        }
+
+        function render(key) {
+          const page = mapping[key]
+          if (!page) return
+
+          currentKey = key
+          canvasEl.classList.toggle('mode-mtq', key === 'mtq')
+
+          // 参考截图里左上块基本不展示标题文字
+          tlCaption.textContent = page.tl
+          tlCaption.style.display = key === 'mtq' ? 'none' : ''
+          trCaption.textContent = 'Sankey（主图）'
+          bcCaption.textContent = '副图'
+          brCaption.textContent = '副图2（词云/说明）'
+
+          const isMtq = key === 'mtq'
+          // mtq 参考图：右上桑葚图、底部两块都要明显缩小
+          renderIFrame(slotTL, page.tlSrc, isMtq ? 0.9 : undefined)
+          renderIFrame(slotTR, page.tr, isMtq ? 0.72 : undefined)
+          renderIFrame(slotBC, page.bc, isMtq ? 0.78 : undefined)
+          renderIFrame(slotBR, page.br, isMtq ? 0.78 : undefined)
+        }
+
+        function layoutSegments(key) {
+          const isMtq = key === 'mtq'
+          const rect = fanSwitch.getBoundingClientRect()
+          const w = rect.width
+          const h = rect.height
+
+          // mtq：规整扇形展开（当前项居中，其余沿固定弧线分布）
+          const center = isMtq ? { x: w * 0.42, y: h * 0.72 } : { x: w * 0.52, y: h * 0.63 }
+          const radius = isMtq ? Math.min(w, h) * 0.55 : Math.min(w, h) * 0.42
+
+          const angleStart = isMtq ? -150 : -150
+          const angleEnd = isMtq ? -30 : -35
+
+          const size = 92
+
+          const orderedSegs = posKeys.map((k) => segs.find((s) => s.dataset.key === k))
+
+          orderedSegs.forEach((seg, index) => {
+            if (!seg) return
+            const t = orderedSegs.length === 1 ? 0 : index / (orderedSegs.length - 1)
+            const deg = angleStart + (angleEnd - angleStart) * t
+            const rad = (deg * Math.PI) / 180
+            const x = center.x + radius * Math.cos(rad)
+            const y = center.y + radius * Math.sin(rad)
+
+            seg.style.left = x - size / 2 + 'px'
+            seg.style.top = y - size / 2 + 'px'
+            seg.classList.toggle('active', index === CENTER_INDEX)
+          })
+        }
+
+        segs.forEach((seg) => {
+          seg.addEventListener('click', function () {
+            const key = seg.dataset.key
+            currentKey = key
+            setCenterKey(key)
+            layoutSegments(key)
+            render(posKeys[CENTER_INDEX])
+          })
+        })
+
+        // 默认：把 mtq 放到中心
+        setCenterKey('mtq')
+        layoutSegments('mtq')
+        render(posKeys[CENTER_INDEX])
+
+        window.addEventListener('resize', function () {
+          layoutSegments()
+        })
+      })()
+    </script>
+  </body>
+</html>
+

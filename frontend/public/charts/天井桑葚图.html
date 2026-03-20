@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天井 多元环境-材料 影响关系桑基图</title>
+    <!-- 引入ECharts CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        /* 严格按照配色规范修改 */
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f0e8;
+            /* 页面主背景色 */
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23e0d4c3' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+            font-family: "SimSun", "宋体", sans-serif;
+        }
+
+        #chart-container {
+            width: 100%;
+            height: 900px;
+            background-color: #faf7f0;
+            /* 图表容器背景色 */
+            border: 1px solid #d4bfa7;
+            /* 图表容器边框色 */
+            position: relative;
+            overflow: hidden;
+        }
+
+        #chart-container::after {
+            content: "A";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: #d48b67;
+            /* 材料层颜色 */
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50%;
+        }
+
+        .title {
+            text-align: center;
+            color: #d48b67;
+            /* 标题文字色 */
+            margin-bottom: 15px;
+            font-size: 22px;
+            font-weight: 600;
+            font-family: "SimHei", "黑体";
+        }
+
+        .legend-note {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #b08968;
+            /* 图例说明文字色 */
+            text-align: center;
+        }
+
+        .level-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80px;
+            text-align: center;
+            color: #d48b67;
+            /* 层级标签文字色 */
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .level1 {
+            left: 10px;
+        }
+
+        .level2 {
+            left: 18%;
+        }
+
+        .level3 {
+            left: 36%;
+        }
+
+        .level4 {
+            left: 54%;
+        }
+
+        .level5 {
+            left: 72%;
+        }
+
+        .city-function {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80px;
+            text-align: center;
+            color: #7a9e9f;
+            /* 右侧功能说明文字色 */
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="title">天井：多元环境→功能→类型→结构→材料 影响关系桑基图</h1>
+    <div id="chart-container">
+        <div class="level-label level1">环境因子</div>
+        <div class="level-label level2">功能需求</div>
+        <div class="level-label level3">类型</div>
+        <div class="level-label level4">结构</div>
+        <div class="level-label level5">材料</div>
+        <div class="city-function">
+            环境适配<br />
+            功能导向<br />
+            构造匹配<br />
+            材料选择
+        </div>
+    </div>
+    <p class="legend-note">注：流线宽度代表影响权重，hover/点击节点/流线可高亮链路 | 点击可切换高亮/恢复状态 | 配色参考复古文献色系</p>
+
+    <script>
+        const myChart = echarts.init(document.getElementById('chart-container'));
+
+        // 存储选中状态
+        const selectedState = {
+            linkIds: new Set(),   // 选中的链路ID
+            nodeNames: new Set()  // 选中的节点名称
+        };
+
+        // 严格按照配色规范定义层级颜色
+        const levelColors = {
+            level1: '#7a9e9f',    // 环境因子层
+            level2: '#b8c5b0',    // 功能需求层
+            level3: '#e6a86e',    // 类型层
+            level4: '#f2d0b0',    // 结构层
+            level5: '#d48b67'     // 材料层
+        };
+
+        // 天井专属节点数据（使用规范配色）
+        const nodes = [
+            // 1. 环境因子层（统一颜色：#7a9e9f）
+            { name: '多雨潮湿', itemStyle: { color: levelColors.level1 } },
+            { name: '日照不足', itemStyle: { color: levelColors.level1 } },
+            { name: '夏季闷热', itemStyle: { color: levelColors.level1 } },
+            { name: '冬季湿冷', itemStyle: { color: levelColors.level1 } },
+            { name: '地形局促', itemStyle: { color: levelColors.level1 } },
+            { name: '街巷密集', itemStyle: { color: levelColors.level1 } },
+            { name: '防火需求高', itemStyle: { color: levelColors.level1 } },
+            // 2. 功能需求层（统一颜色：#b8c5b0）
+            { name: '采光', itemStyle: { color: levelColors.level2 } },
+            { name: '通风排湿', itemStyle: { color: levelColors.level2 } },
+            { name: '排水集水', itemStyle: { color: levelColors.level2 } },
+            { name: '防火隔火', itemStyle: { color: levelColors.level2 } },
+            { name: '聚气纳凉', itemStyle: { color: levelColors.level2 } },
+            { name: '私密安全', itemStyle: { color: levelColors.level2 } },
+            // 3. 类型层（统一颜色：#e6a86e）
+            { name: '矩形天井（主流）', itemStyle: { color: levelColors.level3 } },
+            { name: '方形天井', itemStyle: { color: levelColors.level3 } },
+            { name: '长条形天井', itemStyle: { color: levelColors.level3 } },
+            { name: '异形天井（复合）', itemStyle: { color: levelColors.level3 } },
+            { name: '侧天井（辅助）', itemStyle: { color: levelColors.level3 } },
+            // 4. 结构层（统一颜色：#f2d0b0）
+            { name: '四水归堂', itemStyle: { color: levelColors.level4 } },
+            { name: '檐口挑出', itemStyle: { color: levelColors.level4 } },
+            { name: '地面坡降', itemStyle: { color: levelColors.level4 } },
+            { name: '暗沟排水', itemStyle: { color: levelColors.level4 } },
+            { name: '石质池底', itemStyle: { color: levelColors.level4 } },
+            { name: '高墙围合', itemStyle: { color: levelColors.level4 } },
+            // 5. 材料层（统一颜色：#d48b67）
+            { name: '青石板', itemStyle: { color: levelColors.level5 } },
+            { name: '青砖', itemStyle: { color: levelColors.level5 } },
+            { name: '白灰砂浆', itemStyle: { color: levelColors.level5 } },
+            { name: '杉木构件', itemStyle: { color: levelColors.level5 } },
+            { name: '陶土排水瓦', itemStyle: { color: levelColors.level5 } },
+            { name: '鹅卵石', itemStyle: { color: levelColors.level5 } }
+        ];
+
+        // 为链路添加唯一ID，方便追踪
+        const links = [
+            // 环境因子→功能需求
+            { id: 1, source: '多雨潮湿', target: '通风排湿', value: 35 },
+            { id: 2, source: '多雨潮湿', target: '排水集水', value: 30 },
+            { id: 3, source: '夏季闷热', target: '通风排湿', value: 30 },
+            { id: 4, source: '夏季闷热', target: '聚气纳凉', value: 25 },
+            { id: 5, source: '日照不足', target: '采光', value: 40 },
+            { id: 6, source: '地形局促', target: '采光', value: 15 },
+            { id: 7, source: '地形局促', target: '私密安全', value: 20 },
+            { id: 8, source: '街巷密集', target: '防火隔火', value: 25 },
+            { id: 9, source: '街巷密集', target: '私密安全', value: 20 },
+            { id: 10, source: '冬季湿冷', target: '聚气纳凉', value: 20 },
+            { id: 11, source: '冬季湿冷', target: '通风排湿', value: 15 },
+            { id: 12, source: '防火需求高', target: '防火隔火', value: 35 },
+            // 功能→类型
+            { id: 13, source: '采光', target: '矩形天井（主流）', value: 35 },
+            { id: 14, source: '采光', target: '方形天井', value: 25 },
+            { id: 15, source: '通风排湿', target: '长条形天井', value: 30 },
+            { id: 16, source: '通风排湿', target: '矩形天井（主流）', value: 20 },
+            { id: 17, source: '排水集水', target: '矩形天井（主流）', value: 30 },
+            { id: 18, source: '防火隔火', target: '矩形天井（主流）', value: 25 },
+            { id: 19, source: '聚气纳凉', target: '方形天井', value: 25 },
+            { id: 20, source: '私密安全', target: '侧天井（辅助）', value: 20 },
+            { id: 21, source: '私密安全', target: '异形天井（复合）', value: 15 },
+            // 类型→结构
+            { id: 22, source: '矩形天井（主流）', target: '四水归堂', value: 45 },
+            { id: 23, source: '矩形天井（主流）', target: '高墙围合', value: 25 },
+            { id: 24, source: '方形天井', target: '四水归堂', value: 35 },
+            { id: 25, source: '长条形天井', target: '檐口挑出', value: 30 },
+            { id: 26, source: '长条形天井', target: '地面坡降', value: 20 },
+            { id: 27, source: '侧天井（辅助）', target: '暗沟排水', value: 25 },
+            { id: 28, source: '异形天井（复合）', target: '地面坡降', value: 20 },
+            { id: 29, source: '异形天井（复合）', target: '石质池底', value: 15 },
+            // 结构→材料
+            { id: 30, source: '四水归堂', target: '青石板', value: 40 },
+            { id: 31, source: '四水归堂', target: '青砖', value: 25 },
+            { id: 32, source: '檐口挑出', target: '杉木构件', value: 30 },
+            { id: 33, source: '地面坡降', target: '青石板', value: 25 },
+            { id: 34, source: '暗沟排水', target: '陶土排水瓦', value: 30 },
+            { id: 35, source: '高墙围合', target: '青砖', value: 35 },
+            { id: 36, source: '高墙围合', target: '白灰砂浆', value: 15 },
+            { id: 37, source: '石质池底', target: '青石板', value: 20 },
+            { id: 38, source: '石质池底', target: '鹅卵石', value: 15 }
+        ];
+
+        // 获取节点对应的颜色（用于链路高亮）
+        function getNodeColor(nodeName) {
+            // 先判断节点所属层级，返回对应层级配色
+            const level1Nodes = ['多雨潮湿', '日照不足', '夏季闷热', '冬季湿冷', '地形局促', '街巷密集', '防火需求高'];
+            const level2Nodes = ['采光', '通风排湿', '排水集水', '防火隔火', '聚气纳凉', '私密安全'];
+            const level3Nodes = ['矩形天井（主流）', '方形天井', '长条形天井', '异形天井（复合）', '侧天井（辅助）'];
+            const level4Nodes = ['四水归堂', '檐口挑出', '地面坡降', '暗沟排水', '石质池底', '高墙围合'];
+            const level5Nodes = ['青石板', '青砖', '白灰砂浆', '杉木构件', '陶土排水瓦', '鹅卵石'];
+
+            if (level1Nodes.includes(nodeName)) return levelColors.level1;
+            if (level2Nodes.includes(nodeName)) return levelColors.level2;
+            if (level3Nodes.includes(nodeName)) return levelColors.level3;
+            if (level4Nodes.includes(nodeName)) return levelColors.level4;
+            if (level5Nodes.includes(nodeName)) return levelColors.level5;
+
+            return '#e0d4c3'; // 默认连线色
+        }
+
+        // 更新链路样式
+        function updateLinkStyles() {
+            const updatedLinks = links.map(link => {
+                // 判断是否被选中（链路本身或关联节点被选中）
+                const isLinkSelected = selectedState.linkIds.has(link.id);
+                const isNodeRelated = selectedState.nodeNames.has(link.source) || selectedState.nodeNames.has(link.target);
+
+                if (isLinkSelected || isNodeRelated) {
+                    // 高亮状态：使用源节点层级配色，透明度0.9
+                    return {
+                        ...link,
+                        lineStyle: {
+                            color: getNodeColor(link.source),
+                            opacity: 0.9,
+                            width: 3,
+                            curveness: 0.1
+                        }
+                    };
+                } else {
+                    // 默认状态：背景纹理填充色，透明度0.4
+                    return {
+                        ...link,
+                        lineStyle: {
+                            color: '#e0d4c3',
+                            opacity: 0.4,
+                            width: 1.5,
+                            curveness: 0.1
+                        }
+                    };
+                }
+            });
+
+            myChart.setOption({
+                series: [{ links: updatedLinks }]
+            });
+        }
+
+        const option = {
+            grid: { show: false },
+            xAxis: { show: false },
+            yAxis: { show: false },
+            tooltip: {
+                trigger: 'item',
+                triggerOn: 'mousemove',
+                backgroundColor: 'rgba(250,247,240,0.95)', // 图表容器背景色（带透明度）
+                borderColor: '#d4bfa7', // 提示框边框色
+                borderWidth: 1,
+                textStyle: { color: '#d48b67', fontFamily: 'SimSun' }, // 提示框文字色
+                formatter: function (params) {
+                    if (params.dataType === 'node') {
+                        const nodeName = params.name || '未知节点';
+                        return `<b>${nodeName}</b><br/>类别：${getNodeType(nodeName)}`;
+                    } else {
+                        const source = params.data?.source || params.source || '未知源节点';
+                        const target = params.data?.target || params.target || '未知目标节点';
+                        const value = params.data?.value || params.value || 0;
+                        return `<b>影响链路</b><br/>${source} → ${target}<br/>影响权重：${value}`;
+                    }
+                }
+            },
+            series: [
+                {
+                    type: 'sankey',
+                    layout: 'none',
+                    nodeWidth: 25,
+                    nodeGap: 15,
+                    emphasis: {
+                        focus: 'adjacency',
+                        itemStyle: {
+                            shadowBlur: 6,
+                            shadowColor: 'rgba(212, 139, 103, 0.3)', // 节点高亮阴影色
+                            borderWidth: 1.5,
+                            borderColor: '#d48b67' // 节点高亮边框色
+                        },
+                        lineStyle: {
+                            color: 'source',
+                            opacity: 0.9,
+                            width: 3
+                        }
+                    },
+                    lineStyle: {
+                        color: '#e0d4c3', // 默认连线色
+                        curveness: 0.1,
+                        opacity: 0.4, // 默认连线透明度
+                        width: 1.5
+                    },
+                    data: nodes,
+                    links: links,
+                    // 点击事件处理
+                    onClick: function (params) {
+                        if (params.dataType === 'link') {
+                            // 点击链路：toggle选中状态
+                            const linkId = params.data.id;
+                            if (selectedState.linkIds.has(linkId)) {
+                                selectedState.linkIds.delete(linkId);
+                            } else {
+                                // 清空其他选中状态，只保留当前链路
+                                selectedState.linkIds.clear();
+                                selectedState.nodeNames.clear();
+                                selectedState.linkIds.add(linkId);
+                            }
+                        } else if (params.dataType === 'node') {
+                            // 点击节点：toggle选中状态
+                            const nodeName = params.name;
+                            if (selectedState.nodeNames.has(nodeName)) {
+                                selectedState.nodeNames.delete(nodeName);
+                            } else {
+                                // 清空其他选中状态，只保留当前节点
+                                selectedState.linkIds.clear();
+                                selectedState.nodeNames.clear();
+                                selectedState.nodeNames.add(nodeName);
+                            }
+                        }
+                        // 更新链路样式
+                        updateLinkStyles();
+                    }
+                }
+            ]
+        };
+
+        // 天井节点类型说明函数
+        function getNodeType(nodeName) {
+            if (!nodeName) return '未知节点';
+            const typeMap = {
+                // 环境因子层
+                '多雨潮湿': '环境因子（年降水量1200-2000mm，空气湿度75%-90%）',
+                '日照不足': '环境因子（丘陵遮挡，日均日照4-6小时）',
+                '夏季闷热': '环境因子（夏季均温28-35℃，体感温度更高）',
+                '冬季湿冷': '环境因子（冬季均温2-8℃，相对湿度80%以上）',
+                '地形局促': '环境因子（徽州山地，建筑用地狭窄）',
+                '街巷密集': '环境因子（村落街巷间距1-3m，建筑密度高）',
+                '防火需求高': '环境因子（木质建筑密集，防火等级要求高）',
+                // 功能层
+                '采光': '功能层（弥补室内自然光不足）',
+                '通风排湿': '功能层（降低室内湿度，改善微气候）',
+                '排水集水': '功能层（收集雨水，快速排离建筑区）',
+                '防火隔火': '功能层（分隔建筑，阻断火势蔓延）',
+                '聚气纳凉': '功能层（利用热压差通风，降低室内温度）',
+                '私密安全': '功能层（隔绝外部视线，提升居住安全性）',
+                // 类型层
+                '矩形天井（主流）': '类型层（徽州民居最常见，长宽比1.5:1）',
+                '方形天井': '类型层（大户人家主厅，采光通风均衡）',
+                '长条形天井': '类型层（窄面宽建筑，强化通风效果）',
+                '异形天井（复合）': '类型层（复杂地形适配，多为不规则形状）',
+                '侧天井（辅助）': '类型层（次要空间辅助采光排水）',
+                // 结构层
+                '四水归堂': '结构层（核心排水构造，雨水汇入天井中央）',
+                '檐口挑出': '结构层（扩大遮雨范围，引导雨水流向）',
+                '地面坡降': '结构层（天井地面1%-2%坡度，导向排水口）',
+                '暗沟排水': '结构层（地下排水通道，连接天井与水系）',
+                '石质池底': '结构层（天井底部石材铺装，防渗漏）',
+                '高墙围合': '结构层（四周高墙，强化聚气和私密性）',
+                // 材料层
+                '青石板': '材料层（天井地面主材，耐磨防渗漏）',
+                '青砖': '材料层（天井侧壁主材，透气防潮）',
+                '白灰砂浆': '材料层（勾缝/抹面主材，防水抗裂）',
+                '杉木构件': '材料层（檐口/梁架主材，防腐防虫）',
+                '陶土排水瓦': '材料层（暗沟排水主材，耐水耐用）',
+                '鹅卵石': '材料层（池底垫层/装饰，透水防滑）'
+            };
+            return typeMap[nodeName] || '未知节点';
+        }
+
+        // 渲染图表
+        myChart.setOption(option);
+        // 响应式适配
+        window.addEventListener('resize', function () {
+            myChart.resize();
+        });
+    </script>
+</body>
+
+</html>

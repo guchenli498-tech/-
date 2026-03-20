@@ -1,0 +1,52 @@
+{
+  "tags": [
+    { "id": "t-all", "label": "全部" },
+    { "id": "t-residence", "label": "民居" },
+    { "id": "t-temple", "label": "祠堂" },
+    { "id": "t-gate", "label": "牌坊" },
+    { "id": "t-academy", "label": "书院" }
+  ],
+  "cases": [
+    {
+      "id": "c-1",
+      "title": "家族礼制与聚气围合",
+      "subtitle": "祠堂空间叙事",
+      "type": "祠堂",
+      "era": "明",
+      "location": "徽州",
+      "description": "以围合组织与采光排水协同为主线，体现礼制与日常生活之间的稳定秩序。当前为 mock 文案与样例结构，后续由数据组替换真实案例内容。",
+      "score": 0.86
+    },
+    {
+      "id": "c-2",
+      "title": "檐口收放与风雨适配",
+      "subtitle": "屋面系统与檐口构造",
+      "type": "亭台楼阁",
+      "era": "清",
+      "location": "徽州",
+      "description": "通过屋面曲线与排水组织的统一表达，展示气候适配如何反向塑造建筑形制。当前为 mock 文案与样例结构。",
+      "score": 0.78
+    },
+    {
+      "id": "c-3",
+      "title": "牌坊意象与公共记忆",
+      "subtitle": "叙事性构件展示",
+      "type": "牌坊",
+      "era": "清",
+      "location": "徽州",
+      "description": "以象征符号承载社会记忆与身份表达。当前为 mock 文案与样例结构。",
+      "score": 0.71
+    },
+    {
+      "id": "c-4",
+      "title": "书院与风雅的空间秩序",
+      "subtitle": "学习生活与景观借喻",
+      "type": "书院",
+      "era": "明",
+      "location": "徽州",
+      "description": "通过空间节奏与光影构造，支撑文人学习与交流的温润氛围。当前为 mock 文案与样例结构。",
+      "score": 0.69
+    }
+  ]
+}
+

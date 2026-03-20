@@ -1,0 +1,51 @@
+[
+  {
+    "cityId": "hangzhou",
+    "cityName": "杭州",
+    "province": "浙江",
+    "totalBefore1911": 95,
+    "geoCoord": [120.1551, 30.2741],
+    "center": [760, 270]
+  },
+  {
+    "cityId": "ningbo",
+    "cityName": "宁波",
+    "province": "浙江",
+    "totalBefore1911": 58,
+    "geoCoord": [121.5503, 29.8703],
+    "center": [840, 355]
+  },
+  {
+    "cityId": "hefei",
+    "cityName": "合肥",
+    "province": "安徽",
+    "totalBefore1911": 82,
+    "geoCoord": [117.283, 31.8632],
+    "center": [600, 320]
+  },
+  {
+    "cityId": "huangshan",
+    "cityName": "黄山",
+    "province": "安徽",
+    "totalBefore1911": 64,
+    "geoCoord": [118.3387, 29.7098],
+    "center": [560, 430]
+  },
+  {
+    "cityId": "nanchang",
+    "cityName": "南昌",
+    "province": "江西",
+    "totalBefore1911": 61,
+    "geoCoord": [115.8582, 28.6821],
+    "center": [420, 420]
+  },
+  {
+    "cityId": "shangrao",
+    "cityName": "上饶",
+    "province": "江西",
+    "totalBefore1911": 47,
+    "geoCoord": [117.958, 28.4543],
+    "center": [350, 345]
+  }
+]
+

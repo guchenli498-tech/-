@@ -1,0 +1,76 @@
+.wrap {
+  position: relative;
+  width: 100%;
+  height: 470px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(252, 252, 252, 0.92);
+  border: 1px solid rgba(212, 191, 167, 0.9);
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.legend {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  z-index: 2;
+  background: rgba(252, 252, 252, 0.88);
+  border: 1px solid rgba(242, 239, 233, 0.95);
+  border-radius: 12px;
+  padding: 10px 12px;
+  width: 220px;
+}
+
+.legendTitle {
+  font-size: 13px;
+  color: rgba(74, 74, 72, 0.85);
+  margin-bottom: 6px;
+}
+
+.legendBins {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.legendBin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  color: rgba(74, 74, 72, 0.65);
+}
+
+.legendSwatch {
+  width: 18px;
+  height: 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(212, 191, 167, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+.legendBinLabel {
+  color: rgba(74, 74, 72, 0.72);
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 5;
+  transform: translate(0, 0);
+  pointer-events: none;
+  background: rgba(250, 247, 240, 0.96);
+  border: 1px solid rgba(212, 191, 167, 0.95);
+  color: rgba(74, 74, 72, 0.95);
+  padding: 8px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  box-shadow: 0 14px 30px -16px rgba(74, 74, 72, 0.35);
+  white-space: nowrap;
+}
+

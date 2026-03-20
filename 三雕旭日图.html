@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>徽派三雕 · 旭日图 (石雕色加深版)</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #e0d8d0;
+            /* 深莫兰迪底 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Georgia', '宋体', serif;
+            padding: 16px;
+            position: relative;
+        }
+
+        .card {
+            max-width: 1200px;
+            width: 100%;
+            background: #e0d8d0;
+            border-radius: 40px;
+            box-shadow: 0 25px 45px -10px rgba(80, 50, 25, 0.12);
+            padding: 25px 20px 15px 20px;
+            border: 1px solid #d4c8bc;
+            position: relative;
+            margin-right: 80px;
+        }
+
+        .title-block {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .title-block h1 {
+            font-size: 2.6rem;
+            font-weight: 350;
+            color: #4a3b2e;
+            letter-spacing: 6px;
+            border-bottom: 2px solid #c8b5a2;
+            display: inline-block;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+        }
+
+        .title-block .subhead {
+            background: #e9dfd3;
+            display: inline-block;
+            padding: 6px 28px;
+            border-radius: 40px;
+            color: #63503d;
+            font-size: 1.2rem;
+            font-style: italic;
+            box-shadow: inset 0 1px 5px #d8c8b8;
+        }
+
+        .legend-hint {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 25px;
+            background: #e9e0d5;
+            padding: 15px 12px;
+            border-radius: 60px;
+            border: 1px solid #d0c0ac;
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            margin: 0;
+            z-index: 10;
+            width: 80px;
+        }
+
+        .legend-hint span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #584635;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .legend-hint i {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+        }
+
+        /* 基础色系（仅用于图例）- 石雕色同步加深 */
+        .i-wood {
+            background-color: #e8b98a;
+        }
+
+        /* 木雕主色 */
+        .i-stone {
+            background-color: #8ba8a6;
+        }
+
+        /* 石雕主色（加深） */
+        .i-brick {
+            background-color: #d99e8c;
+        }
+
+        /* 砖雕主色 */
+        .i-tech {
+            background-color: #f0e0c8;
+        }
+
+        /* 技艺基础色（浅暖黄） */
+        .i-material {
+            background-color: #d9c0a0;
+        }
+
+        /* 材料基础色（柔和暖棕） */
+
+        #sunburstChart {
+            width: 100%;
+            height: 780px;
+            margin: 5px 0;
+        }
+
+        .foot-note {
+            text-align: center;
+            color: #7a6854;
+            font-size: 0.95rem;
+            margin-top: 12px;
+            border-top: 1px dashed #d0c0ac;
+            padding-top: 15px;
+            padding-right: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="title-block">
+            <h1>徽 派 三 雕 · 旭 日 图</h1>
+            <div class="subhead">1911年以前 · 技艺 · 材料 (无工艺流派)</div>
+        </div>
+
+        <div id="sunburstChart"></div>
+
+        <div class="foot-note">
+            ⚱️ 内圈：木雕 · 石雕 · 砖雕 &nbsp;&nbsp; 中圈：两大维度 &nbsp;&nbsp; 外圈：具体细分 &nbsp;&nbsp; 最外圈：应用场景示例
+        </div>
+    </div>
+
+    <div class="legend-hint">
+        <span><i class="i-wood"></i> 木雕</span>
+        <span><i class="i-stone"></i> 石雕</span>
+        <span><i class="i-brick"></i> 砖雕</span>
+        <span><i class="i-tech"></i> 技艺</span>
+        <span><i class="i-material"></i> 材料</span>
+    </div>
+
+    <script>
+        (function () {
+            const dom = document.getElementById('sunburstChart');
+            const myChart = echarts.init(dom);
+
+            const sunburstData = {
+                name: "徽派三雕 (至1911)",
+                children: [
+                    {
+                        name: "木雕",
+                        value: 40,
+                        itemStyle: { color: '#e8b98a' }, // 木雕1级主色（核心暖橙）
+                        children: [
+                            {
+                                name: "技艺",
+                                value: 24,
+                                itemStyle: { color: '#f0e0c8' }, // 技艺2级色（浅暖黄）
+                                children: [
+                                    { name: "浅雕", value: 3, itemStyle: { color: '#f5e8d2' }, children: [{ name: "花板装饰", value: 3, itemStyle: { color: '#f9efdb' } }] },
+                                    { name: "平雕", value: 3, itemStyle: { color: '#f2e4c9' }, children: [{ name: "门窗裙板", value: 3, itemStyle: { color: '#f7ebd3' } }] },
+                                    {
+                                        name: "多层透雕", value: 7.5, itemStyle: { color: '#efe0c0' },
+                                        children: [
+                                            { name: "梁架雀替", value: 2.5, itemStyle: { color: '#ecdcb8' } },
+                                            { name: "窗格栏板", value: 2.5, itemStyle: { color: '#e9d8b0' } },
+                                            { name: "挂落飞罩", value: 2.5, itemStyle: { color: '#e6d4a8' } }
+                                        ]
+                                    },
+                                    {
+                                        name: "深浮雕", value: 3.75, itemStyle: { color: '#e3d0a0' },
+                                        children: [
+                                            { name: "床榻围板", value: 1.875, itemStyle: { color: '#e0cc98' } },
+                                            { name: "箱柜面板", value: 1.875, itemStyle: { color: '#ddc890' } }
+                                        ]
+                                    },
+                                    {
+                                        name: "圆雕", value: 3.75, itemStyle: { color: '#dac488' },
+                                        children: [
+                                            { name: "人物瑞兽", value: 1.875, itemStyle: { color: '#d7c080' } },
+                                            { name: "供桌摆件", value: 1.875, itemStyle: { color: '#d4bc78' } }
+                                        ]
+                                    },
+                                    {
+                                        name: "阴雕", value: 1.5, itemStyle: { color: '#f8e8b8' },
+                                        children: [{ name: "书案镇纸", value: 1.5, itemStyle: { color: '#fbeec0' } }]
+                                    },
+                                    {
+                                        name: "阳雕", value: 1.5, itemStyle: { color: '#faf0c8' },
+                                        children: [{ name: "匾额楹联", value: 1.5, itemStyle: { color: '#fcf6d0' } }]
+                                    }
+                                ]
+                            },
+                            {
+                                name: "材料",
+                                value: 16,
+                                itemStyle: { color: '#d9c0a0' }, // 材料2级色（柔和暖棕）
+                                children: [
+                                    { name: "杉木", value: 5, itemStyle: { color: '#d4b898' }, children: [{ name: "梁架", value: 5, itemStyle: { color: '#c9af8f' } }] },
+                                    {
+                                        name: "樟木", value: 4.5, itemStyle: { color: '#c4a980' },
+                                        children: [
+                                            { name: "衣柜", value: 2.25, itemStyle: { color: '#b99f77' } },
+                                            { name: "窗棂", value: 2.25, itemStyle: { color: '#ae956e' } }
+                                        ]
+                                    },
+                                    {
+                                        name: "楠木", value: 3, itemStyle: { color: '#a38b65' },
+                                        children: [{ name: "宗祠立柱", value: 3, itemStyle: { color: '#98815c' } }]
+                                    },
+                                    {
+                                        name: "银杏木", value: 3.5, itemStyle: { color: '#8d7753' },
+                                        children: [{ name: "桌案", value: 3.5, itemStyle: { color: '#826d4a' } }]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        name: "石雕",
+                        value: 30,
+                        itemStyle: { color: '#8ba8a6' }, // 石雕1级主色（加深为深青灰）
+                        children: [
+                            {
+                                name: "技艺",
+                                value: 18,
+                                itemStyle: { color: '#9cb8b6' }, // 石雕技艺2级色（加深）
+                                children: [
+                                    { name: "浅浮雕", value: 2.25, itemStyle: { color: '#a7c0be' }, children: [{ name: "碑刻纹饰", value: 2.25, itemStyle: { color: '#b1c8c6' } }] },
+                                    { name: "平雕", value: 2.25, itemStyle: { color: '#96b4b2' }, children: [{ name: "牌坊字牌", value: 2.25, itemStyle: { color: '#a0bcba' } }] },
+                                    { name: "深浮雕", value: 2.625, itemStyle: { color: '#8facaa' }, children: [{ name: "祠庙墙面", value: 2.625, itemStyle: { color: '#96b4b2' } }] },
+                                    { name: "剔地雕", value: 2.625, itemStyle: { color: '#89a8a6' }, children: [{ name: "柱础", value: 2.625, itemStyle: { color: '#8facaa' } }] },
+                                    {
+                                        name: "圆雕", value: 5.25, itemStyle: { color: '#83a4a2' },
+                                        children: [
+                                            { name: "石狮石人", value: 1.75, itemStyle: { color: '#89a8a6' } },
+                                            { name: "石马石象", value: 1.75, itemStyle: { color: '#8facaa' } },
+                                            { name: "祭祀器皿", value: 1.75, itemStyle: { color: '#96b4b2' } }
+                                        ]
+                                    },
+                                    {
+                                        name: "透雕", value: 3, itemStyle: { color: '#b1c8c6' },
+                                        children: [
+                                            { name: "栏板石窗", value: 1.5, itemStyle: { color: '#bbcaca' } },
+                                            { name: "庭院漏窗", value: 1.5, itemStyle: { color: '#c5d2d0' } }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                name: "材料",
+                                value: 12,
+                                itemStyle: { color: '#7fa09e' }, // 石雕材料2级色（加深）
+                                children: [
+                                    { name: "黟县青石", value: 6, itemStyle: { color: '#799896' }, children: [{ name: "牌坊", value: 6, itemStyle: { color: '#83a09e' } }] },
+                                    { name: "茶园石", value: 3.6, itemStyle: { color: '#6d8c8a' }, children: [{ name: "石狮子", value: 3.6, itemStyle: { color: '#779492' } }] },
+                                    { name: "麻砾石", value: 2.4, itemStyle: { color: '#61807e' }, children: [{ name: "台基", value: 2.4, itemStyle: { color: '#6b8886' } }] }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        name: "砖雕",
+                        value: 30,
+                        itemStyle: { color: '#d99e8c' }, // 砖雕1级主色
+                        children: [
+                            {
+                                name: "技艺",
+                                value: 19.5,
+                                itemStyle: { color: '#e0b0a0' }, // 砖雕技艺2级色
+                                children: [
+                                    {
+                                        name: "浅浮雕", value: 4.5, itemStyle: { color: '#e5b8a8' },
+                                        children: [
+                                            { name: "门楼字牌", value: 1.5, itemStyle: { color: '#eac0b0' } },
+                                            { name: "门楣装饰", value: 1.5, itemStyle: { color: '#efc8b8' } },
+                                            { name: "墙头纹饰", value: 1.5, itemStyle: { color: '#f4d0c0' } }
+                                        ]
+                                    },
+                                    {
+                                        name: "多层镂雕", value: 3.375, itemStyle: { color: '#dbab99' },
+                                        children: [
+                                            { name: "花鸟窗格", value: 1.6875, itemStyle: { color: '#e0b0a0' } },
+                                            { name: "人物故事板", value: 1.6875, itemStyle: { color: '#e5b8a8' } }
+                                        ]
+                                    },
+                                    { name: "堆雕", value: 3.375, itemStyle: { color: '#d6a38f' }, children: [{ name: "门头", value: 3.375, itemStyle: { color: '#dbab99' } }] },
+                                    { name: "圆雕", value: 2.625, itemStyle: { color: '#d19b86' }, children: [{ name: "人物摆件", value: 2.625, itemStyle: { color: '#d6a38f' } }] },
+                                    { name: "半圆雕", value: 2.625, itemStyle: { color: '#cc937d' }, children: [{ name: "瑞兽装饰", value: 2.625, itemStyle: { color: '#d19b86' } }] },
+                                    {
+                                        name: "线刻", value: 3, itemStyle: { color: '#efc8b8' },
+                                        children: [
+                                            { name: "砖边纹饰", value: 1.5, itemStyle: { color: '#f4d0c0' } },
+                                            { name: "楹联边框", value: 1.5, itemStyle: { color: '#f9d8c8' } }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                name: "材料",
+                                value: 10.5,
+                                itemStyle: { color: '#c8b0a6' }, // 砖雕材料2级色
+                                children: [
+                                    {
+                                        name: "青灰砖", value: 6.6, itemStyle: { color: '#bea89e' },
+                                        children: [
+                                            { name: "门楼", value: 3.3, itemStyle: { color: '#c3b0a6' } },
+                                            { name: "照壁", value: 3.3, itemStyle: { color: '#c8b8ae' } }
+                                        ]
+                                    },
+                                    { name: "窑制金砖", value: 3.9, itemStyle: { color: '#b4a096' }, children: [{ name: "天井", value: 3.9, itemStyle: { color: '#bea89e' } }] }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: '#f0e8dd',
+                    borderColor: '#c8a88c',
+                    borderWidth: 1,
+                    textStyle: { color: '#4a3b2e', fontSize: 12, fontFamily: 'Georgia' },
+                    formatter: (params) => {
+                        const path = params.treePathInfo.map(p => p.name).join(' → ');
+                        return `<b>${path}</b><br/>数值比例: ${params.value}`;
+                    },
+                    confine: true,
+                    textStyle: {
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-all'
+                    }
+                },
+                series: [
+                    {
+                        type: 'sunburst',
+                        data: sunburstData.children,
+                        radius: [0, '94%'],
+                        center: ['50%', '52%'],
+                        levelSize: {
+                            0: { r0: '0%', r: '15%' },
+                            1: { r0: '15%', r: '30%' },
+                            2: { r0: '30%', r: '50%' },
+                            3: { r0: '50%', r: '75%' },
+                            4: { r0: '75%', r: '94%' }
+                        },
+                        label: {
+                            rotate: 0,
+                            color: '#4a3b2e',
+                            fontSize: 10,
+                            fontFamily: 'Georgia, "宋体", serif',
+                            show: true,
+                            position: 'inside',
+                            textShadowBlur: 1,
+                            textShadowColor: 'rgba(255,255,255,0.4)',
+                            formatter: (params) => {
+                                if (params.level <= 1) {
+                                    return params.name;
+                                } else if (params.value < 1) {
+                                    return '';
+                                } else {
+                                    return params.name.length > 6 ? params.name.substring(0, 6) + '...' : params.name;
+                                }
+                            }
+                        },
+                        emphasis: {
+                            focus: 'descendant',
+                            blurScope: 'coordinateSystem',
+                            itemStyle: {
+                                shadowBlur: 6,
+                                shadowColor: 'rgba(120,90,60,0.2)',
+                                borderWidth: 1.2,
+                                borderColor: '#e0d8d0'
+                            },
+                            label: {
+                                fontWeight: 600,
+                                fontSize: 11,
+                                color: '#4a3b2e',
+                                textShadowBlur: 1,
+                                textShadowColor: 'rgba(255,255,255,0.6)'
+                            }
+                        },
+                        itemStyle: {
+                            borderRadius: 6,
+                            borderColor: '#e0d8d0',
+                            borderWidth: 1.5
+                        },
+                        color: ['#e8b98a', '#8ba8a6', '#d99e8c'] // 石雕1级默认色同步加深
+                    }
+                ],
+                backgroundColor: '#e0d8d0',
+                graphic: [
+                    {
+                        type: 'text',
+                        left: 'center',
+                        top: 8,
+                        style: {
+                            text: '『 无 工 艺 流 派 · 专 注 技 法 与 材 质 』',
+                            fill: '#63503d',
+                            font: 'italic 18px "Times New Roman", "宋体"',
+                            shadowBlur: 1,
+                            shadowColor: '#d8c8b8'
+                        }
+                    }
+                ]
+            };
+
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
+        })();
+    </script>
+</body>
+
+</html>
