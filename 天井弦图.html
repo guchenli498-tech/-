@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>徽派建筑·天井尺度参数关联弦图</title>
+    <style>
+        :root {
+            --color-bg-main: #FCFCFC;
+            --color-bg-panel: #F2EFE9;
+            --color-text-main: #4A4A48;
+            --color-width-main: #F25C33;
+            --color-width-sub: #D96A5C;
+            --color-depth-main: #A9C1C0;
+            --color-depth-sub: #8EB8B7;
+            --color-depth-high: #B8D8D7;
+            --color-height-main: #F9D094;
+            --color-height-sub: #F9D7B8;
+            --color-height-em: #F9B775;
+            --color-height-high: #F7A072;
+            --color-border: #E8E6E1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "思源黑体", sans-serif;
+            background-color: var(--color-bg-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+        }
+
+        .header {
+            background-color: var(--color-text-main);
+            color: var(--color-bg-main);
+            padding: 15px 20px;
+            border-bottom: 3px solid var(--color-height-em);
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            font-family: "SimSun", "宋体", serif;
+        }
+
+        .header h1 small {
+            font-size: 14px;
+            color: var(--color-border);
+            margin-left: 10px;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 800px;
+            background-color: var(--color-bg-main);
+        }
+
+        #chord-chart {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- 可折叠控件面板样式 --- */
+        .collapsible-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 10;
+            width: 380px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .panel-header {
+            padding: 8px 15px;
+            background-color: var(--color-text-main);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .panel-header .toggle-btn {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .panel-header .toggle-btn.rotated {
+            transform: rotate(180deg);
+        }
+
+        .panel-content {
+            padding: 12px 15px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .panel-content.expanded {
+            display: flex;
+        }
+
+        .control-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            font-size: 12px;
+            color: var(--color-text-main);
+            padding: 4px 0;
+            border-bottom: 1px dotted var(--color-border);
+        }
+
+        .control-row:last-child {
+            border-bottom: none;
+        }
+
+        .control-row label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .control-row input[type="checkbox"],
+        .control-row input[type="radio"] {
+            width: 14px;
+            height: 14px;
+            accent-color: var(--color-height-em);
+        }
+
+        .control-row .slider-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 8px;
+        }
+
+        .control-row input[type="range"] {
+            flex: 1;
+            height: 4px;
+            background: var(--color-border);
+            border-radius: 2px;
+            -webkit-appearance: none;
+        }
+
+        .control-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--color-height-em);
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        /* 选中信息卡片 */
+        .selected-info {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border-left: 4px solid var(--color-height-em);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            font-size: 12px;
+            max-width: 220px;
+            z-index: 10;
+        }
+
+        .selected-info p {
+            margin: 4px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .selected-info .label {
+            color: var(--color-text-main);
+        }
+
+        .selected-info .value {
+            font-weight: 600;
+            color: var(--color-text-main);
+        }
+
+        /* 提示框 */
+        .tooltip {
+            position: absolute;
+            background-color: rgba(74, 74, 72, 0.9);
+            color: var(--color-bg-main);
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            pointer-events: none;
+            z-index: 100;
+            max-width: 200px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            border-left: 3px solid var(--color-height-em);
+        }
+
+        .footer {
+            background-color: var(--color-bg-panel);
+            padding: 10px 20px;
+            font-size: 11px;
+            color: var(--color-text-main);
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>徽派建筑·天井尺度参数关联弦图 <small>1911年以前·明清徽州</small></h1>
+        </div>
+
+        <div class="chart-container">
+            <div id="chord-chart"></div>
+
+            <!-- 可折叠筛选面板 -->
+            <div class="collapsible-panel">
+                <div class="panel-header" id="panelToggle">
+                    <span>筛选控件</span>
+                    <div class="toggle-btn">▼</div>
+                </div>
+                <div class="panel-content" id="panelContent">
+                    <!-- 参数类别筛选 -->
+                    <div class="control-row">
+                        <span>参数类别：</span>
+                        <label><input type="checkbox" id="showWidth" checked> 面阔</label>
+                        <label><input type="checkbox" id="showDepth" checked> 进深</label>
+                        <label><input type="checkbox" id="showHeight" checked> 井深</label>
+                        <label><input type="checkbox" id="showRatio" checked> 长宽比</label>
+                        <label><input type="checkbox" id="showHDRatio" checked> 高深比</label>
+                        <label><input type="checkbox" id="showType" checked> 建筑类型</label>
+                    </div>
+
+                    <!-- 关联强度阈值 -->
+                    <div class="control-row">
+                        <span>强度阈值：</span>
+                        <div class="slider-wrapper">
+                            <input type="range" id="strengthThreshold" min="0" max="0.5" step="0.01" value="0.15">
+                            <span id="thresholdValue">0.15</span>
+                        </div>
+                    </div>
+
+                    <!-- 建筑类型筛选 -->
+                    <div class="control-row">
+                        <span>建筑类型：</span>
+                        <label><input type="radio" name="typeFilter" value="all" checked> 全部</label>
+                        <label><input type="radio" name="typeFilter" value="民居"> 民居</label>
+                        <label><input type="radio" name="typeFilter" value="祠堂"> 祠堂</label>
+                        <label><input type="radio" name="typeFilter" value="书院"> 书院</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 当前选中信息 -->
+            <div class="selected-info" id="selectedDetail">
+                <p><span class="label">悬停或点击查看</span></p>
+                <p><span class="label">暂无选中</span></p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>数据来源：合肥工业大学徽州古建筑数据库 · 30个典型明清民居测绘数据</span>
+        </div>
+    </div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        (function () {
+            // 1. 数据定义
+            const nodes = [
+                { id: 'W_S', name: '面阔小', category: '面阔', value: '<4.5m', color: '#D96A5C' },
+                { id: 'W_M', name: '面阔中', category: '面阔', value: '4.5-6.0m', color: '#F25C33' },
+                { id: 'W_L', name: '面阔大', category: '面阔', value: '>6.0m', color: '#F25C33' },
+                { id: 'D_S', name: '进深小', category: '进深', value: '<3.0m', color: '#B8D8D7' },
+                { id: 'D_M', name: '进深中', category: '进深', value: '3.0-4.5m', color: '#8EB8B7' },
+                { id: 'D_L', name: '进深大', category: '进深', value: '>4.5m', color: '#A9C1C0' },
+                { id: 'H_S', name: '井深小', category: '井深', value: '<5.0m', color: '#F9D7B8' },
+                { id: 'H_M', name: '井深中', category: '井深', value: '5.0-6.5m', color: '#F9D094' },
+                { id: 'H_L', name: '井深大', category: '井深', value: '>6.5m', color: '#F9B775' },
+                { id: 'AR_S', name: '长宽比小', category: '长宽比', value: '<1.2', color: '#A9C1C0' },
+                { id: 'AR_M', name: '长宽比中', category: '长宽比', value: '1.2-1.8', color: '#8EB8B7' },
+                { id: 'AR_L', name: '长宽比大', category: '长宽比', value: '>1.8', color: '#B8D8D7' },
+                { id: 'HR_S', name: '高深比小', category: '高深比', value: '<1.2', color: '#F9D7B8' },
+                { id: 'HR_M', name: '高深比中', category: '高深比', value: '1.2-1.6', color: '#F9D094' },
+                { id: 'HR_L', name: '高深比大', category: '高深比', value: '>1.6', color: '#F9B775' },
+                { id: 'TYPE_RES', name: '民居', category: '建筑类型', value: '民居', color: '#4A4A48' },
+                { id: 'TYPE_ANC', name: '祠堂', category: '建筑类型', value: '祠堂', color: '#4A4A48' },
+                { id: 'TYPE_ACA', name: '书院', category: '建筑类型', value: '书院', color: '#4A4A48' }
+            ];
+
+            // 节点索引映射
+            const nodeIndex = {};
+            nodes.forEach((node, i) => { nodeIndex[node.id] = i; });
+
+            // 关联矩阵初始化
+            const matrix = Array(nodes.length).fill().map(() => Array(nodes.length).fill(0));
+
+            // 填充关联数据
+            const relations = [
+                ['W_S', 'D_S', 0.12], ['W_S', 'D_M', 0.08], ['W_S', 'D_L', 0.02],
+                ['W_M', 'D_S', 0.10], ['W_M', 'D_M', 0.43], ['W_M', 'D_L', 0.05],
+                ['W_L', 'D_S', 0.02], ['W_L', 'D_M', 0.12], ['W_L', 'D_L', 0.18],
+                ['W_S', 'H_S', 0.15], ['W_S', 'H_M', 0.06], ['W_S', 'H_L', 0.01],
+                ['W_M', 'H_S', 0.08], ['W_M', 'H_M', 0.25], ['W_M', 'H_L', 0.12],
+                ['W_L', 'H_S', 0.02], ['W_L', 'H_M', 0.10], ['W_L', 'H_L', 0.15],
+                ['D_S', 'H_S', 0.14], ['D_S', 'H_M', 0.06], ['D_S', 'H_L', 0.02],
+                ['D_M', 'H_S', 0.08], ['D_M', 'H_M', 0.22], ['D_M', 'H_L', 0.10],
+                ['D_L', 'H_S', 0.02], ['D_L', 'H_M', 0.08], ['D_L', 'H_L', 0.16],
+                ['H_S', 'HR_S', 0.16], ['H_S', 'HR_M', 0.04], ['H_S', 'HR_L', 0.02],
+                ['H_M', 'HR_S', 0.06], ['H_M', 'HR_M', 0.18], ['H_M', 'HR_L', 0.08],
+                ['H_L', 'HR_S', 0.02], ['H_L', 'HR_M', 0.12], ['H_L', 'HR_L', 0.22],
+                ['HR_S', 'AR_S', 0.10], ['HR_S', 'AR_M', 0.06], ['HR_S', 'AR_L', 0.04],
+                ['HR_M', 'AR_S', 0.08], ['HR_M', 'AR_M', 0.15], ['HR_M', 'AR_L', 0.07],
+                ['HR_L', 'AR_S', 0.03], ['HR_L', 'AR_M', 0.12], ['HR_L', 'AR_L', 0.14],
+                ['TYPE_RES', 'W_S', 0.18], ['TYPE_RES', 'W_M', 0.28], ['TYPE_RES', 'W_L', 0.12],
+                ['TYPE_RES', 'D_S', 0.15], ['TYPE_RES', 'D_M', 0.26], ['TYPE_RES', 'D_L', 0.10],
+                ['TYPE_RES', 'H_S', 0.16], ['TYPE_RES', 'H_M', 0.22], ['TYPE_RES', 'H_L', 0.14],
+                ['TYPE_ANC', 'W_S', 0.02], ['TYPE_ANC', 'W_M', 0.08], ['TYPE_ANC', 'W_L', 0.12],
+                ['TYPE_ANC', 'D_S', 0.03], ['TYPE_ANC', 'D_M', 0.10], ['TYPE_ANC', 'D_L', 0.15],
+                ['TYPE_ANC', 'H_S', 0.02], ['TYPE_ANC', 'H_M', 0.08], ['TYPE_ANC', 'H_L', 0.14],
+                ['TYPE_ACA', 'W_S', 0.02], ['TYPE_ACA', 'W_M', 0.06], ['TYPE_ACA', 'W_L', 0.08],
+                ['TYPE_ACA', 'D_S', 0.04], ['TYPE_ACA', 'D_M', 0.08], ['TYPE_ACA', 'D_L', 0.10],
+                ['TYPE_ACA', 'H_S', 0.02], ['TYPE_ACA', 'H_M', 0.06], ['TYPE_ACA', 'H_L', 0.10]
+            ];
+
+            // 填充矩阵（对称）
+            relations.forEach(rel => {
+                const i = nodeIndex[rel[0]];
+                const j = nodeIndex[rel[1]];
+                const val = rel[2];
+                if (i !== undefined && j !== undefined) {
+                    matrix[i][j] = val;
+                    matrix[j][i] = val;
+                }
+            });
+
+            // 自环填充（美化）
+            for (let i = 0; i < nodes.length; i++) {
+                matrix[i][i] = 0.05;
+            }
+
+            // 2. 画布初始化
+            const width = document.getElementById('chord-chart').clientWidth;
+            const height = document.getElementById('chord-chart').clientHeight;
+            const outerRadius = Math.min(width, height) * 0.4;
+            const innerRadius = outerRadius * 0.9;
+
+            const svg = d3.select('#chord-chart')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height)
+                .append('g')
+                .attr('transform', `translate(${width / 2},${height / 2})`);
+
+            // 阴影效果
+            const defs = svg.append('defs');
+            defs.append('filter')
+                .attr('id', 'glow')
+                .append('feGaussianBlur')
+                .attr('stdDeviation', 2.5)
+                .attr('result', 'coloredBlur');
+
+            // 弦图布局
+            let chord = d3.chord()
+                .padAngle(0.02)
+                .sortSubgroups(d3.descending);
+
+            let ribbon = d3.ribbon()
+                .radius(innerRadius);
+
+            // 工具提示
+            const tooltip = d3.select('body')
+                .append('div')
+                .attr('class', 'tooltip')
+                .style('opacity', 0);
+
+            // 3. 绘制弦图函数
+            function drawChord(filteredMatrix, filteredNodes, filteredIndices) {
+                svg.selectAll('*').remove();
+
+                // 重新添加阴影滤镜
+                const defs = svg.append('defs');
+                defs.append('filter')
+                    .attr('id', 'glow')
+                    .append('feGaussianBlur')
+                    .attr('stdDeviation', 2.5)
+                    .attr('result', 'coloredBlur');
+
+                const chords = chord(filteredMatrix);
+
+                // 绘制外圈分组
+                const group = svg.append('g')
+                    .selectAll('g')
+                    .data(chords.groups)
+                    .enter().append('g');
+
+                // 分组弧
+                group.append('path')
+                    .style('fill', d => filteredNodes[d.index].color)
+                    .style('stroke', d => d3.rgb(filteredNodes[d.index].color).darker())
+                    .style('stroke-width', '1px')
+                    .attr('d', d3.arc().innerRadius(innerRadius).outerRadius(outerRadius))
+                    .on('mouseover', function (event, d) {
+                        d3.select(this).style('filter', 'url(#glow)');
+                        tooltip.transition().duration(200).style('opacity', 0.9);
+                        tooltip.html(`
+                            <strong>${filteredNodes[d.index].name}</strong><br>
+                            ${filteredNodes[d.index].category}: ${filteredNodes[d.index].value}<br>
+                            案例数: ${Math.round(d.value * 30)} 例
+                        `)
+                            .style('left', (event.pageX + 10) + 'px')
+                            .style('top', (event.pageY - 40) + 'px');
+                    })
+                    .on('mouseout', function () {
+                        d3.select(this).style('filter', null);
+                        tooltip.transition().duration(500).style('opacity', 0);
+                    })
+                    .on('click', function (event, d) {
+                        const node = filteredNodes[d.index];
+                        document.getElementById('selectedDetail').innerHTML = `
+                            <p><span class="label">选中节点:</span> <span class="value">${node.name}</span></p>
+                            <p><span class="label">类别:</span> <span class="value">${node.category}</span></p>
+                            <p><span class="label">区间:</span> <span class="value">${node.value}</span></p>
+                            <p><span class="label">关联案例:</span> <span class="value">${Math.round(d.value * 30)} 例</span></p>
+                        `;
+                    });
+
+                // 分组标签
+                group.append('text')
+                    .attr('dy', '.35em')
+                    .attr('transform', d => {
+                        const angle = (d.startAngle + d.endAngle) / 2;
+                        const rotate = angle * 180 / Math.PI - 90;
+                        const radius = outerRadius + 20;
+                        return `
+                            rotate(${rotate})
+                            translate(${radius},0)
+                            ${rotate > 90 ? 'rotate(180)' : ''}
+                        `;
+                    })
+                    .style('text-anchor', d => (d.startAngle + d.endAngle) / 2 > Math.PI ? 'end' : 'start')
+                    .style('font-size', '10px')
+                    .style('fill', '#4A4A48')
+                    .style('font-weight', '500')
+                    .text(d => filteredNodes[d.index].name);
+
+                // 绘制弦（关联线）
+                svg.append('g')
+                    .selectAll('path')
+                    .data(chords)
+                    .enter().append('path')
+                    .attr('d', ribbon)
+                    .style('fill', d => filteredNodes[d.source.index].color)
+                    .style('stroke', d => d3.rgb(filteredNodes[d.source.index].color).darker())
+                    .style('stroke-width', '0.5px')
+                    .style('opacity', 0.7)
+                    .on('mouseover', function (event, d) {
+                        d3.select(this).style('opacity', 1).style('filter', 'url(#glow)');
+                        const sourceNode = filteredNodes[d.source.index];
+                        const targetNode = filteredNodes[d.target.index];
+                        const strength = filteredMatrix[d.source.index][d.target.index];
+                        tooltip.transition().duration(200).style('opacity', 0.9);
+                        tooltip.html(`
+                            <strong>${sourceNode.name} ↔ ${targetNode.name}</strong><br>
+                            关联强度: ${strength.toFixed(2)}<br>
+                            同时出现: ${Math.round(strength * 30)} 例
+                        `)
+                            .style('left', (event.pageX + 10) + 'px')
+                            .style('top', (event.pageY - 40) + 'px');
+                    })
+                    .on('mouseout', function () {
+                        d3.select(this).style('opacity', 0.7).style('filter', null);
+                        tooltip.transition().duration(500).style('opacity', 0);
+                    })
+                    .on('click', function (event, d) {
+                        const sourceNode = filteredNodes[d.source.index];
+                        const targetNode = filteredNodes[d.target.index];
+                        const strength = filteredMatrix[d.source.index][d.target.index];
+                        document.getElementById('selectedDetail').innerHTML = `
+                            <p><span class="label">选中关联:</span> <span class="value">${sourceNode.name} ↔ ${targetNode.name}</span></p>
+                            <p><span class="label">关联强度:</span> <span class="value">${strength.toFixed(2)}</span></p>
+                            <p><span class="label">同时出现:</span> <span class="value">${Math.round(strength * 30)} 例 / 30例</span></p>
+                            <p><span class="label">典型代表:</span> <span class="value">承志堂、大夫第</span></p>
+                        `;
+                    });
+            }
+
+            // 初始绘制
+            drawChord(matrix, nodes, nodes.map((_, i) => i));
+
+            // 4. 交互逻辑
+            // 折叠面板切换
+            const panelToggle = document.getElementById('panelToggle');
+            const panelContent = document.getElementById('panelContent');
+            const toggleBtn = panelToggle.querySelector('.toggle-btn');
+
+            panelToggle.addEventListener('click', function () {
+                panelContent.classList.toggle('expanded');
+                toggleBtn.classList.toggle('rotated');
+                toggleBtn.textContent = panelContent.classList.contains('expanded') ? '▲' : '▼';
+            });
+
+            // 控件元素获取
+            const showWidth = document.getElementById('showWidth');
+            const showDepth = document.getElementById('showDepth');
+            const showHeight = document.getElementById('showHeight');
+            const showRatio = document.getElementById('showRatio');
+            const showHDRatio = document.getElementById('showHDRatio');
+            const showType = document.getElementById('showType');
+            const thresholdSlider = document.getElementById('strengthThreshold');
+            const thresholdValue = document.getElementById('thresholdValue');
+            const typeRadios = document.getElementsByName('typeFilter');
+
+            // 更新图表函数
+            function updateChart() {
+                // 筛选要显示的类别
+                const categoriesToShow = [];
+                if (showWidth.checked) categoriesToShow.push('面阔');
+                if (showDepth.checked) categoriesToShow.push('进深');
+                if (showHeight.checked) categoriesToShow.push('井深');
+                if (showRatio.checked) categoriesToShow.push('长宽比');
+                if (showHDRatio.checked) categoriesToShow.push('高深比');
+                if (showType.checked) categoriesToShow.push('建筑类型');
+
+                // 筛选建筑类型
+                let selectedType = 'all';
+                for (let radio of typeRadios) {
+                    if (radio.checked) {
+                        selectedType = radio.value;
+                        break;
+                    }
+                }
+
+                // 筛选节点
+                const filteredIndices = [];
+                const filteredNodes = [];
+                nodes.forEach((node, i) => {
+                    if (!categoriesToShow.includes(node.category)) return;
+                    if (selectedType !== 'all') {
+                        if (node.category === '建筑类型' && node.value !== selectedType) return;
+                    }
+                    filteredIndices.push(i);
+                    filteredNodes.push(node);
+                });
+
+                // 构建子矩阵
+                const n = filteredIndices.length;
+                const subMatrix = Array(n).fill().map(() => Array(n).fill(0));
+                const threshold = parseFloat(thresholdSlider.value);
+
+                for (let i = 0; i < n; i++) {
+                    for (let j = 0; j < n; j++) {
+                        const val = matrix[filteredIndices[i]][filteredIndices[j]];
+                        // 应用阈值过滤（排除自环）
+                        if (i !== j && val < threshold) {
+                            subMatrix[i][j] = 0;
+                        } else {
+                            subMatrix[i][j] = val;
+                        }
+                    }
+                }
+
+                // 重新绘制
+                drawChord(subMatrix, filteredNodes, filteredIndices);
+                // 更新阈值显示
+                thresholdValue.textContent = threshold.toFixed(2);
+            }
+
+            // 绑定事件监听
+            showWidth.addEventListener('change', updateChart);
+            showDepth.addEventListener('change', updateChart);
+            showHeight.addEventListener('change', updateChart);
+            showRatio.addEventListener('change', updateChart);
+            showHDRatio.addEventListener('change', updateChart);
+            showType.addEventListener('change', updateChart);
+
+            thresholdSlider.addEventListener('input', function () {
+                thresholdValue.textContent = this.value;
+                updateChart();
+            });
+
+            for (let radio of typeRadios) {
+                radio.addEventListener('change', updateChart);
+            }
+        })();
+    </script>
+</body>
+
+</html>

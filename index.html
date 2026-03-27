@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>徽派建筑 · 可视化系统</title>
+  <style>
+    :root {
+      --bg: #E8E6E1;
+      --card: #FCFCFC;
+      --ink: #4A4A48;
+      --muted: #8EB8B7;
+      --border: #F2EFE9;
+      --accent: #F25C33;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      font-family: Georgia, "KaiTi", "楷体", "华文楷体", "STKaiti", serif;
+      color: var(--ink);
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: rgba(232, 230, 225, 0.88);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(242, 239, 233, 0.9);
+    }
+    .topbar {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      line-height: 1.1;
+    }
+    .brand .title {
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 2px;
+    }
+    .brand .sub {
+      font-size: 12px;
+      color: var(--muted);
+      font-style: italic;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .tab {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--ink);
+      padding: 10px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s, border-color 0.15s;
+      font-size: 16px;
+    }
+    .tab:hover { transform: translateY(-1px); border-color: rgba(242, 239, 233, 0.2); }
+    .tab.active {
+      background: rgba(242, 92, 51, 0.10);
+      border-color: rgba(242, 92, 51, 0.35);
+      color: var(--accent);
+    }
+    .frame {
+      width: 100%;
+      height: calc(100vh - 64px);
+      border: 0;
+      display: block;
+      background: transparent;
+    }
+    @media (max-width: 700px) {
+      .frame { height: calc(100vh - 108px); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <div class="title">徽派建筑 · 可视化系统</div>
+        <div class="sub">模块入口（现有图表 HTML 直接 iframe 嵌入）</div>
+      </div>
+      <nav aria-label="模块导航">
+        <button class="tab active" data-target="./module2.html">模块二</button>
+        <button class="tab" data-target="./module3.html">模块三</button>
+        <button class="tab" data-target="./module1.html">模块一</button>
+      </nav>
+    </div>
+  </header>
+
+  <iframe id="mainFrame" class="frame" title="模块内容"></iframe>
+
+  <script>
+    (function () {
+      const frame = document.getElementById('mainFrame');
+      const tabs = Array.from(document.querySelectorAll('.tab'));
+
+      function setActive(target) {
+        tabs.forEach(t => t.classList.toggle('active', t.dataset.target === target));
+      }
+
+      function load(target) {
+        setActive(target);
+        frame.src = target;
+      }
+
+      // 默认加载模块二
+      load('./module2.html');
+
+      tabs.forEach(t => {
+        t.addEventListener('click', () => load(t.dataset.target));
+      });
+    })();
+  </script>
+</body>
+</html>
+

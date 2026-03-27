@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>马头墙座头样式图表</title>
+    <script src="../echarts.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background: #F7F1E7;
+            font-family: '华文楷体', 'KaiTi', 'SimSun', serif;
+        }
+        #sunburst-rich {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="sunburst-rich"></div>
+    <script>
+        window.addEventListener('load', function() {
+            (function () {
+            const dom = document.getElementById('sunburst-rich');
+            const chart = echarts.init(dom);
+            const selectedNodes = new Set();
+
+            const data = {
+                name: "马头墙座头",
+                itemStyle: { color: '#F7F1E7' },
+                children: [
+                    {
+                        name: "印斗式",
+                        itemStyle: { color: '#B8D8D7' },
+                        children: [
+                            { name: '\u201c卍\u201d字纹 (连弧卍)', value: 16, itemStyle: { color: '#A9C1C0' }, children: [{ name: '万德吉祥 延绵不断', value: 16, itemStyle: { color: '#91B7B6' } }] },
+                            { name: '\u201c卍\u201d字纹 (双关卍)', value: 14, itemStyle: { color: '#A9C1C0' }, children: [{ name: '福寿双全 生生不息', value: 14, itemStyle: { color: '#91B7B6' } }] },
+                            { name: '\u201c田\u201d字纹 (九宫田)', value: 13, itemStyle: { color: '#8EB8B7' }, children: [{ name: '九畴丰登 家宅稳固', value: 13, itemStyle: { color: '#77ACA9' } }] },
+                            { name: '\u201c田\u201d字纹 (四四方)', value: 12, itemStyle: { color: '#8EB8B7' }, children: [{ name: '四方安和 四季康宁', value: 12, itemStyle: { color: '#77ACA9' } }] }
+                        ]
+                    },
+                    {
+                        name: "坐吻式",
+                        itemStyle: { color: '#F9D7B8' },
+                        children: [
+                            { name: "鳌鱼纹 (卷鼻鳌)", value: 12, itemStyle: { color: '#F9B775' }, children: [{ name: "独占鳌头 科甲连登", value: 12, itemStyle: { color: '#F8A658' } }] },
+                            { name: "鳌鱼纹 (翘尾鳌)", value: 10, itemStyle: { color: '#F9B775' }, children: [{ name: "镇水辟邪 家宅安泰", value: 10, itemStyle: { color: '#F8A658' } }] },
+                            { name: "哺鸡纹 (仰哺)", value: 11, itemStyle: { color: '#F9D094' }, children: [{ name: "反哺奉亲 家族和顺", value: 11, itemStyle: { color: '#F8C076' } }] },
+                            { name: "哺鸡纹 (护雏)", value: 9, itemStyle: { color: '#F9D094' }, children: [{ name: "护佑子孙 人丁繁茂", value: 9, itemStyle: { color: '#F8C076' } }] },
+                            { name: "天狗纹 (蹲天狗)", value: 9, itemStyle: { color: '#A9C1C0' }, children: [{ name: "守宅护院 驱邪纳吉", value: 9, itemStyle: { color: '#91B7B6' } }] },
+                            { name: "天狗纹 (啸天狗)", value: 8, itemStyle: { color: '#A9C1C0' }, children: [{ name: "威震四方 百祟不侵", value: 8, itemStyle: { color: '#91B7B6' } }] }
+                        ]
+                    },
+                    {
+                        name: "鹊尾式",
+                        itemStyle: { color: '#F2EFE9' },
+                        children: [
+                            { name: "卷草鹊尾 (缠枝)", value: 18, itemStyle: { color: '#F9D7B8' }, children: [{ name: "缠枝连福 富贵万年", value: 18, itemStyle: { color: '#F8C99C' } }] },
+                            { name: "卷草鹊尾 (折枝)", value: 16, itemStyle: { color: '#F9D7B8' }, children: [{ name: "折桂登科 清雅高洁", value: 16, itemStyle: { color: '#F8C99C' } }] },
+                            { name: "卷草鹊尾 (双卷)", value: 14, itemStyle: { color: '#F9D7B8' }, children: [{ name: "双喜临门 和合美满", value: 14, itemStyle: { color: '#F8C99C' } }] }
+                        ]
+                    },
+                    {
+                        name: "朝笏式",
+                        itemStyle: { color: '#F9D094' },
+                        children: [
+                            { name: "板式朝笏 (光素板)", value: 15, itemStyle: { color: '#F7A072' }, children: [{ name: "清正廉明 品行端方", value: 15, itemStyle: { color: '#F68E58' } }] },
+                            { name: "板式朝笏 (起线板)", value: 13, itemStyle: { color: '#F7A072' }, children: [{ name: "守礼有度 不越矩规", value: 13, itemStyle: { color: '#F68E58' } }] },
+                            { name: "瓦片朝笏 (仰瓦)", value: 12, itemStyle: { color: '#F2EFE9' }, children: [{ name: "上承天泽 下接地气", value: 12, itemStyle: { color: '#E5E1D8' } }] },
+                            { name: "瓦片朝笏 (覆瓦)", value: 11, itemStyle: { color: '#F2EFE9' }, children: [{ name: "藏风聚气 纳福迎祥", value: 11, itemStyle: { color: '#E5E1D8' } }] }
+                        ]
+                    }
+                ]
+            };
+
+            function getNodeId(params) {
+                return params.treePathInfo.map(p => p.name).join('|');
+            }
+
+            const option = {
+                backgroundColor: 'transparent',
+                series: [{
+                    type: 'sunburst',
+                    data: [data],
+                    radius: [0, '92%'],
+                    center: ['50%', '50%'],
+                    levelSize: {
+                        '0': { r0: '0%', r: '12%' },
+                        '1': { r0: '12%', r: '30%' },
+                        '2': { r0: '30%', r: '60%' },
+                        '3': { r0: '60%', r: '92%' }
+                    },
+                    label: {
+                        rotate: 'radial',
+                        fontSize: function (params) {
+                            const level = params.treePathInfo.length;
+                            return level === 4 ? 11 : (level === 3 ? 12 : (level === 2 ? 13 : 14));
+                        },
+                        color: '#444444',
+                        fontWeight: 500,
+                        fontFamily: '华文楷体, KaiTi, serif',
+                        formatter: function (params) {
+                            const nodeId = getNodeId(params);
+                            const level = params.treePathInfo.length;
+                            if (level === 1) return '马头墙座头';
+                            if (selectedNodes.has(nodeId) || params.emphasis) {
+                                return level === 4 ? params.name.replace(' ', '\n') : params.name;
+                            }
+                            return '';
+                        },
+                        emphasis: {
+                            color: '#333333',
+                            fontWeight: 'bold',
+                            fontSize: function (params) {
+                                const level = params.treePathInfo.length;
+                                return level === 4 ? 12 : (level === 3 ? 13 : (level === 2 ? 14 : 15));
+                            },
+                            textShadow: '0 0 6px #EEEEEE'
+                        },
+                        overflow: 'break',
+                        width: function (params) {
+                            const level = params.treePathInfo.length;
+                            return level === 4 ? 120 : (level === 3 ? 90 : (level === 2 ? 70 : 50));
+                        },
+                        height: function (params) {
+                            const level = params.treePathInfo.length;
+                            return level === 4 ? 70 : (level === 3 ? 55 : (level === 2 ? 45 : 35));
+                        },
+                        padding: [6, 8],
+                        align: 'center',
+                        verticalAlign: 'middle',
+                        lineHeight: 18
+                    },
+                    emphasis: {
+                        focus: 'descendant',
+                        blurScope: 'coordinateSystem',
+                        itemStyle: {
+                            shadowBlur: 15,
+                            shadowColor: 'rgba(90, 64, 40, 0.2)',
+                            borderWidth: 2,
+                            borderColor: '#F7A072',
+                            borderRadius: 12
+                        }
+                    },
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#FCFCFC',
+                        borderWidth: 2,
+                        color: function (params) {
+                            const color = params.data.itemStyle?.color || '#F7F1E7';
+                            return new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: color },
+                                { offset: 1, color: echarts.color.lift(color, 0.15) }
+                            ]);
+                        }
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        backgroundColor: '#FCFCFC',
+                        borderColor: '#F9D7B8',
+                        borderWidth: 2,
+                        borderRadius: 12,
+                        textStyle: { color: '#444444', fontSize: 15 },
+                        triggerOn: 'mousemove',
+                        formatter: function (params) {
+                            const path = params.treePathInfo.map(p => p.name).filter(n => n !== '马头墙座头');
+                            return `<div style="font-family: KaiTi; line-height: 1.6;"><strong>${path.join(' > ')}</strong><br/>占比权重：${params.value}</div>`;
+                        }
+                    },
+                    nodeClick: false,
+                    sort: (a, b) => b.value - a.value,
+                    animationDuration: 800,
+                    animationEasing: 'cubicInOut'
+                }]
+            };
+
+            chart.setOption(option);
+            window.addEventListener('resize', () => chart.resize());
+
+            chart.on('click', function (params) {
+                const nodeId = getNodeId(params);
+                const level = params.treePathInfo.length;
+                if (level === 1) {
+                    selectedNodes.clear();
+                } else {
+                    selectedNodes.has(nodeId) ? selectedNodes.delete(nodeId) : selectedNodes.add(nodeId);
+                }
+                chart.setOption({ series: [{ label: { formatter: option.series[0].label.formatter } }] });
+            });
+
+            chart.on('click', { seriesIndex: 0, name: '马头墙座头' }, function () {
+                chart.dispatchAction({ type: 'sunburstRootToNode', seriesIndex: 0, targetNode: null });
+            });
+            })();
+        });
+    </script>
+</body>
+</html>

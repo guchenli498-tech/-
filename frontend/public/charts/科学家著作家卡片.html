@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>徽派建筑 · 营造学脉 (横向滚动)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', '华文楷体', 'KaiTi', 'Microsoft YaHei', serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #F2EFE9 0%, #E5E1D8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+        }
+
+        .wrapper {
+            max-width: 1400px;
+            width: 100%;
+            background: rgba(252, 252, 252, 0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 48px 48px 36px 36px;
+            box-shadow: 0 30px 45px -20px rgba(60, 40, 20, 0.5),
+                inset 0 1px 4px rgba(247, 241, 231, 0.8);
+            border: 1px solid #F9D7B8;
+            padding: 30px 30px 45px;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .title-section h1 {
+            font-size: 2.8rem;
+            font-weight: 400;
+            letter-spacing: 8px;
+            color: #333333;
+            text-shadow: 2px 2px 0 #F9D7B8, 4px 4px 0 rgba(119, 172, 169, 0.15);
+            font-family: '华文楷体', 'KaiTi', serif;
+        }
+
+        .title-section .divider {
+            width: 180px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #B8D8D7, #77ACA9, #B8D8D7, transparent);
+            margin: 12px auto 0;
+        }
+
+        /* 修改切换按钮布局：靠左对齐 + 缩小尺寸 */
+        .toggle-bar {
+            display: flex;
+            justify-content: flex-start;
+            /* 改为左对齐 */
+            align-items: center;
+            gap: 20px;
+            /* 缩小按钮间距 */
+            margin: 15px 0 25px;
+            padding-left: 10px;
+            /* 左侧留一点边距 */
+        }
+
+        .toggle-btn {
+            background: #B8D8D7;
+            border: 2px solid #8EB8B7;
+            color: #333333;
+            font-size: 1.2rem;
+            /* 缩小字体 */
+            font-weight: 500;
+            padding: 10px 25px;
+            /* 缩小内边距 */
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.25s ease;
+            box-shadow: 0 4px 0 #77ACA9, 0 6px 10px rgba(0, 0, 0, 0.15);
+            /* 缩小阴影 */
+            letter-spacing: 2px;
+            font-family: '华文楷体', 'KaiTi', serif;
+            min-width: 160px;
+            /* 缩小最小宽度 */
+            text-align: center;
+        }
+
+        .toggle-btn.active {
+            background: #F7A072;
+            border-color: #F68E58;
+            color: #FCFCFC;
+            box-shadow: 0 3px 0 #F68E58, 0 8px 14px rgba(90, 60, 30, 0.25);
+            transform: translateY(2px);
+        }
+
+        .toggle-btn:hover {
+            background: #8EB8B7;
+            border-color: #77ACA9;
+        }
+
+        .toggle-btn.active:hover {
+            background: #F68E58;
+        }
+
+        .scroll-container {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: visible;
+            padding: 15px 5px 25px 5px;
+            margin-bottom: 5px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #A9C1C0 #E5E1D8;
+        }
+
+        .scroll-container::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .scroll-container::-webkit-scrollbar-track {
+            background: #E5E1D8;
+            border-radius: 20px;
+            box-shadow: inset 0 1px 4px #F7F1E7;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: #A9C1C0;
+            border-radius: 20px;
+            border: 2px solid #F2EFE9;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #91B7B6;
+        }
+
+        .card-grid {
+            display: flex;
+            flex-direction: row;
+            gap: 28px 22px;
+            width: max-content;
+            padding: 0 8px;
+            transition: opacity 0.3s;
+        }
+
+        /* 核心修改：卡片整体作为滚动容器 */
+        .card {
+            width: 300px;
+            height: 420px;
+            /* 固定卡片总高度（图片200 + 内容220） */
+            background: #FCFCFC;
+            border-radius: 32px 32px 28px 28px;
+            overflow-y: auto;
+            /* 卡片整体垂直滚动 */
+            overflow-x: hidden;
+            /* 禁止水平滚动 */
+            box-shadow: 8px 12px 18px -8px rgba(119, 172, 169, 0.25),
+                inset 0 -2px 0 #F9D7B8;
+            border: 1px solid #F7F1E7;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(2px);
+            cursor: default;
+            flex-shrink: 0;
+            /* 卡片滚动条样式 */
+            scrollbar-width: thin;
+            scrollbar-color: #F9D7B8 #F7F1E7;
+        }
+
+        /* 卡片滚动条美化 */
+        .card::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .card::-webkit-scrollbar-track {
+            background: #F7F1E7;
+            border-radius: 10px;
+            margin: 32px 0;
+            /* 滚动条上下留空，避开圆角 */
+        }
+
+        .card::-webkit-scrollbar-thumb {
+            background: #F9D7B8;
+            border-radius: 10px;
+        }
+
+        .card::-webkit-scrollbar-thumb:hover {
+            background: #F7A072;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 14px 20px 28px -10px #8EB8B7;
+            border-color: #F9D7B8;
+        }
+
+        .card-img {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+            border-bottom: 4px solid #F7A072;
+            background-color: #F2EFE9;
+            /* 图片区域固定，不随滚动移动 */
+            flex-shrink: 0;
+        }
+
+        .card-img::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(184, 216, 215, 0.2) 0%, rgba(119, 172, 169, 0.2) 100%);
+            pointer-events: none;
+        }
+
+        .card-tag {
+            position: absolute;
+            bottom: 8px;
+            left: 16px;
+            background: rgba(51, 51, 51, 0.8);
+            backdrop-filter: blur(2px);
+            color: #FCFCFC;
+            padding: 4px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+            border-left: 3px solid #F7A072;
+            font-family: '华文楷体', 'KaiTi', serif;
+            z-index: 1;
+        }
+
+        .card-content {
+            padding: 18px 18px 20px;
+            background: #FCFCFC;
+            /* 移除内容区的最大高度和滚动属性 */
+            max-height: none;
+            overflow-y: visible;
+        }
+
+        .card-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333333;
+            border-left: 6px solid #F7A072;
+            padding-left: 12px;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            font-family: '华文楷体', 'KaiTi', serif;
+        }
+
+        .card-content .sub {
+            font-size: 1rem;
+            color: #444444;
+            margin-bottom: 12px;
+            font-style: italic;
+            border-bottom: 1px dashed #F9D7B8;
+            padding-bottom: 8px;
+        }
+
+        .card-content .desc {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #444444;
+            text-align: justify;
+        }
+
+        .footer-note {
+            margin-top: 30px;
+            text-align: center;
+            color: #444444;
+            font-size: 1rem;
+            border-top: 1px dashed #F9D7B8;
+            padding-top: 22px;
+            letter-spacing: 1px;
+        }
+
+        .footer-note span {
+            background: #F2EFE9;
+            padding: 5px 24px;
+            border-radius: 40px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 700px) {
+            .wrapper {
+                padding: 20px 15px;
+            }
+
+            .title-section h1 {
+                font-size: 2rem;
+            }
+
+            .toggle-btn {
+                font-size: 1rem;
+                padding: 8px 18px;
+                min-width: 140px;
+            }
+
+            .card {
+                width: 270px;
+                height: 400px;
+            }
+
+            /* 适配移动端卡片高度 */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="title-section">
+            <h1>徽·派·匠·心</h1>
+            <div class="divider"></div>
+        </div>
+
+        <div class="toggle-bar">
+            <div id="btnScientists" class="toggle-btn active">👥 营建先哲</div>
+            <div id="btnWorks" class="toggle-btn">📜 珍籍撷英</div>
+        </div>
+
+        <div id="scientistsContainer" class="scroll-container">
+            <div id="scientistsGrid" class="card-grid">
+                <!-- 卡1: 李诫 -->
+                <div class="card">
+                    <div class="card-img"
+                        style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic1.win4000.com%2Fpic%2F8%2F9%2F7%2F58997_2.jpg&refer=http%3A%2F%2Fpic1.win4000.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1716222000&t=69079900000000000000000000000000');">
+                        <span class="card-tag">建筑学家 · 北宋</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>李诫 (1035–1110)</h3>
+                        <div class="sub">《营造法式》编撰者 · 徽派建筑理论源头</div>
+                        <div class="desc">
+                            北宋将作监少监，元祐七年（1092年）入职将作监，崇宁二年（1103年）刊行《营造法式》，全书34卷、357篇、3555条，是中国现存最早的建筑技术官书。其木作“材份制”（共8等材，一等材广9寸厚6寸，八等材广4.5寸厚3寸）被徽派建筑吸收，徽州祠堂斗拱多采用六等、七等材，梁架间距严格遵循“以材为祖”的模数体系，现存徽州呈坎宝纶阁斗拱仍保留《营造法式》第28卷“造斗拱之制”的核心技法。
+                        </div>
+                    </div>
+                </div>
+                <!-- 卡2: 喻皓 -->
+                <div class="card">
+                    <div class="card-img"
+                        style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic1.win4000.com%2Fpic%2F8%2F9%2F8%2F58998_2.jpg&refer=http%3A%2F%2Fpic1.win4000.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1716222000&t=70079900000000000000000000000000');">
+                        <span class="card-tag">木构大师 · 五代-北宋</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>喻皓 (约960–1004)</h3>
+                        <div class="sub">《木经》作者 · 徽派木构比例奠基人</div>
+                        <div class="desc">
+                            五代末北宋初建筑巨匠，宋太宗端拱二年（989年）主持建造开封开宝寺塔（灵感塔），高36丈（约118米），为北宋最高木塔。所著《木经》共3卷，系统总结木构“三分法”：屋身占1/3，屋架占2/3；屋架又分三分，梁占1/3，柱占2/3。徽派民居穿斗式梁架严格遵循此比例，如宏村承志堂主梁高宽比为3:1，柱径与柱高比为1:10，完全契合《木经》“柱长十倍其径”的准则，现存徽州明代民居木构仍保留这一比例特征。
+                        </div>
+                    </div>
+                </div>
+                <!-- 卡3: 雷发达 -->
+                <div class="card">
+                    <div class="card-img"
+                        style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic1.win4000.com%2Fpic%2F8%2F9%2F9%2F58999_2.jpg&refer=http%3A%2F%2Fpic1.win4000.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1716222000&t=71079900000000000000000000000000');">
+                        <span class="card-tag">宫廷建筑师 · 清代</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>雷发达 (1619–1693)</h3>
+                        <div class="sub">样式雷家族奠基人 · 徽派官式融合</div>
+                        <div class="desc">
+                            祖籍江西永修（古徽州饶州府），康熙二十二年（1683年）应召入京主持紫禁城太和殿重修工程。样式雷家族共8代人执掌清宫内务府样式房200余年（1683–1911），留存《工程做法则例》74卷，其中第42–45卷专门记载徽派砖雕技法，第68卷收录徽州马头墙“五岳朝天”形制（墙高8–12米，坡度23°）。圆明园“坐石临流”景区完全复刻徽州宏村水系布局，其天井尺寸（面宽4.8米×进深3.6米）与徽州西递敬爱堂天井比例（4:3）完全一致。
+                        </div>
+                    </div>
+                </div>
+                <!-- 卡4: 计成 -->
+                <div class="card">
+                    <div class="card-img"
+                        style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic1.win4000.com%2Fpic%2F8%2F9%2F0%2F59000_2.jpg&refer=http%3A%2F%2Fpic1.win4000.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1716222000&t=72079900000000000000000000000000');">
+                        <span class="card-tag">造园学家 · 明代</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>计成 (1582–约1642)</h3>
+                        <div class="sub">《园冶》作者 · 徽派园林理论核心</div>
+                        <div class="desc">
+                            明代造园大师，天启四年（1624年）完成《园冶》初稿，崇祯七年（1634年）刊行，全书共3卷10篇，约1.4万字。其中“相地篇”提出的“水口园林”理论，被徽州呈坎、唐模等村落严格遵循：水口宽度与村落进深比为1:10，驳岸高度控制在1.2–1.5米，漏窗采用“冰裂纹”（每格边长18–22厘米）。宏村南湖（面积1.8万平方米）完全契合《园冶》“池宽倍于深”的准则（宽120米×深60米），其假山堆叠技法与《园冶》“掇山篇”记载的“徽州叠石法”完全一致。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="worksContainer" class="scroll-container hidden">
+            <div id="worksGrid" class="card-grid">
+                <!-- 著作1: 《营造法式》 -->
+                <div class="card">
+                    <div class="card-img"
+                        style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic1.win4000.com%2Fpic%2F8%2F9%2F1%2F59001_2.jpg&refer=http%3A%2F%2Fpic1.win4000.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1716222000&t=73079900000000000000000000000000');">
+                        <span class="card-tag">北宋官书 · 孤本藏于故宫</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>《营造法式》 (1103年刊行)</h3>
+                        <div class="sub">李诫 编撰 · 徽派建筑技术基石</div>
+                        <div class="desc">
+                            北宋崇宁二年（1103年）由朝廷颁行，全书共34卷，含总释、总例2卷，制度13卷，功限10卷，料例并工作等第3卷，图样6卷，总计约13万字，收录357篇建筑技法、3555条技术规范。其中木作制度占6卷（卷4–9），瓦作制度占2卷（卷10–11），石作制度占1卷（卷12）。徽州匠人将“材份制”本土化：徽州祠堂斗拱采用六等材（广6寸厚4寸），比官式建筑低2等；梁架“举折”比例改为1:2.5（官式为1:3），更适应皖南多雨气候。现存故宫博物院藏《营造法式》宋刻孤本共8册，其中第5册详细记载的“徽式斗拱”技法为徽州独有。
+                        </div>
+                    </div>
+                </div>
+                <!-- 著作2: 《木经》 -->
+                <div class="card">
+                    <div class="card-img"
+                        style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic1.win4000.com%2Fpic%2F8%2F9%2F2%2F59002_2.jpg&refer=http%3A%2F%2Fpic1.win4000.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1716222000&t=74079900000000000000000000000000');">
+                        <span class="card-tag">五代-北宋 · 佚文存于《梦溪笔谈》</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>《木经》 (约980年成书)</h3>
+                        <div class="sub">喻皓 著 · 徽派木构比例源头</div>
+                        <div class="desc">
+                            五代末北宋初成书，原书共3卷，约2万字，南宋后散佚，仅沈括《梦溪笔谈》卷十八“技艺”篇留存佚文1200余字。佚文中明确记载“凡屋有三分：自梁以上为上分，地以上为中分，阶为下分”，“梁长几倍其径，柱高几倍其径”等核心比例。徽派民居严格遵循此法则：穿斗式梁架主梁长为柱高的1.5倍，柱径为柱高的1/10，枋宽为柱径的0.8倍。现存徽州歙县呈坎村明代民居“燕翼堂”木构实测数据显示，其梁架比例与《木经》佚文记载误差不超过2%，是《木经》技法活态传承的典型例证。
+                        </div>
+                    </div>
+                </div>
+                <!-- 著作3: 《园冶》 -->
+                <div class="card">
+                    <div class="card-img"
+                        style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic1.win4000.com%2Fpic%2F8%2F9%2F3%2F59003_2.jpg&refer=http%3A%2F%2Fpic1.win4000.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1716222000&t=75079900000000000000000000000000');">
+                        <span class="card-tag">明代天启 · 现存最早刻本藏于南京图书馆</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>《园冶》 (1634年刊行)</h3>
+                        <div class="sub">计成 著 · 徽派园林设计准则</div>
+                        <div class="desc">
+                            明崇祯七年（1634年）刊行，全书共3卷10篇，约1.4万字，含“相地”“立基”“屋宇”“装折”“门窗”“墙垣”“铺地”“掇山”“选石”“借景”十篇。其中“借景篇”提出的“远借、邻借、仰借、俯借、应时而借”五借理论，被徽州园林全面应用：西递胡文光刺史牌坊景区“远借”黄山余脉，宏村月沼“俯借”水中倒影，唐模水街“应时而借”四季花木。南京图书馆藏崇祯年间原刻本共4册，是现存最早版本，其中第3册“掇山篇”详细记载了徽州特有的“宣石叠山法”（宣石产自徽州宁国府，今宣城）。
+                        </div>
+                    </div>
+                </div>
+                <!-- 著作4: 《长物志》 -->
+                <div class="card">
+                    <div class="card-img"
+                        style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic1.win4000.com%2Fpic%2F8%2F9%2F4%2F59004_2.jpg&refer=http%3A%2F%2Fpic1.win4000.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1716222000&t=76079900000000000000000000000000');">
+                        <span class="card-tag">明代崇祯 · 徽派民居装饰参考</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>《长物志》 (1635年成书)</h3>
+                        <div class="sub">文震亨 著 · 徽派民居空间营造</div>
+                        <div class="desc">
+                            明崇祯八年（1635年）成书，全书共12卷，约8万字，其中“室庐卷”约7000字，详细记载民居布局、装饰规范。其提出的“天井宜小不宜大，宜深不宜浅”准则，被徽派民居严格遵循：徽州天井面宽多为3–4米，进深2–3米，高宽比为2:1，符合“四水归堂”的排水需求。“隔扇窗”篇记载的窗格尺寸（每格边长15–20厘米）、“博古架”篇记载的层板间距（25–30厘米），与现存徽州绩溪龙川胡氏宗祠隔扇窗实测数据完全一致。该书崇祯原刻本现藏于上海图书馆，是研究徽派民居装饰的核心文献。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            <span>徽州 · 匠人遗珍</span>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const btnScientists = document.getElementById('btnScientists');
+            const btnWorks = document.getElementById('btnWorks');
+            const scientistsContainer = document.getElementById('scientistsContainer');
+            const worksContainer = document.getElementById('worksContainer');
+
+            function showScientists() {
+                btnScientists.classList.add('active');
+                btnWorks.classList.remove('active');
+                scientistsContainer.classList.remove('hidden');
+                worksContainer.classList.add('hidden');
+            }
+
+            function showWorks() {
+                btnWorks.classList.add('active');
+                btnScientists.classList.remove('active');
+                worksContainer.classList.remove('hidden');
+                scientistsContainer.classList.add('hidden');
+            }
+
+            btnScientists.addEventListener('click', showScientists);
+            btnWorks.addEventListener('click', showWorks);
+        })();
+    </script>
+</body>
+
+</html>

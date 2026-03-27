@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>马头墙 波浪概览图</title>
+    <script src="../echarts.min.js"></script>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: transparent;
+        overflow: hidden;
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      }
+      .wrap {
+        width: 100%;
+        height: 100%;
+        padding: 10px 10px 6px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+      .chart-title {
+        font-family: 'STKaiti', '华文楷体', 'KaiTi', serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #4A4A48;
+        letter-spacing: 4px;
+        margin: 0 0 6px 4px;
+        padding-bottom: 6px;
+        position: relative;
+        flex-shrink: 0;
+      }
+      .chart-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 36px;
+        height: 2px;
+        background: #A9C1C0;
+      }
+      #chart {
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="chart-title">马头墙 · 波浪概览</div>
+      <div id="chart"></div>
+    </div>
+    <script>
+      (function () {
+        const dom = document.getElementById("chart");
+        const chart = echarts.init(dom);
+
+        // 仅用于匹配参考图“多色波浪曲线”的视觉结构（语义可后续替换）
+        const x = ["1898", "1899", "1900", "1901", "1903", "1905", "1907", "1909", "1910", "1911"];
+        const series = [
+          {
+            name: "波动A",
+            color: "#8EB8B7",
+            data: [12, 18, 14, 22, 19, 25, 20, 28, 23, 30],
+          },
+          {
+            name: "波动B",
+            color: "#F25C33",
+            data: [10, 14, 16, 12, 20, 16, 24, 18, 26, 20],
+          },
+          {
+            name: "波动C",
+            color: "#A9C1C0",
+            data: [8, 11, 9, 15, 12, 18, 14, 20, 16, 22],
+          },
+          {
+            name: "波动D",
+            color: "#4A4A48",
+            data: [6, 9, 8, 10, 13, 12, 15, 14, 17, 16],
+          },
+        ];
+
+        const option = {
+          backgroundColor: "transparent",
+          tooltip: { trigger: "axis" },
+          grid: { left: 22, right: 10, top: 8, bottom: 18 },
+          xAxis: {
+            type: "category",
+            boundaryGap: false,
+            axisLine: { lineStyle: { color: "rgba(74,74,72,0.18)" } },
+            axisTick: { show: false },
+            axisLabel: { color: "rgba(74,74,72,0.55)", fontSize: 10 },
+            data: x,
+          },
+          yAxis: {
+            type: "value",
+            axisLine: { show: false },
+            axisTick: { show: false },
+            splitLine: { lineStyle: { color: "rgba(74,74,72,0.06)" } },
+            axisLabel: { show: false },
+          },
+          series: series.map((s) => ({
+            name: s.name,
+            type: "line",
+            smooth: true,
+            symbol: "none",
+            lineStyle: { color: s.color, width: 2.4 },
+            areaStyle: { color: s.color, opacity: 0.12 },
+            data: s.data,
+          })),
+        };
+
+        chart.setOption(option);
+
+        window.addEventListener("resize", function () {
+          chart.resize();
+        });
+      })();
+    </script>
+  </body>
+</html>
+

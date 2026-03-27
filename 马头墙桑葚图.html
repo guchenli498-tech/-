@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>马头墙 多元环境-材料 影响关系桑基图</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f0e8;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23e0d4c3' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+            font-family: "SimSun", "宋体", sans-serif;
+        }
+
+        #chart-container {
+            width: 100%;
+            height: 900px;
+            background-color: #faf7f0;
+            border: 1px solid #d4bfa7;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #chart-container::after {
+            content: "S";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: #d48b67;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50%;
+        }
+
+        .title {
+            text-align: center;
+            color: #d48b67;
+            margin-bottom: 15px;
+            font-size: 22px;
+            font-weight: 600;
+            font-family: "SimHei", "黑体";
+        }
+
+        .legend-note {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #b08968;
+            text-align: center;
+        }
+
+        .level-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80px;
+            text-align: center;
+            color: #d48b67;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .level1 {
+            left: 10px;
+        }
+
+        .level2 {
+            left: 18%;
+        }
+
+        .level3 {
+            left: 36%;
+        }
+
+        .level4 {
+            left: 54%;
+        }
+
+        .level5 {
+            left: 72%;
+        }
+
+        .city-function {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80px;
+            text-align: center;
+            color: #7a9e9f;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="title">马头墙：多元环境→功能→类型→结构→材料 影响关系桑基图</h1>
+    <div id="chart-container">
+        <div class="level-label level1">环境因子</div>
+        <div class="level-label level2">功能需求</div>
+        <div class="level-label level3">类型</div>
+        <div class="level-label level4">结构</div>
+        <div class="level-label level5">材料</div>
+        <div class="city-function">
+            环境适配<br />
+            功能导向<br />
+            构造匹配<br />
+            材料选择
+        </div>
+    </div>
+    <p class="legend-note">注：流线宽度代表影响权重，hover节点/流线可查看详细说明 | 配色参考徽派建筑传统色系</p>
+
+    <script>
+        const myChart = echarts.init(document.getElementById('chart-container'));
+
+        // 统一各层级颜色（匹配示例图暖橙+青绿色系）
+        const levelColors = {
+            env: '#7a9e9f',      // 环境因子层：青绿色
+            func: '#b8c5b0',     // 功能需求层：浅薄荷绿
+            type: '#e6a86e',     // 类型层：暖橙色
+            struct: '#f2d0b0',   // 结构层：浅杏色
+            material: '#d48b67'  // 材料层：复古红橙
+        };
+
+        const nodes = [
+            // 1. 环境因子层
+            { name: '高温多雨', itemStyle: { color: levelColors.env } },
+            { name: '夏季湿热', itemStyle: { color: levelColors.env } },
+            { name: '台风/雷暴', itemStyle: { color: levelColors.env } },
+            { name: '冬冷夏热', itemStyle: { color: levelColors.env } },
+            { name: '风力强劲', itemStyle: { color: levelColors.env } },
+            { name: '地形起伏', itemStyle: { color: levelColors.env } },
+            { name: '水系密集', itemStyle: { color: levelColors.env } },
+            // 2. 功能需求层
+            { name: '防火', itemStyle: { color: levelColors.func } },
+            { name: '防风/导风', itemStyle: { color: levelColors.func } },
+            { name: '排水/隔热', itemStyle: { color: levelColors.func } },
+            { name: '防雷/防盗', itemStyle: { color: levelColors.func } },
+            // 3. 类型层
+            { name: '三叠印斗式', itemStyle: { color: levelColors.type } },
+            { name: '四叠鹊尾式', itemStyle: { color: levelColors.type } },
+            { name: '坐吻式（祠堂）', itemStyle: { color: levelColors.type } },
+            { name: '二叠简易式', itemStyle: { color: levelColors.type } },
+            // 4. 结构层
+            { name: '阶梯跌落+排檐砖', itemStyle: { color: levelColors.struct } },
+            { name: '座头+小青瓦压顶', itemStyle: { color: levelColors.struct } },
+            { name: '墙身收分+巷道间距', itemStyle: { color: levelColors.struct } },
+            // 5. 材料层
+            { name: '青砖+白灰浆', itemStyle: { color: levelColors.material } },
+            { name: '小青瓦', itemStyle: { color: levelColors.material } },
+            { name: '杉木（搏风板）', itemStyle: { color: levelColors.material } },
+            { name: '灰塑/陶吻', itemStyle: { color: levelColors.material } }
+        ];
+
+        const links = [
+            // 环境因子→功能需求
+            { source: '高温多雨', target: '排水/隔热', value: 30 },
+            { source: '高温多雨', target: '防火', value: 25 },
+            { source: '夏季湿热', target: '防风/导风', value: 25 },
+            { source: '夏季湿热', target: '排水/隔热', value: 15 },
+            { source: '台风/雷暴', target: '防雷/防盗', value: 25 },
+            { source: '台风/雷暴', target: '防风/导风', value: 20 },
+            { source: '冬冷夏热', target: '排水/隔热', value: 20 },
+            { source: '冬冷夏热', target: '防风/导风', value: 15 },
+            { source: '风力强劲', target: '防风/导风', value: 30 },
+            { source: '地形起伏', target: '排水/隔热', value: 10 },
+            { source: '水系密集', target: '排水/隔热', value: 15 },
+            { source: '水系密集', target: '防火', value: 10 },
+            // 功能→类型
+            { source: '防火', target: '三叠印斗式', value: 40 },
+            { source: '防火', target: '四叠鹊尾式', value: 30 },
+            { source: '防风/导风', target: '三叠印斗式', value: 25 },
+            { source: '防风/导风', target: '二叠简易式', value: 20 },
+            { source: '排水/隔热', target: '四叠鹊尾式', value: 25 },
+            { source: '排水/隔热', target: '坐吻式（祠堂）', value: 15 },
+            { source: '防雷/防盗', target: '坐吻式（祠堂）', value: 20 },
+            { source: '防雷/防盗', target: '二叠简易式', value: 10 },
+            // 类型→结构
+            { source: '三叠印斗式', target: '阶梯跌落+排檐砖', value: 45 },
+            { source: '三叠印斗式', target: '座头+小青瓦压顶', value: 30 },
+            { source: '四叠鹊尾式', target: '阶梯跌落+排檐砖', value: 35 },
+            { source: '四叠鹊尾式', target: '墙身收分+巷道间距', value: 25 },
+            { source: '坐吻式（祠堂）', target: '座头+小青瓦压顶', value: 25 },
+            { source: '坐吻式（祠堂）', target: '墙身收分+巷道间距', value: 15 },
+            { source: '二叠简易式', target: '墙身收分+巷道间距', value: 10 },
+            // 结构→材料
+            { source: '阶梯跌落+排檐砖', target: '青砖+白灰浆', value: 50 },
+            { source: '阶梯跌落+排檐砖', target: '小青瓦', value: 20 },
+            { source: '座头+小青瓦压顶', target: '小青瓦', value: 25 },
+            { source: '座头+小青瓦压顶', target: '杉木（搏风板）', value: 15 },
+            { source: '墙身收分+巷道间距', target: '青砖+白灰浆', value: 30 },
+            { source: '墙身收分+巷道间距', target: '灰塑/陶吻', value: 10 }
+        ];
+
+        const option = {
+            grid: { show: false },
+            xAxis: { show: false },
+            yAxis: { show: false },
+            tooltip: {
+                trigger: 'item',
+                triggerOn: 'mousemove',
+                backgroundColor: 'rgba(248,245,238,0.95)',
+                borderColor: '#d4bfa7',
+                borderWidth: 1,
+                textStyle: { color: '#d48b67', fontFamily: 'SimSun' },
+                formatter: function (params) {
+                    if (params.dataType === 'node') {
+                        const nodeName = params.name || '未知节点';
+                        return `<b>${nodeName}</b><br/>类别：${getNodeType(nodeName)}`;
+                    } else {
+                        const source = params.data?.source || params.source || '未知源节点';
+                        const target = params.data?.target || params.target || '未知目标节点';
+                        const value = params.data?.value || params.value || 0;
+                        return `<b>影响链路</b><br/>${source} → ${target}<br/>影响权重：${value}`;
+                    }
+                }
+            },
+            series: [
+                {
+                    type: 'sankey',
+                    layout: 'none',
+                    nodeWidth: 25,
+                    nodeGap: 15,
+                    emphasis: {
+                        focus: 'adjacency',
+                        itemStyle: {
+                            shadowBlur: 8,
+                            shadowColor: 'rgba(212, 139, 103, 0.3)',
+                            borderWidth: 1.5,
+                            borderColor: '#d48b67'
+                        },
+                        lineStyle: {
+                            color: 'source',
+                            opacity: 0.9,
+                            width: 3
+                        }
+                    },
+                    lineStyle: {
+                        color: '#e0d4c3',
+                        curveness: 0.1,
+                        opacity: 0.4,
+                        width: 1.5
+                    },
+                    data: nodes,
+                    links: links
+                }
+            ]
+        };
+
+        function getNodeType(nodeName) {
+            if (!nodeName) return '未知节点';
+            const typeMap = {
+                '高温多雨': '环境因子（年均温15-25℃，年降水量1000-2000mm）',
+                '夏季湿热': '环境因子（相对湿度75%-90%，体感温度高）',
+                '台风/雷暴': '环境因子（年均台风2-4次，雷暴日数30-50天）',
+                '冬冷夏热': '环境因子（冬季-5-5℃，夏季28-35℃）',
+                '风力强劲': '环境因子（年均风速3-5m/s，阵风可达10m/s）',
+                '地形起伏': '环境因子（丘陵山地，坡度5-25°）',
+                '水系密集': '环境因子（河网密度>0.5km/km²，地下水位高）',
+                '防火': '功能层（密集聚落核心需求）',
+                '防风/导风': '功能层（降温/抗风需求）',
+                '排水/隔热': '功能层（防雨/保温需求）',
+                '防雷/防盗': '功能层（安全防护需求）',
+                '三叠印斗式': '类型层（最常见民居马头墙）',
+                '四叠鹊尾式': '类型层（大户人家装饰性马头墙）',
+                '坐吻式（祠堂）': '类型层（宗祠专用高端马头墙）',
+                '二叠简易式': '类型层（普通农舍简化版）',
+                '阶梯跌落+排檐砖': '结构层（核心造型构造）',
+                '座头+小青瓦压顶': '结构层（顶部防水构造）',
+                '墙身收分+巷道间距': '结构层（整体稳定性构造）',
+                '青砖+白灰浆': '材料层（主体墙体材料）',
+                '小青瓦': '材料层（顶部防水材料）',
+                '杉木（搏风板）': '材料层（装饰+防护材料）',
+                '灰塑/陶吻': '材料层（高端装饰材料）'
+            };
+            return typeMap[nodeName] || '未知节点';
+        }
+
+        myChart.setOption(option);
+        window.addEventListener('resize', () => myChart.resize());
+    </script>
+</body>
+
+</html>

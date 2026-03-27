@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>徽派建筑 水圳系统 自然环境-材料 影响关系桑基图（1911年前）</title>
+    <!-- 引入ECharts CDN -->
+    <script src="../echarts.min.js"></script>
+    <style>
+        /* 保留复古配色风格，贴合清末徽州建筑文献质感 */
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f0e8;
+            /* 页面主背景色 */
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23e0d4c3' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+            font-family: "SimSun", "宋体", sans-serif;
+        }
+
+        #chart-container {
+            width: 100%;
+            height: 900px;
+            background-color: #faf7f0;
+            /* 图表容器背景色 */
+            border: 1px solid #d4bfa7;
+            /* 图表容器边框色 */
+            position: relative;
+            overflow: hidden;
+        }
+
+        #chart-container::after {
+            content: "S";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: #d48b67;
+            /* 主色调 */
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50%;
+        }
+
+        .title {
+            text-align: left;
+            color: #4A4A48;
+            margin: 8px 0 8px 12px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            font-family: 'STKaiti', '华文楷体', 'KaiTi', serif;
+            letter-spacing: 4px;
+            padding-bottom: 6px;
+            position: relative;
+        }
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 36px;
+            height: 2px;
+            background: #A9C1C0;
+        }
+
+        .legend-note {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #b08968;
+            /* 图例说明文字色 */
+            text-align: center;
+        }
+
+        .level-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80px;
+            text-align: center;
+            color: #d48b67;
+            /* 层级标签文字色 */
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .level1 {
+            left: 10px;
+        }
+
+        .level2 {
+            left: 18%;
+        }
+
+        .level3 {
+            left: 36%;
+        }
+
+        .level4 {
+            left: 54%;
+        }
+
+        .level5 {
+            left: 72%;
+        }
+
+        .city-function {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80px;
+            text-align: center;
+            color: #7a9e9f;
+            /* 右侧功能说明文字色 */
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="title">徽派建筑：水圳系统 自然环境因子→功能需求→类型→结构→材料 影响关系桑基图（1911年前）</h1>
+    <div id="chart-container">
+        <div class="level-label level1">自然环境因子</div>
+        <div class="level-label level2">功能需求</div>
+        <div class="level-label level3">类型</div>
+        <div class="level-label level4">结构</div>
+        <div class="level-label level5">材料</div>
+        <div class="city-function">
+            环境适配<br />
+            功能导向<br />
+            形制匹配<br />
+            构造工艺<br />
+            材料选择
+        </div>
+    </div>
+    <p class="legend-note">注：流线宽度代表影响权重，hover/点击节点/流线可高亮链路 | 点击可切换高亮/恢复状态 | 数据基于1911年前徽派建筑史料（仅含自然环境因子）</p>
+
+    <script>
+        const myChart = echarts.init(document.getElementById('chart-container'));
+
+        // 存储选中状态
+        const selectedState = {
+            linkIds: new Set(),
+            nodeNames: new Set()
+        };
+
+        // 统一配色体系（贴合水圳主题的复古配色）
+        const levelColors = {
+            level1: '#7a9e9f',    // 环境因子层 - 青灰（贴合徽州水系）
+            level2: '#b8c5b0',    // 功能需求层 - 浅绿
+            level3: '#e6a86e',    // 类型层 - 赭石
+            level4: '#f2d0b0',    // 结构层 - 浅棕
+            level5: '#d48b67'     // 材料层 - 主色调
+        };
+
+        // 1911年前徽派水圳系统专属节点数据（仅保留自然环境因子）
+        const nodes = [
+            // 1. 自然环境因子层（清末徽州水系特征）
+            { name: '山多水丰', itemStyle: { color: levelColors.level1 } },
+            { name: '降水不均', itemStyle: { color: levelColors.level1 } },
+            { name: '山地地形', itemStyle: { color: levelColors.level1 } },
+            { name: '土壤黏重', itemStyle: { color: levelColors.level1 } },
+            { name: '四季温差', itemStyle: { color: levelColors.level1 } },
+            { name: '易生洪涝', itemStyle: { color: levelColors.level1 } },
+            { name: '石材资源丰富', itemStyle: { color: levelColors.level1 } },
+            // 2. 功能需求层（水圳核心自然适配功能）
+            { name: '引水入村', itemStyle: { color: levelColors.level2 } },
+            { name: '蓄水调洪', itemStyle: { color: levelColors.level2 } },
+            { name: '生活用水', itemStyle: { color: levelColors.level2 } },
+            { name: '消防防火', itemStyle: { color: levelColors.level2 } },
+            { name: '灌溉农田', itemStyle: { color: levelColors.level2 } },
+            { name: '排污清淤', itemStyle: { color: levelColors.level2 } },
+            { name: '调节微气候', itemStyle: { color: levelColors.level2 } },
+            // 3. 类型层（清末水圳形制）
+            { name: '干圳', itemStyle: { color: levelColors.level3 } },
+            { name: '支圳', itemStyle: { color: levelColors.level3 } },
+            { name: '暗圳', itemStyle: { color: levelColors.level3 } },
+            { name: '明圳', itemStyle: { color: levelColors.level3 } },
+            { name: '塘圳', itemStyle: { color: levelColors.level3 } },
+            { name: '渠圳', itemStyle: { color: levelColors.level3 } },
+            // 4. 结构层（清末水圳构造）
+            { name: '阶梯式落差', itemStyle: { color: levelColors.level4 } },
+            { name: '石板衬砌', itemStyle: { color: levelColors.level4 } },
+            { name: '闸口控水', itemStyle: { color: levelColors.level4 } },
+            { name: '弯道缓冲', itemStyle: { color: levelColors.level4 } },
+            { name: '暗涵过巷', itemStyle: { color: levelColors.level4 } },
+            { name: '驳岸加固', itemStyle: { color: levelColors.level4 } },
+            { name: '沉淀池设计', itemStyle: { color: levelColors.level4 } },
+            // 5. 材料层（清末水圳传统材料）
+            { name: '青石板', itemStyle: { color: levelColors.level5 } },
+            { name: '麻石', itemStyle: { color: levelColors.level5 } },
+            { name: '条石', itemStyle: { color: levelColors.level5 } },
+            { name: '黏土', itemStyle: { color: levelColors.level5 } },
+            { name: '石灰', itemStyle: { color: levelColors.level5 } },
+            { name: '杉木', itemStyle: { color: levelColors.level5 } },
+            { name: '松木', itemStyle: { color: levelColors.level5 } },
+            { name: '鹅卵石', itemStyle: { color: levelColors.level5 } }
+        ];
+
+        // 链路数据（带唯一ID，仅保留自然环境关联，权重贴合清末工艺特征）
+        const links = [
+            // 自然环境因子→功能需求（清末核心关联）
+            { id: 1, source: '山多水丰', target: '引水入村', value: 48 },
+            { id: 2, source: '降水不均', target: '蓄水调洪', value: 45 },
+            { id: 3, source: '山地地形', target: '阶梯式落差', value: 42 },
+            { id: 4, source: '易生洪涝', target: '蓄水调洪', value: 40 },
+            { id: 5, source: '山多水丰', target: '生活用水', value: 38 },
+            { id: 6, source: '易生洪涝', target: '排污清淤', value: 35 },
+            { id: 7, source: '山多水丰', target: '灌溉农田', value: 36 },
+            { id: 8, source: '石材资源丰富', target: '石板衬砌', value: 45 },
+            { id: 9, source: '土壤黏重', target: '驳岸加固', value: 32 },
+            { id: 10, source: '四季温差', target: '调节微气候', value: 30 },
+            { id: 11, source: '易生洪涝', target: '消防防火', value: 34 },
+            // 功能→类型（清末水圳形制匹配）
+            { id: 12, source: '引水入村', target: '干圳', value: 42 },
+            { id: 13, source: '生活用水', target: '支圳', value: 40 },
+            { id: 14, source: '蓄水调洪', target: '塘圳', value: 38 },
+            { id: 15, source: '排污清淤', target: '暗圳', value: 35 },
+            { id: 16, source: '灌溉农田', target: '渠圳', value: 36 },
+            { id: 17, source: '消防防火', target: '明圳', value: 32 },
+            { id: 18, source: '调节微气候', target: '明圳', value: 28 },
+            // 类型→结构（清末构造工艺）
+            { id: 19, source: '干圳', target: '阶梯式落差', value: 45 },
+            { id: 20, source: '支圳', target: '闸口控水', value: 42 },
+            { id: 21, source: '暗圳', target: '暗涵过巷', value: 40 },
+            { id: 22, source: '明圳', target: '石板衬砌', value: 38 },
+            { id: 23, source: '塘圳', target: '沉淀池设计', value: 36 },
+            { id: 24, source: '渠圳', target: '弯道缓冲', value: 43 },
+            { id: 25, source: '干圳', target: '驳岸加固', value: 35 },
+            { id: 26, source: '明圳', target: '驳岸加固', value: 32 },
+            // 结构→材料（清末传统材料配比）
+            { id: 27, source: '阶梯式落差', target: '条石', value: 45 },
+            { id: 28, source: '石板衬砌', target: '青石板', value: 42 },
+            { id: 29, source: '闸口控水', target: '杉木', value: 40 },
+            { id: 30, source: '弯道缓冲', target: '鹅卵石', value: 38 },
+            { id: 31, source: '暗涵过巷', target: '麻石', value: 36 },
+            { id: 32, source: '驳岸加固', target: '黏土', value: 35 },
+            { id: 33, source: '沉淀池设计', target: '石灰', value: 40 },
+            { id: 34, source: '闸口控水', target: '松木', value: 32 },
+            { id: 35, source: '驳岸加固', target: '石灰', value: 28 },
+            { id: 36, source: '石板衬砌', target: '石灰', value: 30 }
+        ];
+
+        // 获取节点对应的颜色（用于链路高亮）
+        function getNodeColor(nodeName) {
+            const level1Nodes = ['山多水丰', '降水不均', '山地地形', '土壤黏重', '四季温差', '易生洪涝', '石材资源丰富'];
+            const level2Nodes = ['引水入村', '蓄水调洪', '生活用水', '消防防火', '灌溉农田', '排污清淤', '调节微气候'];
+            const level3Nodes = ['干圳', '支圳', '暗圳', '明圳', '塘圳', '渠圳'];
+            const level4Nodes = ['阶梯式落差', '石板衬砌', '闸口控水', '弯道缓冲', '暗涵过巷', '驳岸加固', '沉淀池设计'];
+            const level5Nodes = ['青石板', '麻石', '条石', '黏土', '石灰', '杉木', '松木', '鹅卵石'];
+
+            if (level1Nodes.includes(nodeName)) return levelColors.level1;
+            if (level2Nodes.includes(nodeName)) return levelColors.level2;
+            if (level3Nodes.includes(nodeName)) return levelColors.level3;
+            if (level4Nodes.includes(nodeName)) return levelColors.level4;
+            if (level5Nodes.includes(nodeName)) return levelColors.level5;
+
+            return '#e0d4c3'; // 默认连线色
+        }
+
+        // 更新链路样式
+        function updateLinkStyles() {
+            const updatedLinks = links.map(link => {
+                const isLinkSelected = selectedState.linkIds.has(link.id);
+                const isNodeRelated = selectedState.nodeNames.has(link.source) || selectedState.nodeNames.has(link.target);
+
+                if (isLinkSelected || isNodeRelated) {
+                    return {
+                        ...link,
+                        lineStyle: {
+                            color: getNodeColor(link.source), // 继承源节点颜色
+                            opacity: 0.9, // 高亮连线透明度
+                            width: 3,
+                            curveness: 0.1
+                        }
+                    };
+                } else {
+                    return {
+                        ...link,
+                        lineStyle: {
+                            color: '#e0d4c3', // 默认连线色
+                            opacity: 0.4, // 默认连线透明度
+                            width: 1.5,
+                            curveness: 0.1
+                        }
+                    };
+                }
+            });
+
+            myChart.setOption({
+                series: [{ links: updatedLinks }]
+            });
+        }
+
+        const option = {
+            grid: { show: false },
+            xAxis: { show: false },
+            yAxis: { show: false },
+            tooltip: {
+                trigger: 'item',
+                triggerOn: 'mousemove',
+                backgroundColor: 'rgba(250,247,240,0.95)', // 图表容器背景色（带透明度）
+                borderColor: '#d4bfa7', // 提示框边框色
+                borderWidth: 1,
+                textStyle: { color: '#d48b67', fontFamily: 'SimSun' }, // 提示框文字色
+                formatter: function (params) {
+                    if (params.dataType === 'node') {
+                        const nodeName = params.name || '未知节点';
+                        return `<b>${nodeName}</b><br/>类别：${getNodeType(nodeName)}`;
+                    } else {
+                        const source = params.data?.source || params.source || '未知源节点';
+                        const target = params.data?.target || params.target || '未知目标节点';
+                        const value = params.data?.value || params.value || 0;
+                        return `<b>影响链路</b><br/>${source} → ${target}<br/>影响权重：${value}`;
+                    }
+                }
+            },
+            series: [
+                {
+                    type: 'sankey',
+                    layout: 'none',
+                    nodeWidth: 25,
+                    nodeGap: 15,
+                    emphasis: {
+                        focus: 'adjacency',
+                        itemStyle: {
+                            shadowBlur: 6,
+                            shadowColor: 'rgba(212, 139, 103, 0.3)', // 节点高亮阴影色
+                            borderWidth: 1.5,
+                            borderColor: '#d48b67' // 节点高亮边框色
+                        },
+                        lineStyle: {
+                            color: 'source', // 高亮连线继承源节点颜色
+                            opacity: 0.9,
+                            width: 3
+                        }
+                    },
+                    lineStyle: {
+                        color: '#e0d4c3', // 默认连线色
+                        curveness: 0.1,
+                        opacity: 0.4, // 默认连线透明度
+                        width: 1.5
+                    },
+                    data: nodes,
+                    links: links,
+                    // 点击事件处理
+                    onClick: function (params) {
+                        if (params.dataType === 'link') {
+                            const linkId = params.data.id;
+                            if (selectedState.linkIds.has(linkId)) {
+                                selectedState.linkIds.delete(linkId);
+                            } else {
+                                selectedState.linkIds.clear();
+                                selectedState.nodeNames.clear();
+                                selectedState.linkIds.add(linkId);
+                            }
+                        } else if (params.dataType === 'node') {
+                            const nodeName = params.name;
+                            if (selectedState.nodeNames.has(nodeName)) {
+                                selectedState.nodeNames.delete(nodeName);
+                            } else {
+                                selectedState.linkIds.clear();
+                                selectedState.nodeNames.clear();
+                                selectedState.nodeNames.add(nodeName);
+                            }
+                        }
+                        updateLinkStyles();
+                    }
+                }
+            ]
+        };
+
+        // 清末徽派水圳节点类型说明函数（仅自然环境相关）
+        function getNodeType(nodeName) {
+            if (!nodeName) return '未知节点';
+            const typeMap = {
+                // 自然环境因子层（1911年前特征）
+                '山多水丰': '自然环境因子（清末徽州境内新安江、练江等水系发达，年均径流深800-1200mm）',
+                '降水不均': '自然环境因子（清末徽州降水集中在4-6月，占全年60%以上，易旱易涝）',
+                '山地地形': '自然环境因子（徽州多低山丘陵，坡度15°-35°，水圳需顺应地形修建）',
+                '土壤黏重': '自然环境因子（徽州山地红壤黏重，透水性差，易造成水土流失）',
+                '四季温差': '自然环境因子（清末徽州年均温15-17℃，冬季水温低，水圳需防冻裂）',
+                '易生洪涝': '自然环境因子（清末徽州年均洪涝2-3次，水圳需兼具行洪功能）',
+                '石材资源丰富': '自然环境因子（徽州山区青石板、麻石储量大，就地取材成本低）',
+                // 功能层
+                '引水入村': '功能层（适配山多水丰特征，干圳引山泉水入村，日均引水500-800m³）',
+                '蓄水调洪': '功能层（适配降水不均特征，塘圳蓄水能力可达1000-3000m³，调蓄洪峰）',
+                '生活用水': '功能层（清末徽州人均日用水量15-20L，水圳满足全村生活用水需求）',
+                '消防防火': '功能层（适配木质建筑密集特征，水圳间距≤50m，应急取水时间≤1分钟）',
+                '灌溉农田': '功能层（适配山地地形，渠圳灌溉效率达80%以上，覆盖全村耕地）',
+                '排污清淤': '功能层（适配高湿环境，暗圳排污避免蚊虫滋生，每月清淤一次）',
+                '调节微气候': '功能层（水圳水体蒸发可降低夏季气温2-4℃，提升居住舒适度）',
+                // 类型层
+                '干圳': '类型层（清末徽派水圳主干，宽0.8-1.2m，深0.6-0.9m，贯穿全村主巷道）',
+                '支圳': '类型层（干圳分支，宽0.4-0.6m，深0.3-0.5m，延伸至各户门前）',
+                '暗圳': '类型层（地下埋设，宽0.3-0.5m，深0.4-0.6m，主要用于排污）',
+                '明圳': '类型层（地面明渠，宽0.5-0.8m，深0.4-0.7m，兼具用水和景观功能）',
+                '塘圳': '类型层（蓄水池塘+圳渠结合，面积500-1000㎡，调节水量峰值）',
+                '渠圳': '类型层（农田灌溉专用，宽0.6-0.9m，深0.5-0.8m，坡度1‰-3‰）',
+                // 结构层（清末工艺）
+                '阶梯式落差': '结构层（顺应山地地形，每100m落差0.5-1m，保证水流速度0.3-0.5m/s）',
+                '石板衬砌': '结构层（青石板铺设圳壁，厚度8-12cm，防止水土渗漏，适配黏重土壤）',
+                '闸口控水': '结构层（杉木闸板，宽0.5-0.8m，可调节流量，适配降水不均特征）',
+                '弯道缓冲': '结构层（圳道转弯半径≥2m，降低水流冲击力，防止驳岸坍塌）',
+                '暗涵过巷': '结构层（麻石砌筑涵管，直径0.5-0.8m，过巷道不影响通行）',
+                '驳岸加固': '结构层（条石+黏土砌筑，坡度1:1.5，抵御洪涝冲击）',
+                '沉淀池设计': '结构层（每500m设一处，深1.2-1.5m，沉降泥沙，保证水质）',
+                // 材料层
+                '青石板': '材料层（主材：徽州青石板，抗压强度≥30MPa，耐水性佳，适配水圳衬砌）',
+                '麻石': '材料层（涵管主材：麻石质地坚硬，抗冻融性好，适配四季温差）',
+                '条石': '材料层（驳岸主材：条石规格80×30×20cm，堆砌稳固，抵御洪涝）',
+                '黏土': '材料层（填缝料：徽州山地黏土，黏性强，密封石板缝隙防止渗漏）',
+                '石灰': '材料层（胶凝料：生石灰+水熟化，与黏土混合增强防渗性）',
+                '杉木': '材料层（闸板主材：杉木耐水性强，浸泡水中可使用10-15年）',
+                '松木': '材料层（支撑主材：松木质轻，易加工，用于闸口支撑结构）',
+                '鹅卵石': '材料层（垫层主材：鹅卵石粒径10-20cm，铺设圳底增强抗冲性）'
+            };
+            return typeMap[nodeName] || '未知节点';
+        }
+
+        // 渲染图表
+        myChart.setOption(option);
+        // 响应式适配
+        window.addEventListener('resize', function () {
+            myChart.resize();
+        });
+    </script>
+</body>
+
+</html>

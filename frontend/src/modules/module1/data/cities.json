@@ -1,0 +1,65 @@
+[
+  {
+    "cityId": "sheXian",
+    "cityName": "歙县",
+    "province": "安徽",
+    "totalBefore1911": 201,
+    "geoCoord": [118.428025, 29.867748]
+  },
+  {
+    "cityId": "xiuNing",
+    "cityName": "休宁县",
+    "province": "安徽",
+    "totalBefore1911": 40,
+    "geoCoord": [118.1827, 29.7841]
+  },
+  {
+    "cityId": "jiXi",
+    "cityName": "绩溪县",
+    "province": "安徽",
+    "totalBefore1911": 81,
+    "geoCoord": [118.5775, 30.0676]
+  },
+  {
+    "cityId": "huiZhouQu",
+    "cityName": "徽州区",
+    "province": "安徽",
+    "totalBefore1911": 33,
+    "geoCoord": [118.3337, 29.8271]
+  },
+  {
+    "cityId": "wuYuan",
+    "cityName": "婺源县",
+    "province": "江西",
+    "totalBefore1911": 241,
+    "geoCoord": [117.8613, 29.2477]
+  },
+  {
+    "cityId": "yiXian",
+    "cityName": "黟县",
+    "province": "安徽",
+    "totalBefore1911": 86,
+    "geoCoord": [117.9389, 29.9238]
+  },
+  {
+    "cityId": "qiMen",
+    "cityName": "祁门县",
+    "province": "安徽",
+    "totalBefore1911": 40,
+    "geoCoord": [117.7176, 29.8549]
+  },
+  {
+    "cityId": "huangShanQu",
+    "cityName": "黄山区",
+    "province": "安徽",
+    "totalBefore1911": 20,
+    "geoCoord": [118.1415, 30.2726]
+  },
+  {
+    "cityId": "tunXiQu",
+    "cityName": "屯溪区",
+    "province": "安徽",
+    "totalBefore1911": 25,
+    "geoCoord": [118.3152, 29.6968]
+  }
+]

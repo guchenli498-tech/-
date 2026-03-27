@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>屋顶 半环图</title>
+    <script src="../echarts.min.js"></script>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: transparent;
+        overflow: hidden;
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      }
+      .wrap {
+        width: 100%;
+        height: 100%;
+        padding: 12px 10px 10px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+      .title {
+        font-family: 'STKaiti', '华文楷体', 'KaiTi', serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #4A4A48;
+        letter-spacing: 4px;
+        margin: 0 0 8px 4px;
+        padding-bottom: 6px;
+        position: relative;
+        flex-shrink: 0;
+      }
+      .title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 36px;
+        height: 2px;
+        background: #A9C1C0;
+      }
+      #chart {
+        flex: 1;
+        min-height: 0;
+        width: 100%;
+        height: calc(100% - 21px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="title">屋顶：坡度与排水节奏 半环图（示意）</div>
+      <div id="chart"></div>
+    </div>
+    <script>
+      (function () {
+        const dom = document.getElementById("chart");
+        const chart = echarts.init(dom);
+
+        const option = {
+          backgroundColor: "transparent",
+          tooltip: { trigger: "item" },
+          series: [
+            {
+              type: "pie",
+              radius: ["62%", "88%"],
+              center: ["50%", "65%"],
+              startAngle: 180,
+              endAngle: 0,
+              avoidLabelOverlap: true,
+              itemStyle: { borderRadius: 8, borderColor: "rgba(252,252,252,0.85)", borderWidth: 1 },
+              label: {
+                show: true,
+                formatter: function (p) {
+                  // 给偏长标签换行，减少重叠
+                  return (p.name || "").replace("效率", "效率").replace("匹配", "匹配");
+                },
+                position: "outside",
+                color: "rgba(74,74,72,0.88)",
+                fontSize: 10,
+                fontWeight: 500,
+                distance: 10,
+                overflow: "break",
+              },
+              labelLine: { length: 12, length2: 12, smooth: 0.2 },
+              data: [
+                { value: 28, name: "坡度匹配", itemStyle: { color: "#F7A072" } },
+                { value: 22, name: "排水效率", itemStyle: { color: "rgba(247,160,114,0.55)" } },
+                { value: 18, name: "檐口导流", itemStyle: { color: "rgba(247,160,114,0.35)" } },
+                { value: 14, name: "风雨适配", itemStyle: { color: "rgba(74,74,72,0.18)" } },
+              ],
+            },
+          ],
+        };
+
+        chart.setOption(option);
+
+        window.addEventListener("resize", function () {
+          chart.resize();
+        });
+      })();
+    </script>
+  </body>
+</html>
+

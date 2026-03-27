@@ -1,0 +1,19 @@
+## OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+## Cursor / editor metadata (don't upload)
+.cursor/
+agent-transcripts/
+
+## Node / build outputs
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+
+## Logs
+*.log
+*.tmp
+

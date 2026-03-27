@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>徽韵·营造法式 | 模块二</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none; /* 避免扇形文本被意外选中 */
+    }
+
+    :root {
+      --bg: #f2eee6;
+      --panel: #f7f3ea;
+      --ink: #4a4a48;
+      --muted: #8eb8b7;
+      --border: #e7dfd2;
+      --accent: #f25c33;
+      --shadow: rgba(74, 74, 72, 0.18);
+      --fan-active-bg: rgba(188, 225, 159, 0.96);
+      --fan-bg: rgba(171, 201, 148, 0.7);
+      --fan-hover: rgba(190, 216, 166, 0.85);
+      --radius: 0px;  /* 动态半径，js更新 */
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Georgia, 'KaiTi', '楷体', '华文楷体', STKaiti, serif;
+    }
+
+    /* 主网格布局 */
+    .canvas {
+      height: 100vh;
+      width: 100vw;
+      display: grid;
+      grid-template-columns: 40% 60%;
+      grid-template-rows: 54% 46%;
+      gap: 10px 12px;
+      padding: 14px 16px;
+      box-sizing: border-box;
+      background: var(--bg);
+    }
+
+    .slot {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 20px 35px -18px var(--shadow);
+      overflow: hidden;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .slot iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #fefaf2;
+    }
+
+    /* 左上/右上/左下右区布局 */
+    .tl { grid-column: 1; grid-row: 1; }
+    .tr { grid-column: 2; grid-row: 1; }
+
+    /* 左下扇形专属容器 — 全新扇形四分圆 */
+    .fanWrap {
+      grid-column: 1;
+      grid-row: 2;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 20px 35px -18px rgba(74, 74, 72, 0.2);
+      position: relative;
+      overflow: visible !important;   /* 允许扇形缩放超出，获得放大效果 */
+      isolation: isolate;
+    }
+
+    /* 扇形画布 — 绝对定位容器，原点在左下角 */
+    .radial-fan-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      pointer-events: none;  /* 内部按钮独立响应 */
+    }
+
+    .fan-switch {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      pointer-events: auto;
+    }
+
+    /* 单个扇形按钮 */
+    .fan-sector {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      background: var(--fan-bg);
+      backdrop-filter: blur(0px);
+      border: none;
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1),
+                  background 0.2s ease,
+                  box-shadow 0.2s ease,
+                  filter 0.2s;
+      transform-origin: left bottom;
+      will-change: transform;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border-radius: 0;
+      outline: none;
+      pointer-events: auto;
+      z-index: 5;
+    }
+
+    .fan-sector:hover {
+      background: var(--fan-hover);
+      filter: brightness(1.02);
+    }
+
+    /* 选中的扇形：放大 + 高亮 */
+    .fan-sector.active {
+      background: var(--fan-active-bg);
+      transform: scale(1.12);
+      z-index: 30;
+      box-shadow: 0 12px 28px -8px rgba(0,0,0,0.25);
+      filter: saturate(1.05) drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    }
+
+    /* 文本标签 — 优雅径向排列 */
+    .sector-label {
+      position: absolute;
+      font-size: 1.1rem;
+      font-weight: 550;
+      color: #2e3a2a;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 1px rgba(255,255,240,0.6);
+      white-space: nowrap;
+      pointer-events: none;
+      font-family: 'KaiTi', '楷体', '华文楷体', Georgia, serif;
+      transition: all 0.2s;
+      transform-origin: center;
+      z-index: 40;
+    }
+
+    /* 不同标签微调风格，确保可读 */
+    .fan-sector.active .sector-label {
+      font-weight: 700;
+      color: #1f2a1b;
+      text-shadow: 0 0 4px rgba(255,255,210,0.9);
+      font-size: 1.2rem;
+    }
+
+    /* 右侧两个内嵌图容器 */
+    .bottomRight {
+      grid-column: 2;
+      grid-row: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* 副图与词云公共样式 */
+    .bc, .br {
+      background: var(--panel);
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 20px 35px -18px var(--shadow);
+      position: relative;
+    }
+
+    /* 通用说明角标 */
+    .caption-badge {
+      position: absolute;
+      left: 18px;
+      top: 14px;
+      font-size: 12px;
+      background: rgba(242, 92, 51, 0.1);
+      backdrop-filter: blur(4px);
+      padding: 4px 12px;
+      border-radius: 40px;
+      color: #aa7a5c;
+      font-family: monospace;
+      letter-spacing: 1px;
+      z-index: 12;
+      pointer-events: none;
+      border-left: 2px solid var(--accent);
+      font-weight: 400;
+    }
+
+    /* iframe 优雅适配 */
+    iframe {
+      background: #fefaf0;
+    }
+
+    /* 适配移动端/小屏轻微调整 */
+    @media (max-width: 780px) {
+      .sector-label { font-size: 0.8rem; }
+      .fan-sector.active .sector-label { font-size: 0.9rem; }
+      .caption-badge { font-size: 9px; padding: 2px 8px; }
+    }
+  </style>
+</head>
+<body>
+<div class="canvas">
+  <!-- 左上：构件概览波浪图 -->
+  <div class="slot tl" id="slotTL">
+    <div class="caption-badge" id="tlCaption">马头墙 · 气韵流变</div>
+  </div>
+  <!-- 右上：主桑基图 -->
+  <div class="slot tr" id="slotTR">
+    <div class="caption-badge" id="trCaption">桑基图 · 营建智慧</div>
+  </div>
+
+  <!-- 左下全新扇形四分圆区域 (五扇区，组成1/4圆，弧右上) -->
+  <div class="fanWrap" id="fanWrap">
+    <div class="radial-fan-container" id="radialFanContainer">
+      <div class="fan-switch" id="dynamicFanSwitch"></div>
+    </div>
+  </div>
+
+  <!-- 右下侧两图 -->
+  <div class="bottomRight">
+    <div class="bc" id="slotBC">
+      <div class="caption-badge" id="bcCaption">副图 · 装饰纹样</div>
+    </div>
+    <div class="br" id="slotBR">
+      <div class="caption-badge" id="brCaption">词云 · 意象凝萃</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    // ---------- 构件映射资源（保留原有路径）----------
+    const MAPPING = {
+      mtq: {   // 马头墙
+        tr: './马头墙桑葚图.html',
+        bc: './马头墙花纹样式旭日图.html',
+        br: './词云图.html#mtq',
+        tlSrc: './马头墙波浪概览图.html',
+        tl: '马头墙 · 天际轮廓'
+      },
+      tj: {    // 天井
+        tr: './天井桑葚图.html',
+        bc: './天井弦图.html',
+        br: './词云图.html#tj',
+        tlSrc: './天井桑葚图.html',
+        tl: '天井 · 四水归堂'
+      },
+      fq: {    // 粉墙
+        tr: './粉墙桑葚图.html',
+        bc: './粉墙雷达图.html',
+        br: './词云图.html#fq',
+        tlSrc: './粉墙雷达图.html',
+        tl: '粉墙 · 素雅底色'
+      },
+      wd: {    // 屋顶
+        tr: './屋顶桑葚图.html',
+        bc: './屋顶半环图.html',
+        br: './词云图.html#wd',
+        tlSrc: './屋顶桑葚图.html',
+        tl: '屋顶 · 双坡韵律'
+      },
+      sz: {    // 水圳系统
+        tr: './水圳系统桑葚图.html',
+        bc: './水圳系统桑葚图.html',
+        br: './水圳词云图.html',
+        tlSrc: './水圳系统桑葚图.html',
+        tl: '水圳系统 · 活水脉络'
+      }
+    };
+
+    // 扇形顺序 & 对应key 及 显示文字 (从右侧(0°)逆时针至90°)
+    // 顺序: 马头墙(mtq) 0°~18°, 天井(tj) 18°~36°, 粉墙(fq) 36°~54°, 屋顶(wd) 54°~72°, 水圳(sz) 72°~90°
+    const SECTORS_CONFIG = [
+      { key: 'mtq', label: '马头墙', startDeg: 0, endDeg: 18 },
+      { key: 'tj',  label: '天井',   startDeg: 18, endDeg: 36 },
+      { key: 'fq',  label: '粉墙',   startDeg: 36, endDeg: 54 },
+      { key: 'wd',  label: '屋顶',   startDeg: 54, endDeg: 72 },
+      { key: 'sz',  label: '水圳系统', startDeg: 72, endDeg: 90 }
+    ];
+
+    // DOM 元素
+    const slotTL = document.getElementById('slotTL');
+    const slotTR = document.getElementById('slotTR');
+    const slotBC = document.getElementById('slotBC');
+    const slotBR = document.getElementById('slotBR');
+    const tlCaption = document.getElementById('tlCaption');
+    const trCaption = document.getElementById('trCaption');
+    const bcCaption = document.getElementById('bcCaption');
+    const brCaption = document.getElementById('brCaption');
+    const fanContainer = document.getElementById('dynamicFanSwitch');
+    const fanWrapDiv = document.getElementById('fanWrap');
+
+    let currentKey = 'mtq';
+    let resizeObserver = null;
+    let currentSectorElements = [];   // 存储生成按钮
+
+    // ---------- 辅助: 生成近似圆弧的多边形clip-path (四分之一圆内扇形，平滑圆润) ----------
+    // 角度范围 startDeg~endDeg (0~90°之间)，返回 polygon(...) 字符串
+    // 基于正方形区域(0,0)-(R,R)，左下角为原点映射clip-path百分比(左上角0% 0%,右下100%100%)
+    // 坐标系：物理左下角(0,0) 对应百分比(0%,100%)；物理右上角(R,R) 对应(100%,0%)
+    function getSmoothSectorClipPath(startDeg, endDeg, steps = 12) {
+      // 转换弧度
+      const startRad = startDeg * Math.PI / 180;
+      const endRad = endDeg * Math.PI / 180;
+
+      // 收集边界点 (包括圆弧上的插值点)
+      const points = [];
+      // 1. 加入圆心点 (左下角) 对应百分比 (0%, 100%)
+      points.push('0% 100%');
+
+      // 角度步长 (保证弧线平滑)
+      const stepRad = (endRad - startRad) / steps;
+      for (let i = 0; i <= steps; i++) {
+        const angle = startRad + i * stepRad;
+        // 圆上的点坐标 (物理坐标，半径1个单位归一化，因为百分比基于半径比例)
+        const normX = Math.cos(angle);   // 0~1之间
+        const normY = Math.sin(angle);
+        // 映射到百分比坐标: x_percent = normX * 100% , y_percent = 100% - normY*100%
+        const xPercent = (normX * 100).toFixed(3);
+        const yPercent = (100 - normY * 100).toFixed(3);
+        points.push(`${xPercent}% ${yPercent}%`);
+      }
+
+      // 保证终点精确闭合
+      const finalX = (Math.cos(endRad) * 100).toFixed(3);
+      const finalY = (100 - Math.sin(endRad) * 100).toFixed(3);
+      if (points[points.length-1] !== `${finalX}% ${finalY}%`) {
+        points.push(`${finalX}% ${finalY}%`);
+      }
+
+      return `polygon(${points.join(', ')})`;
+    }
+
+    // 计算文本最佳位置 (扇形中间角度，半径的0.68倍处，优雅展示)
+    function getLabelPosition(startDeg, endDeg, radiusPx) {
+      const midDeg = (startDeg + endDeg) / 2;
+      const rad = midDeg * Math.PI / 180;
+      // 径向距离占半径的比例 0.68~0.72 避免太靠边
+      const radialFactor = 0.68;
+      const dist = radiusPx * radialFactor;
+      const dx = Math.cos(rad) * dist;
+      const dy = Math.sin(rad) * dist;
+      // 相对于左下原点偏移，但CSS绝对定位基于父元素左上角。
+      // 父元素fanSwitch宽高为半径正方形，并且左下角原点，转换为left / bottom坐标
+      // left = dx, bottom = dy  (因为左下角原点)
+      return { left: dx, bottom: dy };
+    }
+
+    // 生成所有扇形按钮 (半径由父容器实时决定)
+    function buildSectors(radius) {
+      if (!fanContainer) return;
+      if (radius <= 20) return;
+
+      // 清空现有按钮
+      fanContainer.innerHTML = '';
+      currentSectorElements = [];
+
+      // 为每个配置动态创建按钮
+      SECTORS_CONFIG.forEach((cfg, idx) => {
+        const { key, label, startDeg, endDeg } = cfg;
+        const btn = document.createElement('button');
+        btn.className = 'fan-sector';
+        btn.setAttribute('data-key', key);
+        btn.setAttribute('aria-label', label);
+
+        // 设定宽高 = 半径 (正方形区域)
+        btn.style.width = `${radius}px`;
+        btn.style.height = `${radius}px`;
+        btn.style.position = 'absolute';
+        btn.style.bottom = '0px';
+        btn.style.left = '0px';
+
+        // 旋转整个扇形区域？由于clip-path已经构造了扇形形状，不需要旋转元素本身，clip-path直接展示扇形。
+        // 但是每个扇形覆盖整个正方形区域，clip-path裁剪出该角度范围区域，所以所有扇形叠加共同组成四分之一圆。
+        // 设置clip-path为当前扇形的平滑多边形
+        const clipPathVal = getSmoothSectorClipPath(startDeg, endDeg, 14);
+        btn.style.clipPath = clipPathVal;
+        btn.style.webkitClipPath = clipPathVal;
+        btn.style.background = `linear-gradient(135deg, rgba(166, 196, 138, 0.85), rgba(146, 176, 118, 0.9))`;
+        btn.style.backdropFilter = 'blur(1px)';
+        btn.style.transition = 'transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1), background 0.2s, box-shadow 0.2s';
+
+        // 添加文字标签
+        const span = document.createElement('span');
+        span.className = 'sector-label';
+        span.textContent = label;
+        // 计算文本位置基于半径
+        const pos = getLabelPosition(startDeg, endDeg, radius);
+        span.style.position = 'absolute';
+        span.style.left = `${pos.left}px`;
+        span.style.bottom = `${pos.bottom}px`;
+        span.style.transform = 'translate(-50%, 50%)';
+        // 针对不同角度微调文本偏移使其更自然
+        if (midAngle(startDeg, endDeg) > 70) {
+          span.style.transform = 'translate(-40%, 60%)';
+        } else if (midAngle(startDeg, endDeg) < 20) {
+          span.style.transform = 'translate(-60%, 40%)';
+        } else {
+          span.style.transform = 'translate(-50%, 45%)';
+        }
+        // 字体大小与半径动态适配
+        const fontSize = Math.max(14, Math.min(28, radius * 0.09));
+        span.style.fontSize = `${fontSize}px`;
+        span.style.fontWeight = '540';
+        span.style.whiteSpace = 'nowrap';
+
+        btn.appendChild(span);
+
+        // 点击事件
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setActiveSector(key);
+          renderContentByKey(key);
+        });
+
+        fanContainer.appendChild(btn);
+        currentSectorElements.push(btn);
+
+        // 初始高亮匹配
+        if (key === currentKey) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // 调整容器整体样式确保所有扇形可见不溢出
+      fanContainer.style.position = 'relative';
+      fanContainer.style.width = `${radius}px`;
+      fanContainer.style.height = `${radius}px`;
+      fanContainer.style.bottom = '0px';
+      fanContainer.style.left = '0px';
+      fanContainer.style.margin = '0';
+    }
+
+    function midAngle(start, end) { return (start + end) / 2; }
+
+    // 根据当前半径更新所有扇区文本位置及按钮clip-path (窗口resize重新生成)
+    function refreshSectorsByRadius() {
+      if (!fanWrapDiv) return;
+      const containerRect = fanWrapDiv.getBoundingClientRect();
+      // 半径取宽高中较小值（保证四分圆完全可见）
+      let side = Math.min(containerRect.width, containerRect.height) * 0.92;
+      // 控制最大半径避免超出父容器边界过于夸张，但父容器overflow:visible保证了缩放可见
+      side = Math.min(side, containerRect.width * 0.96);
+      side = Math.min(side, containerRect.height * 0.96);
+      if (side < 30) side = 150;
+      const radius = Math.floor(side);
+      // 重新构建所有扇形（保证扇形完美四分圆）
+      buildSectors(radius);
+      // 重新激活当前选中的样式
+      setActiveSector(currentKey, true);
+    }
+
+    // 设置高亮扇区 (放大效果)
+    function setActiveSector(key, skipRender = false) {
+      currentKey = key;
+      if (!currentSectorElements.length) return;
+      currentSectorElements.forEach(btn => {
+        const btnKey = btn.getAttribute('data-key');
+        if (btnKey === key) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      if (!skipRender) renderContentByKey(key);
+    }
+
+    // 渲染iframe内容 (完全复用原有逻辑)
+    function renderIFrame(slotEl, src, scaleVal = null) {
+      if (!slotEl) return;
+      // 移除旧iframe
+      const oldIframes = slotEl.querySelectorAll('iframe');
+      oldIframes.forEach(iframe => iframe.remove());
+      const iframe = document.createElement('iframe');
+      iframe.src = src;
+      iframe.loading = 'eager';
+      iframe.referrerPolicy = 'no-referrer';
+      iframe.style.border = 'none';
+      iframe.style.display = 'block';
+      if (scaleVal && typeof scaleVal === 'number' && scaleVal > 0 && scaleVal <= 1) {
+        iframe.style.transform = `scale(${scaleVal})`;
+        iframe.style.transformOrigin = 'top left';
+        iframe.style.width = `${100 / scaleVal}%`;
+        iframe.style.height = `${100 / scaleVal}%`;
+      } else {
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+      }
+      slotEl.appendChild(iframe);
+    }
+
+    function renderContentByKey(key) {
+      const page = MAPPING[key];
+      if (!page) return;
+
+      // 更新角标说明
+      if (tlCaption) tlCaption.innerText = page.tl || '构件·时空演变';
+      if (trCaption) trCaption.innerText = '桑基主图 · 材料/工艺流向';
+      if (bcCaption) {
+        if (key === 'mtq') bcCaption.innerText = '马头墙 · 纹样旭日';
+        else if (key === 'tj') bcCaption.innerText = '天井 · 光影弦图';
+        else if (key === 'fq') bcCaption.innerText = '粉墙 · 装饰雷达';
+        else if (key === 'wd') bcCaption.innerText = '屋顶 · 半环结构';
+        else bcCaption.innerText = '水圳 · 拓扑桑基';
+      }
+      if (brCaption) brCaption.innerText = '词云 · 意象';
+
+      // 左上内容: 波浪概览或对应图
+      let tlSrc = page.tlSrc;
+      if (!tlSrc) {
+        // 后备逻辑
+        if (key === 'mtq') tlSrc = './马头墙波浪概览图.html';
+        else if (key === 'tj') tlSrc = './天井桑葚图.html';
+        else if (key === 'fq') tlSrc = './粉墙雷达图.html';
+        else if (key === 'wd') tlSrc = './屋顶桑葚图.html';
+        else tlSrc = './水圳系统桑葚图.html';
+      }
+      // 自适应缩放保证左上内容优雅 (个别波浪图缩放)
+      let tlScale = 0.78;
+      if (key === 'mtq') tlScale = 0.82;
+      if (key === 'sz') tlScale = 0.76;
+      renderIFrame(slotTL, tlSrc, tlScale);
+
+      // 右上桑基图
+      let trSrc = page.tr;
+      if (!trSrc) trSrc = './马头墙桑葚图.html';
+      renderIFrame(slotTR, trSrc, 0.74);
+
+      // 左下副图
+      let bcSrc = page.bc;
+      if (!bcSrc) {
+        if (key === 'mtq') bcSrc = './马头墙花纹样式旭日图.html';
+        else if (key === 'tj') bcSrc = './天井弦图.html';
+        else if (key === 'fq') bcSrc = './粉墙雷达图.html';
+        else if (key === 'wd') bcSrc = './屋顶半环图.html';
+        else bcSrc = './水圳系统桑葚图.html';
+      }
+      let bcScale = 0.44;
+      if (key === 'fq') bcScale = 0.48;
+      if (key === 'sz') bcScale = 0.5;
+      renderIFrame(slotBC, bcSrc, bcScale);
+
+      // 右下词云
+      let brSrc = page.br;
+      if (!brSrc) brSrc = './词云图.html';
+      renderIFrame(slotBR, brSrc, 0.62);
+    }
+
+    // 初始化监听窗口resize 以及 fanWrap尺寸变化 (重绘扇形)
+    function initResizeObserver() {
+      if (!fanWrapDiv) return;
+      const resizeHandler = () => {
+        if (fanWrapDiv) {
+          refreshSectorsByRadius();
+        }
+      };
+      window.addEventListener('resize', () => {
+        setTimeout(resizeHandler, 30);
+      });
+      // 也用 ResizeObserver 精准监听fanWrap尺寸变化
+      if (window.ResizeObserver) {
+        const ro = new ResizeObserver(() => {
+          refreshSectorsByRadius();
+        });
+        ro.observe(fanWrapDiv);
+      }
+      // 初始调用
+      setTimeout(() => {
+        refreshSectorsByRadius();
+      }, 50);
+    }
+
+    // 手动设置初始默认内容
+    function initDefault() {
+      currentKey = 'mtq';
+      renderContentByKey('mtq');
+      // 确保扇形区域生成后高亮
+      setTimeout(() => {
+        setActiveSector('mtq', true);
+      }, 100);
+    }
+
+    // 开始渲染 && 优雅降级
+    function start() {
+      initResizeObserver();
+      initDefault();
+    }
+
+    start();
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 10px 24px -22px rgba(74, 74, 72, 0.45);
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  justify-content: center;
+  flex: 1;
+}
+
+.home {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(252, 252, 252, 0.08);
+  border: 1px solid rgba(252, 252, 252, 0.12);
+}
+
+.home:hover {
+  background: rgba(252, 252, 252, 0.14);
+}
+
+.navItem {
+  color: rgba(252, 252, 252, 0.92);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.navItem:hover {
+  background: rgba(252, 252, 252, 0.08);
+}
+
+.navItemActive {
+  background: rgba(252, 252, 252, 0.10);
+  color: rgba(252, 252, 252, 1);
+}
+
+.rightSpacer {
+  width: 34px;
+  height: 34px;
+}
+

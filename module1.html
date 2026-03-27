@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>模块一</title>
+  <style>
+    :root {
+      --bg: #f2eee6;
+      --panel: #f7f3ea;
+      --ink: #4a4a48;
+      --muted: #8eb8b7;
+      --border: #e7dfd2;
+      --accent: #f25c33;
+      --shadow: rgba(74, 74, 72, 0.18);
+    }
+
+    html, body {
+      height: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    ::-webkit-scrollbar { display: none; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Georgia, 'KaiTi', '楷体', '华文楷体', STKaiti, serif;
+      overflow: hidden;
+    }
+
+    /* ── 整体画布：上下两行 ── */
+    .canvas {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-rows: 72% 28%;
+      grid-template-columns: 100%;
+      gap: 6px;
+      padding: 6px;
+      box-sizing: border-box;
+    }
+
+    /* ── 上半：左中右三等分 ── */
+    .top-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      min-height: 0;
+    }
+
+    /* ── 左列：上下各半 ── */
+    .left-col {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 6px;
+      min-height: 0;
+    }
+
+    /* ── 通用卡片 ── */
+    .slot {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 20px 40px -18px var(--shadow);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    /* 占位标签 */
+    .placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .placeholder .icon {
+      font-size: 2rem;
+      opacity: 0.45;
+    }
+
+    /* 时间轴槽 */
+    .timeline-slot {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 20px 40px -18px var(--shadow);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    /* 时间轴占位 */
+    .timeline-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 0 40px;
+      box-sizing: border-box;
+      color: var(--muted);
+      letter-spacing: 2px;
+      font-size: 0.85rem;
+    }
+
+    .timeline-bar {
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--muted), var(--accent), var(--muted), transparent);
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .timeline-dots {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: -18px;
+    }
+
+    .timeline-dot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      color: var(--ink);
+      opacity: 0.5;
+    }
+
+    .timeline-dot::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      border: 2px solid var(--panel);
+      box-shadow: 0 0 0 1px var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas">
+
+    <!-- ── 上半：左中右 ── -->
+    <div class="top-row">
+
+      <!-- 左列：玫瑰图 + 折线图 -->
+      <div class="left-col">
+        <div class="slot" id="slotRose">
+          <div class="placeholder">
+            <span class="icon">🌹</span>
+            <span>玫 瑰 图</span>
+          </div>
+        </div>
+        <div class="slot" id="slotLine">
+          <div class="placeholder">
+            <span class="icon">📈</span>
+            <span>折 线 图</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中：地图 -->
+      <div class="slot" id="slotMap">
+        <div class="placeholder">
+          <span class="icon">🗺️</span>
+          <span>地 图</span>
+        </div>
+      </div>
+
+      <!-- 右：文字叙述 -->
+      <div class="slot" id="slotDesc">
+        <div class="placeholder">
+          <span class="icon">📖</span>
+          <span>点击地图后显示文字叙述</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── 下半：时间轴 ── -->
+    <div class="timeline-slot" id="slotTimeline">
+      <div class="timeline-placeholder">
+        <span>时 间 轴</span>
+        <div class="timeline-bar"></div>
+        <div class="timeline-dots">
+          <div class="timeline-dot">唐</div>
+          <div class="timeline-dot">宋</div>
+          <div class="timeline-dot">元</div>
+          <div class="timeline-dot">明</div>
+          <div class="timeline-dot">清</div>
+          <div class="timeline-dot">民国</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>徽派建筑 屋顶 自然环境-材料 影响关系桑基图（1911年前）</title>
+    <!-- 引入ECharts CDN -->
+    <script src="../echarts.min.js"></script>
+    <style>
+        /* 保留复古配色风格，贴合清末徽州建筑文献质感 */
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f0e8;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23e0d4c3' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+            font-family: "SimSun", "宋体", sans-serif;
+        }
+
+        #chart-container {
+            width: 100%;
+            height: 900px;
+            background-color: #faf7f0;
+            border: 1px solid #d4bfa7;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #chart-container::after {
+            content: "B";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: #8b5a2b;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50%;
+        }
+
+        .title {
+            text-align: center;
+            color: #8b5a2b;
+            margin-bottom: 15px;
+            font-size: 22px;
+            font-weight: 600;
+            font-family: "SimHei", "黑体";
+        }
+
+        .legend-note {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #7a5c38;
+            text-align: center;
+        }
+
+        .level-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80px;
+            text-align: center;
+            color: #8b5a2b;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .level1 {
+            left: 10px;
+        }
+
+        .level2 {
+            left: 18%;
+        }
+
+        .level3 {
+            left: 36%;
+        }
+
+        .level4 {
+            left: 54%;
+        }
+
+        .level5 {
+            left: 72%;
+        }
+
+        .city-function {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80px;
+            text-align: center;
+            color: #5a7d63;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="title">徽派建筑：屋顶 自然环境因子→功能需求→类型→结构→材料 影响关系桑基图（1911年前）</h1>
+    <div id="chart-container">
+        <div class="level-label level1">自然环境因子</div>
+        <div class="level-label level2">功能需求</div>
+        <div class="level-label level3">类型</div>
+        <div class="level-label level4">结构</div>
+        <div class="level-label level5">材料</div>
+        <div class="city-function">
+            环境适配<br />
+            功能导向<br />
+            形制匹配<br />
+            构造工艺<br />
+            材料选择
+        </div>
+    </div>
+    <p class="legend-note">注：流线宽度代表影响权重，hover/点击节点/流线可高亮链路 | 点击可切换高亮/恢复状态 | 数据基于1911年前徽派建筑史料（仅含自然环境因子）</p>
+
+    <script>
+        const myChart = echarts.init(document.getElementById('chart-container'));
+
+        // 存储选中状态
+        const selectedState = {
+            linkIds: new Set(),
+            nodeNames: new Set()
+        };
+
+        // 保留复古配色体系，适配屋顶主题
+        const levelColors = {
+            level1: '#7a9e9f',    // 自然环境因子层 - 青灰（贴合徽州山水）
+            level2: '#5a7d63',    // 功能需求层 - 墨绿
+            level3: '#8b5a2b',    // 类型层 - 复古棕
+            level4: '#b88662',    // 结构层 - 浅赭石
+            level5: '#9e7b4e'     // 材料层 - 瓦灰棕
+        };
+
+        // 1911年前徽派屋顶专属节点数据（仅保留自然环境因子，移除括号内容）
+        const nodes = [
+            // 1. 自然环境因子层（清末徽州自然特征）
+            { name: '多雨高湿', itemStyle: { color: levelColors.level1 } },
+            { name: '夏季炎热', itemStyle: { color: levelColors.level1 } },
+            { name: '冬季阴冷', itemStyle: { color: levelColors.level1 } },
+            { name: '山地多风', itemStyle: { color: levelColors.level1 } },
+            { name: '山地地形', itemStyle: { color: levelColors.level1 } },
+            { name: '多雷暴天气', itemStyle: { color: levelColors.level1 } },
+            { name: '木材资源丰富', itemStyle: { color: levelColors.level1 } },
+            // 2. 功能需求层（屋顶核心自然适配功能）
+            { name: '快速排水', itemStyle: { color: levelColors.level2 } },
+            { name: '防漏防渗', itemStyle: { color: levelColors.level2 } },
+            { name: '隔热保温', itemStyle: { color: levelColors.level2 } },
+            { name: '抗风稳固', itemStyle: { color: levelColors.level2 } },
+            { name: '避雷防火', itemStyle: { color: levelColors.level2 } },
+            { name: '就地取材', itemStyle: { color: levelColors.level2 } },
+            // 3. 类型层（清末屋顶形制，移除括号）
+            { name: '硬山顶', itemStyle: { color: levelColors.level3 } },
+            { name: '悬山顶', itemStyle: { color: levelColors.level3 } },
+            { name: '歇山顶', itemStyle: { color: levelColors.level3 } },
+            { name: '攒尖顶', itemStyle: { color: levelColors.level3 } },
+            { name: '重檐顶', itemStyle: { color: levelColors.level3 } },
+            { name: '人字顶', itemStyle: { color: levelColors.level3 } },
+            // 4. 结构层（清末屋顶构造）
+            { name: '抬梁式构架', itemStyle: { color: levelColors.level4 } },
+            { name: '穿斗式构架', itemStyle: { color: levelColors.level4 } },
+            { name: '高起翘角', itemStyle: { color: levelColors.level4 } },
+            { name: '双坡大坡度', itemStyle: { color: levelColors.level4 } },
+            { name: '望板铺底', itemStyle: { color: levelColors.level4 } },
+            { name: '压瓦收边', itemStyle: { color: levelColors.level4 } },
+            { name: '脊饰加固', itemStyle: { color: levelColors.level4 } },
+            // 5. 材料层（清末传统材料，移除括号）
+            { name: '小青瓦', itemStyle: { color: levelColors.level5 } },
+            { name: '杉木', itemStyle: { color: levelColors.level5 } },
+            { name: '松木', itemStyle: { color: levelColors.level5 } },
+            { name: '青石板', itemStyle: { color: levelColors.level5 } },
+            { name: '桐油', itemStyle: { color: levelColors.level5 } },
+            { name: '石灰', itemStyle: { color: levelColors.level5 } },
+            { name: '黏土', itemStyle: { color: levelColors.level5 } },
+            { name: '麻丝', itemStyle: { color: levelColors.level5 } }
+        ];
+
+        // 链路数据（带唯一ID，仅保留自然环境关联，权重贴合清末工艺特征，同步移除括号）
+        const links = [
+            // 自然环境因子→功能需求（清末核心关联）
+            { id: 1, source: '多雨高湿', target: '快速排水', value: 48 },
+            { id: 2, source: '多雨高湿', target: '防漏防渗', value: 45 },
+            { id: 3, source: '夏季炎热', target: '隔热保温', value: 42 },
+            { id: 4, source: '冬季阴冷', target: '隔热保温', value: 38 },
+            { id: 5, source: '山地多风', target: '抗风稳固', value: 40 },
+            { id: 6, source: '多雷暴天气', target: '避雷防火', value: 35 },
+            { id: 7, source: '山地地形', target: '快速排水', value: 32 },
+            { id: 8, source: '木材资源丰富', target: '就地取材', value: 45 },
+            { id: 9, source: '山地多风', target: '脊饰加固', value: 28 },
+            // 功能→类型（清末屋顶形制匹配，移除括号）
+            { id: 10, source: '快速排水', target: '人字顶', value: 42 },
+            { id: 11, source: '防漏防渗', target: '硬山顶', value: 40 },
+            { id: 12, source: '隔热保温', target: '悬山顶', value: 38 },
+            { id: 13, source: '抗风稳固', target: '歇山顶', value: 35 },
+            { id: 14, source: '避雷防火', target: '攒尖顶', value: 30 },
+            { id: 15, source: '就地取材', target: '硬山顶', value: 36 },
+            { id: 16, source: '抗风稳固', target: '重檐顶', value: 32 },
+            { id: 17, source: '快速排水', target: '悬山顶', value: 28 },
+            // 类型→结构（清末构造工艺，移除括号）
+            { id: 18, source: '硬山顶', target: '穿斗式构架', value: 45 },
+            { id: 19, source: '悬山顶', target: '抬梁式构架', value: 42 },
+            { id: 20, source: '歇山顶', target: '高起翘角', value: 40 },
+            { id: 21, source: '攒尖顶', target: '双坡大坡度', value: 38 },
+            { id: 22, source: '重檐顶', target: '脊饰加固', value: 36 },
+            { id: 23, source: '人字顶', target: '双坡大坡度', value: 43 },
+            { id: 24, source: '硬山顶', target: '望板铺底', value: 35 },
+            { id: 25, source: '悬山顶', target: '压瓦收边', value: 32 },
+            { id: 26, source: '歇山顶', target: '脊饰加固', value: 29 },
+            // 结构→材料（清末传统材料配比，移除括号）
+            { id: 27, source: '抬梁式构架', target: '杉木', value: 45 },
+            { id: 28, source: '穿斗式构架', target: '松木', value: 42 },
+            { id: 29, source: '高起翘角', target: '小青瓦', value: 40 },
+            { id: 30, source: '双坡大坡度', target: '小青瓦', value: 43 },
+            { id: 31, source: '望板铺底', target: '松木', value: 38 },
+            { id: 32, source: '压瓦收边', target: '石灰', value: 35 },
+            { id: 33, source: '脊饰加固', target: '青石板', value: 40 },
+            { id: 34, source: '抬梁式构架', target: '桐油', value: 32 },
+            { id: 35, source: '压瓦收边', target: '麻丝', value: 28 },
+            { id: 36, source: '脊饰加固', target: '黏土', value: 30 }
+        ];
+
+        // 获取节点对应的颜色（用于链路高亮，同步更新节点名称）
+        function getNodeColor(nodeName) {
+            const level1Nodes = ['多雨高湿', '夏季炎热', '冬季阴冷', '山地多风', '山地地形', '多雷暴天气', '木材资源丰富'];
+            const level2Nodes = ['快速排水', '防漏防渗', '隔热保温', '抗风稳固', '避雷防火', '就地取材'];
+            const level3Nodes = ['硬山顶', '悬山顶', '歇山顶', '攒尖顶', '重檐顶', '人字顶'];
+            const level4Nodes = ['抬梁式构架', '穿斗式构架', '高起翘角', '双坡大坡度', '望板铺底', '压瓦收边', '脊饰加固'];
+            const level5Nodes = ['小青瓦', '杉木', '松木', '青石板', '桐油', '石灰', '黏土', '麻丝'];
+
+            if (level1Nodes.includes(nodeName)) return levelColors.level1;
+            if (level2Nodes.includes(nodeName)) return levelColors.level2;
+            if (level3Nodes.includes(nodeName)) return levelColors.level3;
+            if (level4Nodes.includes(nodeName)) return levelColors.level4;
+            if (level5Nodes.includes(nodeName)) return levelColors.level5;
+
+            return '#e0d4c3';
+        }
+
+        // 更新链路样式
+        function updateLinkStyles() {
+            const updatedLinks = links.map(link => {
+                const isLinkSelected = selectedState.linkIds.has(link.id);
+                const isNodeRelated = selectedState.nodeNames.has(link.source) || selectedState.nodeNames.has(link.target);
+
+                if (isLinkSelected || isNodeRelated) {
+                    return {
+                        ...link,
+                        lineStyle: {
+                            color: getNodeColor(link.source),
+                            opacity: 0.9,
+                            width: 3,
+                            curveness: 0.1
+                        }
+                    };
+                } else {
+                    return {
+                        ...link,
+                        lineStyle: {
+                            color: '#e0d4c3',
+                            opacity: 0.7,
+                            width: 1.5,
+                            curveness: 0.1
+                        }
+                    };
+                }
+            });
+
+            myChart.setOption({
+                series: [{ links: updatedLinks }]
+            });
+        }
+
+        const option = {
+            grid: { show: false },
+            xAxis: { show: false },
+            yAxis: { show: false },
+            tooltip: {
+                trigger: 'item',
+                triggerOn: 'mousemove',
+                backgroundColor: 'rgba(250,247,240,0.95)',
+                borderColor: '#d4bfa7',
+                borderWidth: 1,
+                textStyle: { color: '#8b5a2b', fontFamily: 'SimSun' },
+                formatter: function (params) {
+                    if (params.dataType === 'node') {
+                        const nodeName = params.name || '未知节点';
+                        return `<b>${nodeName}</b><br/>类别：${getNodeType(nodeName)}`;
+                    } else {
+                        const source = params.data?.source || params.source || '未知源节点';
+                        const target = params.data?.target || params.target || '未知目标节点';
+                        const value = params.data?.value || params.value || 0;
+                        return `<b>影响链路</b><br/>${source} → ${target}<br/>影响权重：${value}`;
+                    }
+                }
+            },
+            series: [
+                {
+                    type: 'sankey',
+                    layout: 'none',
+                    nodeWidth: 25,
+                    nodeGap: 15,
+                    emphasis: {
+                        focus: 'adjacency',
+                        itemStyle: {
+                            shadowBlur: 6,
+                            shadowColor: 'rgba(139,90,43,0.3)',
+                            borderWidth: 1.5,
+                            borderColor: '#8b5a2b'
+                        },
+                        lineStyle: {
+                            color: 'source',
+                            opacity: 0.9,
+                            width: 3
+                        }
+                    },
+                    lineStyle: {
+                        color: '#e0d4c3',
+                        curveness: 0.1,
+                        opacity: 0.7,
+                        width: 1.5
+                    },
+                    data: nodes,
+                    links: links,
+                    // 点击事件处理
+                    onClick: function (params) {
+                        if (params.dataType === 'link') {
+                            const linkId = params.data.id;
+                            if (selectedState.linkIds.has(linkId)) {
+                                selectedState.linkIds.delete(linkId);
+                            } else {
+                                selectedState.linkIds.clear();
+                                selectedState.nodeNames.clear();
+                                selectedState.linkIds.add(linkId);
+                            }
+                        } else if (params.dataType === 'node') {
+                            const nodeName = params.name;
+                            if (selectedState.nodeNames.has(nodeName)) {
+                                selectedState.nodeNames.delete(nodeName);
+                            } else {
+                                selectedState.linkIds.clear();
+                                selectedState.nodeNames.clear();
+                                selectedState.nodeNames.add(nodeName);
+                            }
+                        }
+                        updateLinkStyles();
+                    }
+                }
+            ]
+        };
+
+        // 清末徽派屋顶节点类型说明函数（仅自然环境相关，同步简化节点名称）
+        function getNodeType(nodeName) {
+            if (!nodeName) return '未知节点';
+            const typeMap = {
+                // 自然环境因子层（1911年前特征）
+                '多雨高湿': '自然环境因子（清末徽州年降水量1400-2000mm，空气湿度80%-90%）',
+                '夏季炎热': '自然环境因子（清末夏季均温28-36℃，无降温设施）',
+                '冬季阴冷': '自然环境因子（清末冬季均温0-8℃，无采暖设施）',
+                '山地多风': '自然环境因子（皖南山区年均风速2.5-3.5m/s，山谷风显著）',
+                '山地地形': '自然环境因子（徽州多低山丘陵，坡度15°-35°，建筑依山而建）',
+                '多雷暴天气': '自然环境因子（皖南山区年均雷暴日40-60天，易引发火灾）',
+                '木材资源丰富': '自然环境因子（徽州山区杉木/松木储量大，就地取材成本低）',
+                // 功能层
+                '快速排水': '功能层（适配多雨气候，屋顶坡度25°-35°，雨水流速≥1.2m/s）',
+                '防漏防渗': '功能层（抵御高湿环境，防止雨水渗透至梁架，避免腐朽）',
+                '隔热保温': '功能层（双层瓦构造，夏季降温4-6℃，冬季保温3-5℃）',
+                '抗风稳固': '功能层（适配山地多风特征，脊饰压重增强屋顶抗风性）',
+                '避雷防火': '功能层（青石板屋脊接地，降低雷暴天气火灾风险）',
+                '就地取材': '功能层（利用本地木材、黏土，降低运输成本，适配山地交通不便）',
+                // 类型层（简化后）
+                '硬山顶': '类型层（清末徽派民居主流，两山墙齐平，结构简单，适配多雨）',
+                '悬山顶': '类型层（檐角悬挑，排水范围大，适配宗族祠堂大空间）',
+                '歇山顶': '类型层（四面坡+两侧半坡，通风隔热佳，适配书院采光需求）',
+                '攒尖顶': '类型层（锥形屋顶，排水无死角，适配山地亭阁观景需求）',
+                '重檐顶': '类型层（双层屋檐，抗风性强，适配村口牌坊暴露环境）',
+                '人字顶': '类型层（双坡大坡度，雨水汇入天井，适配徽州天井院形制）',
+                // 结构层（清末工艺）
+                '抬梁式构架': '结构层（清末大空间建筑主流，梁架层层抬升，承重性好）',
+                '穿斗式构架': '结构层（清末民居主流，枋木穿柱，抗风性强，适配山地多风）',
+                '高起翘角': '结构层（檐角上翘30°-45°，引导雨水远离墙体，适配多雨）',
+                '双坡大坡度': '结构层（坡度25°-35°，雨水流速快，适配多雨高湿）',
+                '望板铺底': '结构层（屋顶底层铺木板，防止瓦缝漏雨，适配高湿环境）',
+                '压瓦收边': '结构层（瓦件相互压叠，边缘封固，增强抗风防漏性）',
+                '脊饰加固': '结构层（屋脊设石质/陶质脊饰，增加压重，提升抗风性）',
+                // 材料层（简化后）
+                '小青瓦': '材料层（主材：黏土烧制，清末徽州年产瓦超千万片，防水性佳）',
+                '杉木': '材料层（梁架主材：徽州杉木，纹理直，耐腐蚀，适配高湿环境）',
+                '松木': '材料层（椽子主材：松木质轻，易加工，就地取材成本低）',
+                '青石板': '材料层（屋脊主材：徽州青石板，导电率低，适配避雷需求）',
+                '桐油': '材料层（防护层：桐油涂刷木材，增强耐水性，适配高湿环境）',
+                '石灰': '材料层（填缝料：生石灰+水熟化，密封瓦缝，防止雨水渗透）',
+                '黏土': '材料层（瓦件原料：徽州山地黏土，黏性强，烧制后致密耐用）',
+                '麻丝': '材料层（加筋料：掺入灰缝，防止因温度变化开裂）'
+            };
+            return typeMap[nodeName] || '未知节点';
+        }
+
+        // 渲染图表
+        myChart.setOption(option);
+        // 响应式适配
+        window.addEventListener('resize', function () {
+            myChart.resize();
+        });
+    </script>
+</body>
+
+</html>

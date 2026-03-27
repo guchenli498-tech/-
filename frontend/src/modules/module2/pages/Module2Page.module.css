@@ -1,0 +1,19 @@
+.fullBleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+  display: block;
+  background: #fff;
+}
+

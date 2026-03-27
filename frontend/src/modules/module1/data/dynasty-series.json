@@ -1,0 +1,110 @@
+[
+  {
+    "cityId": "sheXian",
+    "cityName": "歙县",
+    "series": [
+      { "dynasty": "桥梁", "count": 7 },
+      { "dynasty": "民居", "count": 49 },
+      { "dynasty": "牌坊", "count": 55 },
+      { "dynasty": "祠堂", "count": 56 },
+      { "dynasty": "综合", "count": 3 },
+      { "dynasty": "其他", "count": 31 }
+    ]
+  },
+  {
+    "cityId": "xiuNing",
+    "cityName": "休宁县",
+    "series": [
+      { "dynasty": "桥梁", "count": 10 },
+      { "dynasty": "民居", "count": 11 },
+      { "dynasty": "牌坊", "count": 6 },
+      { "dynasty": "祠堂", "count": 7 },
+      { "dynasty": "综合", "count": 1 },
+      { "dynasty": "其他", "count": 5 }
+    ]
+  },
+  {
+    "cityId": "jiXi",
+    "cityName": "绩溪县",
+    "series": [
+      { "dynasty": "桥梁", "count": 8 },
+      { "dynasty": "民居", "count": 24 },
+      { "dynasty": "牌坊", "count": 9 },
+      { "dynasty": "祠堂", "count": 26 },
+      { "dynasty": "综合", "count": 11 },
+      { "dynasty": "其他", "count": 3 }
+    ]
+  },
+  {
+    "cityId": "huiZhouQu",
+    "cityName": "徽州区",
+    "series": [
+      { "dynasty": "桥梁", "count": 5 },
+      { "dynasty": "民居", "count": 6 },
+      { "dynasty": "牌坊", "count": 7 },
+      { "dynasty": "祠堂", "count": 8 },
+      { "dynasty": "综合", "count": 3 },
+      { "dynasty": "其他", "count": 4 }
+    ]
+  },
+  {
+    "cityId": "wuYuan",
+    "cityName": "婺源县",
+    "series": [
+      { "dynasty": "桥梁", "count": 78 },
+      { "dynasty": "民居", "count": 103 },
+      { "dynasty": "牌坊", "count": 1 },
+      { "dynasty": "祠堂", "count": 38 },
+      { "dynasty": "综合", "count": 5 },
+      { "dynasty": "其他", "count": 16 }
+    ]
+  },
+  {
+    "cityId": "yiXian",
+    "cityName": "黟县",
+    "series": [
+      { "dynasty": "桥梁", "count": 6 },
+      { "dynasty": "民居", "count": 46 },
+      { "dynasty": "牌坊", "count": 0 },
+      { "dynasty": "祠堂", "count": 18 },
+      { "dynasty": "综合", "count": 9 },
+      { "dynasty": "其他", "count": 7 }
+    ]
+  },
+  {
+    "cityId": "qiMen",
+    "cityName": "祁门县",
+    "series": [
+      { "dynasty": "桥梁", "count": 7 },
+      { "dynasty": "民居", "count": 5 },
+      { "dynasty": "牌坊", "count": 4 },
+      { "dynasty": "祠堂", "count": 21 },
+      { "dynasty": "综合", "count": 3 },
+      { "dynasty": "其他", "count": 0 }
+    ]
+  },
+  {
+    "cityId": "huangShanQu",
+    "cityName": "黄山区",
+    "series": [
+      { "dynasty": "桥梁", "count": 5 },
+      { "dynasty": "民居", "count": 0 },
+      { "dynasty": "牌坊", "count": 2 },
+      { "dynasty": "祠堂", "count": 9 },
+      { "dynasty": "综合", "count": 2 },
+      { "dynasty": "其他", "count": 2 }
+    ]
+  },
+  {
+    "cityId": "tunXiQu",
+    "cityName": "屯溪区",
+    "series": [
+      { "dynasty": "桥梁", "count": 6 },
+      { "dynasty": "民居", "count": 9 },
+      { "dynasty": "牌坊", "count": 2 },
+      { "dynasty": "祠堂", "count": 3 },
+      { "dynasty": "综合", "count": 2 },
+      { "dynasty": "其他", "count": 3 }
+    ]
+  }
+]

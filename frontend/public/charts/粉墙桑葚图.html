@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>徽派建筑 粉墙 自然环境-材料 影响关系桑基图（1911年前）</title>
+    <!-- 引入ECharts CDN -->
+    <script src="../echarts.min.js"></script>
+    <style>
+        /* 严格按照配色规范修改，保留复古质感 */
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f0e8;
+            /* 页面主背景色 */
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23e0d4c3' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+            font-family: "SimSun", "宋体", sans-serif;
+        }
+
+        #chart-container {
+            width: 100%;
+            height: 900px;
+            background-color: #faf7f0;
+            /* 图表容器背景色 */
+            border: 1px solid #d4bfa7;
+            /* 图表容器边框色 */
+            position: relative;
+            overflow: hidden;
+        }
+
+        #chart-container::after {
+            content: "A";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: #d48b67;
+            /* 材料层颜色 */
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50%;
+        }
+
+        .title {
+            text-align: left;
+            color: #4A4A48;
+            margin: 8px 0 8px 12px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            font-family: 'STKaiti', '华文楷体', 'KaiTi', serif;
+            letter-spacing: 4px;
+            padding-bottom: 6px;
+            position: relative;
+        }
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 36px;
+            height: 2px;
+            background: #A9C1C0;
+        }
+
+        .legend-note {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #b08968;
+            /* 图例说明文字色 */
+            text-align: center;
+        }
+
+        .level-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80px;
+            text-align: center;
+            color: #d48b67;
+            /* 层级标签文字色 */
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .level1 {
+            left: 10px;
+        }
+
+        .level2 {
+            left: 18%;
+        }
+
+        .level3 {
+            left: 36%;
+        }
+
+        .level4 {
+            left: 54%;
+        }
+
+        .level5 {
+            left: 72%;
+        }
+
+        .city-function {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80px;
+            text-align: center;
+            color: #7a9e9f;
+            /* 右侧功能说明文字色 */
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="title">徽派建筑：粉墙 自然环境因子→功能需求→类型→结构→材料 影响关系桑基图（1911年前）</h1>
+    <div id="chart-container">
+        <div class="level-label level1">自然环境因子</div>
+        <div class="level-label level2">功能需求</div>
+        <div class="level-label level3">类型</div>
+        <div class="level-label level4">结构</div>
+        <div class="level-label level5">材料</div>
+        <div class="city-function">
+            环境适配<br />
+            功能导向<br />
+            形制匹配<br />
+            构造工艺<br />
+            材料选择
+        </div>
+    </div>
+    <p class="legend-note">注：流线宽度代表影响权重，hover/点击节点/流线可高亮链路 | 点击可切换高亮/恢复状态 | 数据基于1911年前徽派建筑史料（仅含自然环境因子）</p>
+
+    <script>
+        const myChart = echarts.init(document.getElementById('chart-container'));
+
+        // 存储选中状态
+        const selectedState = {
+            linkIds: new Set(),
+            nodeNames: new Set()
+        };
+
+        // 严格按照配色规范定义层级颜色
+        const levelColors = {
+            level1: '#7a9e9f',    // 自然环境因子层
+            level2: '#b8c5b0',    // 功能需求层
+            level3: '#e6a86e',    // 类型层
+            level4: '#f2d0b0',    // 结构层
+            level5: '#d48b67'     // 材料层
+        };
+
+        // 1911年前徽派粉墙专属节点数据（适配规范配色）
+        const nodes = [
+            // 1. 自然环境因子层（统一颜色：#7a9e9f）
+            { name: '多雨高湿', itemStyle: { color: levelColors.level1 } },
+            { name: '山地多雾', itemStyle: { color: levelColors.level1 } },
+            { name: '夏季炎热', itemStyle: { color: levelColors.level1 } },
+            { name: '冬季阴冷', itemStyle: { color: levelColors.level1 } },
+            { name: '山地地形', itemStyle: { color: levelColors.level1 } },
+            { name: '地下水水位高', itemStyle: { color: levelColors.level1 } },
+            { name: '多山洪暴雨', itemStyle: { color: levelColors.level1 } },
+            // 2. 功能需求层（统一颜色：#b8c5b0）
+            { name: '防水耐潮', itemStyle: { color: levelColors.level2 } },
+            { name: '隔热降温', itemStyle: { color: levelColors.level2 } },
+            { name: '反光增亮', itemStyle: { color: levelColors.level2 } },
+            { name: '抗冲刷防坍塌', itemStyle: { color: levelColors.level2 } },
+            { name: '排水导水', itemStyle: { color: levelColors.level2 } },
+            { name: '地基防沉降', itemStyle: { color: levelColors.level2 } },
+            // 3. 类型层（统一颜色：#e6a86e）
+            { name: '宅外墙（高大）', itemStyle: { color: levelColors.level3 } },
+            { name: '天井内墙', itemStyle: { color: levelColors.level3 } },
+            { name: '马头墙侧墙', itemStyle: { color: levelColors.level3 } },
+            { name: '坡地挡墙', itemStyle: { color: levelColors.level3 } },
+            { name: '滨水护墙', itemStyle: { color: levelColors.level3 } },
+            // 4. 结构层（统一颜色：#f2d0b0）
+            { name: '砖石夯土基层', itemStyle: { color: levelColors.level4 } },
+            { name: '分层抹灰（三麻五灰）', itemStyle: { color: levelColors.level4 } },
+            { name: '压顶收边', itemStyle: { color: levelColors.level4 } },
+            { name: '滴水泛水', itemStyle: { color: levelColors.level4 } },
+            { name: '墙基防潮', itemStyle: { color: levelColors.level4 } },
+            { name: '收分斜度（上窄下宽）', itemStyle: { color: levelColors.level4 } },
+            // 5. 材料层（统一颜色：#d48b67）
+            { name: '白灰（生石灰）', itemStyle: { color: levelColors.level5 } },
+            { name: '糯米浆', itemStyle: { color: levelColors.level5 } },
+            { name: '桐油', itemStyle: { color: levelColors.level5 } },
+            { name: '麻筋/稻草', itemStyle: { color: levelColors.level5 } },
+            { name: '青石板（墙基）', itemStyle: { color: levelColors.level5 } },
+            { name: '青砖（夯芯）', itemStyle: { color: levelColors.level5 } },
+            { name: '黄土（夯筑）', itemStyle: { color: levelColors.level5 } }
+        ];
+
+        // 链路数据（带唯一ID，仅保留自然环境关联，权重贴合清末工艺特征）
+        const links = [
+            // 自然环境因子→功能需求（清末核心关联）
+            { id: 1, source: '多雨高湿', target: '防水耐潮', value: 45 },
+            { id: 2, source: '多雨高湿', target: '反光增亮', value: 25 },
+            { id: 3, source: '山地多雾', target: '反光增亮', value: 40 },
+            { id: 4, source: '夏季炎热', target: '隔热降温', value: 40 },
+            { id: 5, source: '冬季阴冷', target: '隔热降温', value: 30 },
+            { id: 6, source: '山地地形', target: '抗冲刷防坍塌', value: 35 },
+            { id: 7, source: '地下水水位高', target: '墙基防潮', value: 38 },
+            { id: 8, source: '多山洪暴雨', target: '排水导水', value: 42 },
+            { id: 9, source: '山地地形', target: '地基防沉降', value: 32 },
+            { id: 10, source: '多山洪暴雨', target: '抗冲刷防坍塌', value: 30 },
+            // 功能→类型（清末粉墙形制匹配）
+            { id: 11, source: '防水耐潮', target: '宅外墙（高大）', value: 40 },
+            { id: 12, source: '隔热降温', target: '天井内墙', value: 35 },
+            { id: 13, source: '反光增亮', target: '天井内墙', value: 40 },
+            { id: 14, source: '抗冲刷防坍塌', target: '坡地挡墙', value: 38 },
+            { id: 15, source: '排水导水', target: '滨水护墙', value: 35 },
+            { id: 16, source: '地基防沉降', target: '宅外墙（高大）', value: 30 },
+            { id: 17, source: '防水耐潮', target: '滨水护墙', value: 32 },
+            { id: 18, source: '抗冲刷防坍塌', target: '马头墙侧墙', value: 28 },
+            { id: 19, source: '排水导水', target: '天井内墙', value: 25 },
+            // 类型→结构（清末构造工艺）
+            { id: 20, source: '宅外墙（高大）', target: '砖石夯土基层', value: 45 },
+            { id: 21, source: '宅外墙（高大）', target: '收分斜度（上窄下宽）', value: 38 },
+            { id: 22, source: '天井内墙', target: '分层抹灰（三麻五灰）', value: 42 },
+            { id: 23, source: '马头墙侧墙', target: '压顶收边', value: 40 },
+            { id: 24, source: '马头墙侧墙', target: '滴水泛水', value: 35 },
+            { id: 25, source: '坡地挡墙', target: '砖石夯土基层', value: 38 },
+            { id: 26, source: '滨水护墙', target: '墙基防潮', value: 40 },
+            { id: 27, source: '滨水护墙', target: '滴水泛水', value: 32 },
+            { id: 28, source: '天井内墙', target: '压顶收边', value: 28 },
+            // 结构→材料（清末传统材料配比）
+            { id: 29, source: '砖石夯土基层', target: '青石板（墙基）', value: 40 },
+            { id: 30, source: '砖石夯土基层', target: '青砖（夯芯）', value: 35 },
+            { id: 31, source: '砖石夯土基层', target: '黄土（夯筑）', value: 30 },
+            { id: 32, source: '分层抹灰（三麻五灰）', target: '白灰（生石灰）', value: 45 },
+            { id: 33, source: '分层抹灰（三麻五灰）', target: '糯米浆', value: 38 },
+            { id: 34, source: '分层抹灰（三麻五灰）', target: '麻筋/稻草', value: 32 },
+            { id: 35, source: '压顶收边', target: '桐油', value: 35 },
+            { id: 36, source: '滴水泛水', target: '白灰（生石灰）', value: 30 },
+            { id: 37, source: '墙基防潮', target: '青石板（墙基）', value: 38 },
+            { id: 38, source: '收分斜度（上窄下宽）', target: '黄土（夯筑）', value: 30 }
+        ];
+
+        // 获取节点对应的颜色（用于链路高亮）
+        function getNodeColor(nodeName) {
+            const level1Nodes = ['多雨高湿', '山地多雾', '夏季炎热', '冬季阴冷', '山地地形', '地下水水位高', '多山洪暴雨'];
+            const level2Nodes = ['防水耐潮', '隔热降温', '反光增亮', '抗冲刷防坍塌', '排水导水', '地基防沉降'];
+            const level3Nodes = ['宅外墙（高大）', '天井内墙', '马头墙侧墙', '坡地挡墙', '滨水护墙'];
+            const level4Nodes = ['砖石夯土基层', '分层抹灰（三麻五灰）', '压顶收边', '滴水泛水', '墙基防潮', '收分斜度（上窄下宽）'];
+            const level5Nodes = ['白灰（生石灰）', '糯米浆', '桐油', '麻筋/稻草', '青石板（墙基）', '青砖（夯芯）', '黄土（夯筑）'];
+
+            if (level1Nodes.includes(nodeName)) return levelColors.level1;
+            if (level2Nodes.includes(nodeName)) return levelColors.level2;
+            if (level3Nodes.includes(nodeName)) return levelColors.level3;
+            if (level4Nodes.includes(nodeName)) return levelColors.level4;
+            if (level5Nodes.includes(nodeName)) return levelColors.level5;
+
+            return '#e0d4c3'; // 默认连线色
+        }
+
+        // 更新链路样式
+        function updateLinkStyles() {
+            const updatedLinks = links.map(link => {
+                const isLinkSelected = selectedState.linkIds.has(link.id);
+                const isNodeRelated = selectedState.nodeNames.has(link.source) || selectedState.nodeNames.has(link.target);
+
+                if (isLinkSelected || isNodeRelated) {
+                    return {
+                        ...link,
+                        lineStyle: {
+                            color: getNodeColor(link.source),
+                            opacity: 0.9,
+                            width: 3,
+                            curveness: 0.1
+                        }
+                    };
+                } else {
+                    return {
+                        ...link,
+                        lineStyle: {
+                            color: '#e0d4c3',
+                            opacity: 0.4, // 默认连线透明度
+                            width: 1.5,
+                            curveness: 0.1
+                        }
+                    };
+                }
+            });
+
+            myChart.setOption({
+                series: [{ links: updatedLinks }]
+            });
+        }
+
+        const option = {
+            grid: { show: false },
+            xAxis: { show: false },
+            yAxis: { show: false },
+            tooltip: {
+                trigger: 'item',
+                triggerOn: 'mousemove',
+                backgroundColor: 'rgba(250,247,240,0.95)', // 图表容器背景色（带透明度）
+                borderColor: '#d4bfa7', // 提示框边框色
+                borderWidth: 1,
+                textStyle: { color: '#d48b67', fontFamily: 'SimSun' }, // 提示框文字色
+                formatter: function (params) {
+                    if (params.dataType === 'node') {
+                        const nodeName = params.name || '未知节点';
+                        return `<b>${nodeName}</b><br/>类别：${getNodeType(nodeName)}`;
+                    } else {
+                        const source = params.data?.source || params.source || '未知源节点';
+                        const target = params.data?.target || params.target || '未知目标节点';
+                        const value = params.data?.value || params.value || 0;
+                        return `<b>影响链路</b><br/>${source} → ${target}<br/>影响权重：${value}`;
+                    }
+                }
+            },
+            series: [
+                {
+                    type: 'sankey',
+                    layout: 'none',
+                    nodeWidth: 25,
+                    nodeGap: 15,
+                    emphasis: {
+                        focus: 'adjacency',
+                        itemStyle: {
+                            shadowBlur: 6,
+                            shadowColor: 'rgba(212, 139, 103, 0.3)', // 节点高亮阴影色
+                            borderWidth: 1.5,
+                            borderColor: '#d48b67' // 节点高亮边框色
+                        },
+                        lineStyle: {
+                            color: 'source',
+                            opacity: 0.9,
+                            width: 3
+                        }
+                    },
+                    lineStyle: {
+                        color: '#e0d4c3', // 默认连线色
+                        curveness: 0.1,
+                        opacity: 0.4, // 默认连线透明度
+                        width: 1.5
+                    },
+                    data: nodes,
+                    links: links,
+                    // 点击事件处理
+                    onClick: function (params) {
+                        if (params.dataType === 'link') {
+                            const linkId = params.data.id;
+                            if (selectedState.linkIds.has(linkId)) {
+                                selectedState.linkIds.delete(linkId);
+                            } else {
+                                selectedState.linkIds.clear();
+                                selectedState.nodeNames.clear();
+                                selectedState.linkIds.add(linkId);
+                            }
+                        } else if (params.dataType === 'node') {
+                            const nodeName = params.name;
+                            if (selectedState.nodeNames.has(nodeName)) {
+                                selectedState.nodeNames.delete(nodeName);
+                            } else {
+                                selectedState.linkIds.clear();
+                                selectedState.nodeNames.clear();
+                                selectedState.nodeNames.add(nodeName);
+                            }
+                        }
+                        updateLinkStyles();
+                    }
+                }
+            ]
+        };
+
+        // 清末徽派粉墙节点类型说明函数（仅自然环境相关）
+        function getNodeType(nodeName) {
+            if (!nodeName) return '未知节点';
+            const typeMap = {
+                // 自然环境因子层（1911年前特征）
+                '多雨高湿': '自然环境因子（清末徽州年降水量1400-2000mm，空气湿度80%-90%）',
+                '山地多雾': '自然环境因子（皖南山区年均雾日80-120天，光照不足）',
+                '夏季炎热': '自然环境因子（清末夏季均温28-36℃，无降温设施）',
+                '冬季阴冷': '自然环境因子（清末冬季均温0-8℃，无采暖设施）',
+                '山地地形': '自然环境因子（徽州多低山丘陵，坡度15°-35°，建筑依山而建）',
+                '地下水水位高': '自然环境因子（皖南山区地下水埋深浅，雨季水位上升至地表下0.5-1m）',
+                '多山洪暴雨': '自然环境因子（夏季多短时暴雨，山洪流速快，冲刷力强）',
+                // 功能层
+                '防水耐潮': '功能层（抵御高湿环境，防止墙体受潮剥落、酥碱）',
+                '隔热降温': '功能层（白色反射阳光，降低室内温度3-5℃，适配夏季炎热）',
+                '反光增亮': '功能层（白色墙面反射光线，改善山地多雾导致的采光不足）',
+                '抗冲刷防坍塌': '功能层（抵御山洪暴雨冲刷，防止坡地墙体坍塌）',
+                '排水导水': '功能层（引导雨水远离建筑主体，适配多雨气候）',
+                '地基防沉降': '功能层（适配山地地形，防止墙体因地基沉降开裂）',
+                // 类型层
+                '宅外墙（高大）': '类型层（清末徽派宅外墙高5-8m，适配山地防风、防冲刷）',
+                '天井内墙': '类型层（天井四周墙体，高3-5m，核心采光面，适配多雾少光）',
+                '马头墙侧墙': '类型层（马头墙两侧粉墙，随山墙坡度收分，适配山地地形）',
+                '坡地挡墙': '类型层（山地建筑坡地挡土墙，厚60-80cm，防坍塌）',
+                '滨水护墙': '类型层（临水建筑护墙，高2-3m，防河水/山洪冲刷）',
+                // 结构层（清末工艺）
+                '砖石夯土基层': '结构层（清末粉墙基层：青砖打底+黄土夯筑，厚50-80cm，增强抗冲刷性）',
+                '分层抹灰（三麻五灰）': '结构层（清末核心工艺：三层麻筋灰+五层白灰，层层收光，提升防水性）',
+                '压顶收边': '结构层（墙顶青砖压顶，防止雨水冲刷墙顶，适配多雨气候）',
+                '滴水泛水': '结构层（墙脚设滴水槽，引导雨水远离墙体，适配高湿环境）',
+                '墙基防潮': '结构层（墙基铺青石板，高出地面30-50cm，适配高地下水位）',
+                '收分斜度（上窄下宽）': '结构层（墙体下宽上窄，斜度1%-3%，增强山地地形稳定性）',
+                // 材料层（清末传统材料）
+                '白灰（生石灰）': '材料层（主材：生石灰+水熟化，清末徽州特产，耐水性强）',
+                '糯米浆': '材料层（粘结剂：糯米熬浆掺入灰中，增强附着力和防水性）',
+                '桐油': '材料层（防护层：桐油涂刷墙面，增强耐水性和抗冲刷性）',
+                '麻筋/稻草': '材料层（加筋料：掺入灰中，防止墙面因温度变化开裂）',
+                '青石板（墙基）': '材料层（墙基主材：徽州青石板，耐潮耐磨，适配高地下水位）',
+                '青砖（夯芯）': '材料层（墙体芯材：徽派青砖，透气防潮，适配高湿环境）',
+                '黄土（夯筑）': '材料层（填充料：徽州山地黄土，就地取材，适配山地地形）'
+            };
+            return typeMap[nodeName] || '未知节点';
+        }
+
+        // 渲染图表
+        myChart.setOption(option);
+        // 响应式适配
+        window.addEventListener('resize', function () {
+            myChart.resize();
+        });
+    </script>
+</body>
+
+</html>

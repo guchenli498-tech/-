@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>水圳 词云图</title>
+    <script src="../d3.min.js"></script>
+    <script src="../d3.layout.cloud.js"></script>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: #f7f3ea;
+        overflow: hidden;
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        padding: 10px 8px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+      .title {
+        font-size: 13px;
+        color: rgba(74, 74, 72, 0.9);
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+        flex: 0 0 auto;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      #cloud {
+        flex: 1 1 auto;
+        position: relative;
+      }
+      svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="title">水圳系统：自然因子与构造意象 词云（示意）</div>
+      <div id="cloud"></div>
+    </div>
+    <script>
+      (function () {
+        const words = [
+          { text: "干圳", size: 70 },
+          { text: "生活用水", size: 62 },
+          { text: "消防防火", size: 56 },
+          { text: "易生洪涝", size: 50 },
+          { text: "调节微气候", size: 48 },
+          { text: "生活巷道", size: 44 },
+          { text: "行洪通道", size: 42 },
+          { text: "青石板", size: 40 },
+          { text: "衬砌与防渗", size: 38 },
+          { text: "水体蒸发", size: 36 },
+          { text: "水流导向", size: 34 },
+          { text: "应急取水", size: 32 },
+        ];
+
+        function colorForWord(w) {
+          if (w.includes("干") || w.includes("洪")) return "#8EB8B7";
+          if (w.includes("水") || w.includes("用水")) return "#B8D8D7";
+          if (w.includes("防") || w.includes("防渗") || w.includes("消防")) return "#A9C1C0";
+          return "#4A4A48";
+        }
+
+        function render() {
+          const cloudEl = document.getElementById("cloud");
+          const rect = cloudEl.getBoundingClientRect();
+          const width = Math.max(240, Math.floor(rect.width));
+          const height = Math.max(220, Math.floor(rect.height));
+
+          cloudEl.innerHTML = "";
+
+          const svg = d3.select("#cloud").append("svg").attr("viewBox", `0 0 ${width} ${height}`);
+          const g = svg.append("g").attr("transform", `translate(${width / 2},${height / 2})`);
+
+          const layout = d3.layout.cloud()
+            .size([width, height])
+            .canvas(function () {
+              const c = document.createElement("canvas");
+              return c;
+            })
+            .words(words)
+            .padding(6)
+            .rotate(function () {
+              return 0;
+            })
+            .font("Georgia")
+            .fontSize((d) => d.size / 1.6)
+            .on("end", function (renderWords) {
+              g.selectAll("text")
+                .data(renderWords)
+                .enter()
+                .append("text")
+                .style("font-size", (d) => d.size / 1.6 + "px")
+                .style("fill", (d) => colorForWord(d.text))
+                .style("font-weight", 500)
+                .attr("text-anchor", "middle")
+                .attr("transform", (d) => `translate(${d.x},${d.y})`)
+                .text((d) => d.text);
+            });
+
+          layout.start();
+        }
+
+        render();
+        window.addEventListener("resize", function () {
+          render();
+        });
+      })();
+    </script>
+  </body>
+</html>
+
