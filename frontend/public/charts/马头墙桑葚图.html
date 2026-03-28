@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>马头墙 多元环境-材料 影响关系桑基图</title>
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="../echarts.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -27,25 +27,33 @@
         #chart-container::after { display: none; }
 
         .mtqTitle {
-            text-align: center;
-            margin: 4px 0 8px;
+            text-align: left;
+            margin: 8px 0 8px 12px;
+            padding-bottom: 6px;
+            position: relative;
+        }
+
+        .mtqTitle::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 36px;
+            height: 2px;
+            background: #A9C1C0;
         }
 
         .titleMain {
-            color: #d48b67;
-            font-size: 18px;
+            color: #4A4A48;
+            font-size: 1.5rem;
             font-weight: 600;
-            font-family: "SimHei", "黑体";
-            letter-spacing: 1px;
+            font-family: 'STKaiti', '华文楷体', 'KaiTi', serif;
+            letter-spacing: 4px;
             line-height: 1.2;
         }
 
         .titleSub {
-            margin-top: 6px;
-            color: #b08968;
-            font-size: 12px;
-            font-weight: 500;
-            letter-spacing: 0.2px;
+            display: none;
         }
 
         .legend-note {
@@ -108,8 +116,7 @@
 
 <body>
     <div class="mtqTitle">
-        <div class="titleMain">马头墙构成关系</div>
-        <div class="titleSub">自然环境因子 → 功能需求 → 类型 → 结构 → 材料</div>
+        <div class="titleMain">马头墙 · 构成关系</div>
     </div>
     <div id="chart-container">
         <div class="level-label level1">环境因子</div>

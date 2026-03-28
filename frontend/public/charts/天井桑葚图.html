@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>天井 多元环境-材料 影响关系桑基图</title>
     <!-- 引入ECharts CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="../echarts.min.js"></script>
     <style>
         /* 严格按照配色规范修改 */
         body {
@@ -47,13 +47,24 @@
         }
 
         .title {
-            text-align: center;
-            color: #d48b67;
-            /* 标题文字色 */
-            margin-bottom: 15px;
-            font-size: 22px;
+            text-align: left;
+            color: #4A4A48;
+            margin: 8px 0 8px 12px;
+            font-size: 1.5rem;
             font-weight: 600;
-            font-family: "SimHei", "黑体";
+            font-family: 'STKaiti', '华文楷体', 'KaiTi', serif;
+            letter-spacing: 4px;
+            padding-bottom: 6px;
+            position: relative;
+        }
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 36px;
+            height: 2px;
+            background: #A9C1C0;
         }
 
         .legend-note {

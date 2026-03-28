@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useEffect, useState } from 'react'
 import { ChartPanel } from '../../../components/common/ChartPanel/ChartPanel'
 import { ProvinceHeatMap } from '../components/ProvinceHeatMap'
 import { DynastyLineChart } from '../components/DynastyLineChart'
@@ -15,6 +15,20 @@ import { module1Overview } from '../data/overview'
 import styles from './Module1Page.module.css'
 
 export function Module1Page() {
+  const wrapRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function fit() {
+      if (!wrapRef.current) return
+      const navEl = document.querySelector('header') as HTMLElement | null
+      const navH = navEl ? navEl.getBoundingClientRect().height : 58
+      wrapRef.current.style.height = `${window.innerHeight - navH}px`
+    }
+    fit()
+    window.addEventListener('resize', fit)
+    return () => window.removeEventListener('resize', fit)
+  }, [])
+
   const cities = citiesJson as CityHeatDatum[]
   const dynastySeries = dynastySeriesJson as CityDynastySeries[]
   const buildings = buildingMarkersJson as BuildingMarker[]
@@ -56,7 +70,7 @@ export function Module1Page() {
   }, [cities])
 
   return (
-    <div className={styles.module1Page}>
+    <div ref={wrapRef} className={styles.module1Page}>
       <div className={styles.mainGrid}>
         <div className={styles.leftCol}>
           <ChartPanel className={styles.leftCard} bodyClassName={styles.noPadding}>
@@ -65,22 +79,12 @@ export function Module1Page() {
 
           <ChartPanel bodyClassName={styles.noPadding}>
             <div style={{ padding: 6 }}>
-              <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.7, marginBottom: 6 }}>
-                城市历朝徽派建筑数量变化 · 点击地图城市联动
-                <span style={{ marginLeft: 10, color: 'rgba(74,74,72,0.65)' }}>
-                  截止1911总量：{overallTotal}
-                </span>
-              </div>
-              <DynastyLineChart data={lineForChart} height={200} mode="area" />
+              <DynastyLineChart selectedCityId={selectedCityId} height={280} mode="area" />
             </div>
           </ChartPanel>
         </div>
 
         <div className={styles.centerCol}>
-          <div className={styles.centerInset}>
-            <RegionInsetMap cities={cities} buildings={buildings} selectedCityId={selectedCityId} />
-          </div>
-
           <ChartPanel className={styles.leftCard} bodyClassName={styles.noPadding}>
             <ProvinceHeatMap
               cities={cities}

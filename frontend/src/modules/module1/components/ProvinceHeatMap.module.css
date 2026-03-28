@@ -1,7 +1,7 @@
 .wrap {
   position: relative;
   width: 100%;
-  height: 470px;
+  height: 100%;
   border-radius: 16px;
   overflow: hidden;
   background: rgba(252, 252, 252, 0.92);
@@ -16,26 +16,30 @@
 
 .legend {
   position: absolute;
-  left: 14px;
-  top: 14px;
+  right: 14px;
+  left: auto;
+  bottom: 8px;
+  top: auto;
   z-index: 2;
   background: rgba(252, 252, 252, 0.88);
   border: 1px solid rgba(242, 239, 233, 0.95);
   border-radius: 12px;
-  padding: 10px 12px;
-  width: 220px;
+  padding: 6px 10px;
+  width: auto;
 }
 
 .legendTitle {
   font-size: 13px;
-  color: rgba(74, 74, 72, 0.85);
+  font-weight: 600;
+  color: rgba(74, 74, 72, 0.95);
   margin-bottom: 6px;
 }
 
 .legendBins {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
 }
 
 .legendBin {
@@ -56,7 +60,9 @@
 }
 
 .legendBinLabel {
-  color: rgba(74, 74, 72, 0.72);
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(74, 74, 72, 0.9);
 }
 
 .tooltip {

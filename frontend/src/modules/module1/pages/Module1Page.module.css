@@ -1,24 +1,59 @@
 .module1Page {
-  padding: 18px 0 40px;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .mainGrid {
-  max-width: 1200px;
-  margin: 0 auto;
+  flex: 1;
+  min-height: 0;
   display: grid;
-  grid-template-columns: 300px 1fr 340px;
-  gap: 16px;
-  align-items: start;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: stretch;
+  gap: 6px;
+  padding: 6px 6px 0;
+  box-sizing: border-box;
 }
 
 .leftCol {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 6px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .centerCol {
   position: relative;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.centerCol > * {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  height: 100%;
+}
+
+.centerCol section {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.centerCol section > div:last-child {
+  flex: 1;
+  min-height: 0;
+  padding: 0 !important;
 }
 
 .centerInset {
@@ -30,11 +65,21 @@
 }
 
 .rightCol {
-  min-height: 600px;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.rightCol > * {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .leftCard {
   overflow: hidden;
+  min-height: 0;
 }
 
 .noPadding {
@@ -42,8 +87,18 @@
 }
 
 .bottomWrap {
-  max-width: 1200px;
-  margin: 0 auto;
+  height: 32%;
+  min-height: 0;
+  padding: 0 6px 6px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.bottomWrap > * {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 @media (max-width: 1200px) {

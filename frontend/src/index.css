@@ -66,6 +66,16 @@ body {
   margin: 0;
   background: var(--bg);
   font-family: Georgia, 'KaiTi', '楷体', '华文楷体', 'STKaiti', serif;
+  overflow: hidden;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 h1,

@@ -92,17 +92,22 @@ export function RegionInsetMap(props: {
         />
 
         {cities.map((c) => {
+          if (!c.center && !c.geoCoord) return null
           const isSel = c.cityId === selectedCityId
           const fill = colorScale(c.totalBefore1911, min, max)
-          const cx = (c.center[0] / 1000) * 260
-          const cy = (c.center[1] / 650) * 180
+          // 用 geoCoord 或 center 映射到 SVG 坐标
+          const cx = c.center
+            ? (c.center[0] / 1000) * 260
+            : ((c.geoCoord![0] - 117.0) / 2.0) * 260
+          const cy = c.center
+            ? (c.center[1] / 650) * 180
+            : (1 - (c.geoCoord![1] - 29.0) / 2.0) * 180
           return (
             <circle
               key={c.cityId}
               cx={cx}
               cy={cy}
               r={isSel ? 6 : 4}
-              // inset 内层仍用热力色，选中只靠描边强调，避免与建筑/城市层语义混淆
               fill={fill}
               stroke={isSel ? '#F7A072' : 'rgba(242,239,233,0.95)'}
               strokeWidth={isSel ? 2.2 : 1}

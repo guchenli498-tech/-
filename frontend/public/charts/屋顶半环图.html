@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>屋顶 半环图</title>
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <script src="../echarts.min.js"></script>
     <style>
       html,
       body {
@@ -19,14 +19,32 @@
         height: 100%;
         padding: 12px 10px 10px;
         box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
       }
       .title {
-        font-size: 13px;
-        color: rgba(74, 74, 72, 0.9);
-        letter-spacing: 1px;
-        margin-bottom: 8px;
+        font-family: 'STKaiti', '华文楷体', 'KaiTi', serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #4A4A48;
+        letter-spacing: 4px;
+        margin: 0 0 8px 4px;
+        padding-bottom: 6px;
+        position: relative;
+        flex-shrink: 0;
+      }
+      .title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 36px;
+        height: 2px;
+        background: #A9C1C0;
       }
       #chart {
+        flex: 1;
+        min-height: 0;
         width: 100%;
         height: calc(100% - 21px);
       }

@@ -4,37 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>徽派建筑 · 四元素词云 · 沉浸交互版</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js"></script>
+    <script src="../d3.min.js"></script>
+    <script src="../d3.layout.cloud.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background: #E8E6E1;
+            background: #F7F3EA;
             font-family: 'Georgia', 'KaiTi', '楷体', '华文楷体', 'STKaiti', serif;
             padding: 25px 15px;
         }
         h1 {
-            text-align: center;
-            font-weight: 350;
+            text-align: left;
+            font-weight: 600;
             color: #4A4A48;
-            letter-spacing: 5px;
-            margin-bottom: 15px;
-            font-size: 2.5rem;
-            border-bottom: 2px solid #A9C1C0;
-            display: inline-block;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+            margin-left: 16px;
+            font-size: 1.8rem;
+            font-family: 'STKaiti', '华文楷体', 'KaiTi', serif;
+            position: relative;
+            display: block;
             padding-bottom: 10px;
-            margin-left: auto; margin-right: auto;
-            width: auto;
-            text-shadow: 1px 1px 0 rgba(252,252,252,0.7);
+        }
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: #A9C1C0;
         }
         .subhead {
-            text-align: center;
-            color: #8EB8B7;
-            font-style: italic;
-            margin-bottom: 25px;
-            font-size: 1.15rem;
-            letter-spacing: 2px;
+            display: none;
         }
         .gallery {
             display: flex;
@@ -45,12 +48,12 @@
             margin: 20px auto;
         }
         .card {
-            background: #FCFCFC;
+            background: #F7F3EA;
             box-shadow: 0 30px 45px -20px rgba(74,74,72,0.4);
             border-radius: 2px;
             padding: 16px 16px 5px 16px;
             width: 670px;
-            border: 1px solid #F2EFE9;
+            border: 1px solid #E7DFD2;
             transition: box-shadow 0.2s, transform 0.2s;
         }
         .card:hover {
@@ -107,24 +110,18 @@
         .vis-container {
             width: 100%;
             height: 400px;
-            background: #FCFCFC;
-            border: 1px solid #F2EFE9;
+            background: #F7F3EA;
+            border: 1px solid #E7DFD2;
             position: relative;
             display: flex; justify-content: center; align-items: center;
             cursor: default;
             margin: 10px 0 8px 0;
-            box-shadow: inset 0 0 0 1px #F2EFE9, 0 8px 12px -12px rgba(74,74,72,0.3);
+            box-shadow: inset 0 0 0 1px #E7DFD2, 0 8px 12px -12px rgba(74,74,72,0.3);
             transition: background 0.3s;
         }
         svg { display: block; width: 100%; height: 100%; background: transparent; }
         .stats-panel {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 10px 5px 0 5px;
-            font-size: 0.9rem;
-            color: #8EB8B7;
-            flex-wrap: wrap;
+            display: none;
         }
         .word-count {
             background: #F2EFE9;
@@ -172,14 +169,7 @@
             max-width: 380px;
         }
         .footer-note {
-            text-align: center;
-            margin: 40px 0 15px 0;
-            color: #8EB8B7;
-            font-size: 1rem;
-            border-top: 1px dashed #A9C1C0;
-            padding-top: 20px;
-            width: 70%;
-            margin-left: auto; margin-right: auto;
+            display: none;
         }
         /* 迷你提示条 */
         .mini-tip {
@@ -195,7 +185,7 @@
     </style>
 </head>
 <body>
-    <h1>🏯 徽派建筑 · 沉浸词云</h1>
+    <h1>徽派建筑 · 沉浸词云</h1>
     <div class="subhead">
         <i class="fas fa-magic"></i> 悬停高亮同组 · 双击词语聚焦 · 点击图例筛选 · 右侧按钮意象切换
     </div>
@@ -289,19 +279,6 @@
     </div>
     <script>
         (function() {
-            // ---------- 词库 (已按语义化权重调整，与之前一致) ----------
-            const matouWords = [...]; const tianjingWords = [...]; const fenqiangWords = [...]; const wudingWords = [...];
-            // 为保证代码完整，这里快速引用原数据（为了简洁，仅展示结构，实际已内嵌）
-            // (由于篇幅，此处省略完整长数组，但运行时使用原完整数据)
-            // 真实代码中已经包含原封不动的四大词库，此处为了节省字符数用[...]，但实际已填充。
-            // 为保险，在最终回答中嵌入完整数据（略作压缩但保留全部词语）
-            // 我们确保函数体内有完整数据。
-            // 由于字符限制，使用完整数据变量，但此处为了可读性用[...]，但在最终交付版本中填入真实数据
-            // 实际已包含在代码中，请见最终交付。
-        })();
-    </script>
-    <script>
-        (function() {
             // ---------- 完整词库 (已全部内嵌) ----------
             const matouWords = [
                 {text:"五岳朝天", weight:5.0, cat:"意象核心"}, {text:"马头墙", weight:5.0, cat:"意象核心"}, {text:"宗族兴旺", weight:4.9, cat:"意象核心"}, {text:"万马奔腾", weight:4.8, cat:"意象核心"}, {text:"封火墙", weight:4.6, cat:"功能"}, {text:"马头", weight:4.1, cat:"形态"}, {text:"阶梯状", weight:4.2, cat:"形态"}, {text:"叠落", weight:3.9, cat:"形态"}, {text:"防火墙", weight:3.8, cat:"功能"}, {text:"叠落山墙", weight:3.8, cat:"形态"}, {text:"错落有致", weight:3.8, cat:"审美"}, {text:"黑白交响", weight:3.7, cat:"审美"}, {text:"鹊尾", weight:3.8, cat:"形态"}, {text:"印斗", weight:3.7, cat:"形态"}, {text:"五叠", weight:3.7, cat:"形态"}, {text:"封火", weight:3.6, cat:"功能"}, {text:"昂首", weight:3.6, cat:"意象核心"}, {text:"天际线", weight:3.6, cat:"审美"}, {text:"一马当先", weight:4.0, cat:"意象核心"}, {text:"马到成功", weight:3.8, cat:"意象核心"}, {text:"节节攀升", weight:3.4, cat:"意象核心"}, {text:"望族", weight:3.5, cat:"功能"}, {text:"宗祠", weight:3.4, cat:"功能"}, {text:"硬山顶", weight:3.5, cat:"形态"}, {text:"砖石砌筑", weight:3.2, cat:"形态"}, {text:"坐吻", weight:3.5, cat:"形态"}, {text:"金印", weight:3.5, cat:"形态"}, {text:"朝笏", weight:3.4, cat:"形态"}, {text:"鹊尾式", weight:3.4, cat:"形态"}, {text:"印斗式", weight:3.4, cat:"形态"}, {text:"三叠", weight:3.5, cat:"形态"}, {text:"座头", weight:3.5, cat:"形态"}, {text:"官位", weight:3.2, cat:"功能"}, {text:"等级", weight:3.1, cat:"功能"}, {text:"礼制", weight:3.0, cat:"功能"}, {text:"盼归", weight:3.2, cat:"意象核心"}, {text:"守望", weight:3.2, cat:"意象核心"}, {text:"参差", weight:3.0, cat:"形态"}, {text:"隔断", weight:2.8, cat:"功能"}, {text:"观音兜", weight:3.0, cat:"形态"}, {text:"屏风墙", weight:2.9, cat:"形态"}, {text:"码头墙", weight:2.8, cat:"其他"}, {text:"五岳", weight:3.0, cat:"意象核心"}, {text:"朝天", weight:2.8, cat:"意象核心"}, {text:"封火理念", weight:3.3, cat:"功能"}, {text:"徽商", weight:3.3, cat:"功能"}, {text:"叠涩", weight:2.9, cat:"形态"}, {text:"墀头", weight:2.8, cat:"形态"}, {text:"榫头", weight:2.6, cat:"形态"}, {text:"搏风板", weight:2.4, cat:"形态"}, {text:"鸱尾", weight:2.7, cat:"其他"}, {text:"鱼龙", weight:2.5, cat:"其他"}, {text:"鳌鱼", weight:2.8, cat:"其他"}, {text:"瑞兽", weight:2.7, cat:"其他"}, {text:"悬鱼", weight:2.6, cat:"其他"}, {text:"惹草", weight:2.4, cat:"其他"}, {text:"如意头", weight:2.8, cat:"其他"}, {text:"卷草纹", weight:2.7, cat:"其他"}, {text:"回纹", weight:2.5, cat:"其他"}, {text:"卍字", weight:2.5, cat:"其他"}, {text:"昂扬", weight:3.0, cat:"意象核心"}, {text:"进取", weight:2.9, cat:"意象核心"}, {text:"祖业", weight:2.8, cat:"功能"}, {text:"家风", weight:2.7, cat:"功能"}, {text:"门楣", weight:2.6, cat:"形态"}, {text:"门第", weight:2.5, cat:"功能"}, {text:"登高", weight:2.4, cat:"意象核心"}, {text:"望远", weight:2.3, cat:"意象核心"}, {text:"镇宅", weight:2.2, cat:"功能"}, {text:"辟邪", weight:2.1, cat:"功能"}, {text:"祈福", weight:2.0, cat:"功能"}, {text:"安定", weight:2.0, cat:"功能"}, {text:"稳固", weight:1.9, cat:"形态"}, {text:"坚实", weight:1.8, cat:"形态"}, {text:"厚重", weight:1.7, cat:"审美"}, {text:"庄重", weight:1.6, cat:"审美"}, {text:"威严", weight:1.5, cat:"审美"}, {text:"肃穆", weight:1.4, cat:"审美"}, {text:"秩序", weight:1.3, cat:"功能"}, {text:"规范", weight:1.2, cat:"功能"}, {text:"传统", weight:1.1, cat:"功能"}, {text:"传承", weight:1.0, cat:"功能"}, {text:"坐吻式", weight:3.2, cat:"形态"}, {text:"朝笏式", weight:3.0, cat:"形态"}, {text:"金印式", weight:3.1, cat:"形态"}
@@ -323,7 +300,7 @@
             function drawCloud(containerId, wordList, options, filterCat = null) {
                 const container = document.getElementById(containerId);
                 if (!container) return;
-                const width = 630, height = 390;
+                const width = 1050, height = 390;
                 d3.select(`#${containerId}`).selectAll("svg").remove();
 
                 const svg = d3.select(`#${containerId}`)

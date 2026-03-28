@@ -37,7 +37,7 @@ export type BuildingMarker = {
 }
 
 export type BuildingCategoryDatum = {
-  category: '民居' | '祠堂' | '牌坊' | '书院' | '亭台楼阁'
+  category: string
   value: number
 }
 
