@@ -1,0 +1,439 @@
+/*
+ * 背景层：主区米纸；顶栏、底分期尺为原米褐文献条（勿把数据色刷进轨道/竖带）
+ * 遗存条、沿革圆点、图例色块见 module1VisualPalette
+ */
+.wrap {
+  --hr-paper: #f4f2eb;
+  --hr-panel: #e3dcd0;
+  --hr-deep: #d8cfc0;
+  --hr-ink: #254e7a;
+  --hr-mute: rgba(37, 78, 122, 0.62);
+  --hr-rule: rgba(61, 55, 46, 0.08);
+  --hr-edge: rgba(61, 55, 46, 0.16);
+
+  width: 100%;
+  margin-top: 0;
+  font-family: system-ui, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--hr-paper);
+  border: 1px solid var(--hr-edge);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.55) inset,
+    0 8px 24px rgba(61, 55, 46, 0.07);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  color: var(--hr-ink);
+}
+
+/* —— 顶栏：左标识 + 搜索 + 分组图例（行为/功能式排版）—— */
+.head {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px 16px;
+  padding: 10px 14px 9px;
+  background: linear-gradient(180deg, #f0ebe3 0%, var(--hr-panel) 100%);
+  border-bottom: 1px solid var(--hr-edge);
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex-shrink: 0;
+  line-height: 1.15;
+  padding-top: 2px;
+}
+
+.brandMain {
+  font-size: 15px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  color: var(--hr-ink);
+}
+
+.brandSub {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  color: var(--hr-mute);
+  text-transform: uppercase;
+}
+
+.search {
+  width: clamp(160px, 20vw, 240px);
+  flex-shrink: 0;
+  padding: 7px 13px;
+  border-radius: 7px;
+  border: 1px solid var(--hr-edge);
+  background: rgba(255, 255, 255, 0.88);
+  font-size: 12px;
+  color: var(--hr-ink);
+  box-shadow: 0 1px 2px rgba(61, 55, 46, 0.06);
+}
+
+.search::placeholder {
+  color: rgba(37, 78, 122, 0.42);
+}
+
+.search:focus {
+  outline: none;
+  border-color: rgba(81, 127, 171, 0.45);
+  box-shadow: 0 0 0 2px rgba(81, 127, 171, 0.12);
+}
+
+.legendBlock {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  flex: 1 1 220px;
+  min-width: 0;
+  align-items: flex-start;
+}
+
+.legendGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1 1 160px;
+}
+
+.legendGroupTitle {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--hr-mute);
+  white-space: nowrap;
+}
+
+.legendScroll {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+  mask-image: linear-gradient(90deg, #000 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, #000 92%, transparent 100%);
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--hr-ink);
+  white-space: nowrap;
+  flex-shrink: 0;
+  opacity: 0.92;
+}
+
+/* 横条类图例：短色段，类似「城市功能」色线 */
+.legendLine {
+  width: 18px;
+  height: 5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(61, 55, 46, 0.1);
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 252, 246, 0.95);
+  box-shadow: 0 0 0 1px rgba(61, 55, 46, 0.12);
+}
+
+/* —— 主区：上行轨道 + 底部分期尺（与参考图一致）—— */
+.main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  background: var(--hr-paper);
+}
+
+.chartScroll {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 6px 10px 4px;
+}
+
+.gridRow {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 7px;
+  align-items: stretch;
+  border-bottom: 1px solid var(--hr-rule);
+  padding-bottom: 1px;
+  margin-bottom: 1px;
+}
+
+.gridRow:last-of-type {
+  border-bottom: none;
+}
+
+.rowLabel {
+  appearance: none;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  padding: 3px 4px 3px 0;
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+  height: 24px;
+  min-width: 0;
+}
+
+.rowLabel:hover {
+  background: rgba(212, 204, 188, 0.22);
+}
+
+.rowLine {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.rowName {
+  font-size: 11px;
+  font-weight: 650;
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowDot {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--hr-mute);
+  opacity: 0.65;
+}
+
+.rowMeta {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: var(--hr-mute);
+  white-space: nowrap;
+}
+
+.trackPane {
+  position: relative;
+  height: 24px;
+  min-height: 24px;
+  border-radius: 5px;
+  background: rgba(255, 253, 248, 0.4);
+  overflow: visible;
+  box-shadow: inset 0 0 0 1px rgba(61, 55, 46, 0.06);
+}
+
+.trackPaneActive {
+  box-shadow:
+    inset 0 0 0 1px rgba(168, 93, 72, 0.32),
+    0 0 0 1px rgba(168, 93, 72, 0.12);
+  background: rgba(255, 248, 240, 0.55);
+}
+
+.dynShade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(232, 226, 214, 0.45);
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+.dynShadeAlt {
+  background: rgba(220, 212, 198, 0.38);
+}
+
+.rail {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 50%;
+  height: 10px;
+  transform: translateY(-50%);
+  border-radius: 4px;
+  background: rgba(255, 253, 248, 0.65);
+  box-shadow: inset 0 0 0 1px rgba(61, 55, 46, 0.08);
+}
+
+.segment {
+  position: absolute;
+  top: 50%;
+  height: 7px;
+  transform: translateY(-50%);
+  border-radius: 3px;
+  cursor: default;
+  z-index: 1;
+  box-shadow: 0 1px 1px rgba(61, 55, 46, 0.1);
+}
+
+.ev {
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 252, 246, 0.98);
+  box-shadow: 0 0 0 1px rgba(61, 55, 46, 0.12);
+  z-index: 2;
+  cursor: help;
+}
+
+.ev:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+.footnote {
+  margin-top: 8px;
+  font-size: 9px;
+  line-height: 1.4;
+  color: var(--hr-mute);
+  padding: 0 2px 4px;
+}
+
+.footnote summary {
+  cursor: pointer;
+  font-weight: 650;
+  list-style: none;
+  letter-spacing: 0.06em;
+}
+
+.footnote summary::-webkit-details-marker {
+  display: none;
+}
+
+.footnote summary::after {
+  content: ' ▾';
+  font-size: 7px;
+  opacity: 0.7;
+}
+
+.footnote[open] summary::after {
+  content: ' ▴';
+}
+
+/* —— 底部：分期尺 + 年份（生命之河式）—— */
+.axisFooter {
+  flex-shrink: 0;
+  padding: 8px 10px 10px;
+  background: linear-gradient(180deg, var(--hr-deep) 0%, #d0c7b8 100%);
+  border-top: 1px solid var(--hr-edge);
+  box-shadow: 0 -2px 12px rgba(61, 55, 46, 0.06);
+}
+
+.axisRow {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.axisRow + .axisRow {
+  margin-top: 4px;
+}
+
+.axisSpacer {
+  width: 120px;
+  flex-shrink: 0;
+}
+
+.dynRuler {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  position: relative;
+  border-radius: 4px;
+  border: 1px solid rgba(61, 55, 46, 0.2);
+  background: rgba(255, 253, 248, 0.45);
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(61, 55, 46, 0.07);
+}
+
+.dynRulerInner {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 0;
+  bottom: 0;
+}
+
+.dynRulerSeg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid rgba(61, 55, 46, 0.12);
+  background: rgba(232, 226, 214, 0.75);
+  box-sizing: border-box;
+}
+
+.dynRulerSegAlt {
+  background: rgba(220, 212, 198, 0.85);
+}
+
+.dynRulerLab {
+  font-size: 9px;
+  font-weight: 650;
+  color: var(--hr-ink);
+  padding: 0 3px;
+  text-align: center;
+  line-height: 1.15;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: keep-all;
+  opacity: 0.88;
+}
+
+.yearRuler {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 16px;
+}
+
+.yearTick {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--hr-mute);
+  font-variant-numeric: tabular-nums;
+}
+
+.yearTick::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 5px;
+  background: rgba(61, 55, 46, 0.2);
+  margin-bottom: 1px;
+}

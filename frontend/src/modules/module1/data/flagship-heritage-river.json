@@ -1,0 +1,176 @@
+{
+  "title": "徽韵遗产志·代表作编年",
+  "timeRange": [300, 1920],
+  "dynastyBands": [
+    { "id": "han-wei", "label": "汉魏六朝", "startYear": 220, "endYear": 589 },
+    { "id": "sui-tang", "label": "隋唐五代", "startYear": 589, "endYear": 960 },
+    { "id": "song", "label": "宋", "startYear": 960, "endYear": 1279 },
+    { "id": "yuan", "label": "元", "startYear": 1271, "endYear": 1368 },
+    { "id": "mg", "label": "明", "startYear": 1368, "endYear": 1644 },
+    { "id": "qing", "label": "清", "startYear": 1644, "endYear": 1911 }
+  ],
+  "actionLegend": [
+      { "id": "settle", "label": "开村聚落", "color": "#76a1d1" },
+      { "id": "waterworks", "label": "水利/路桥工程", "color": "#c5e1ef" },
+      { "id": "clan-public", "label": "宗族公共建筑", "color": "#517fab" },
+      { "id": "edict", "label": "敕建旌表/牌坊", "color": "#f5d8c8" },
+      { "id": "layout", "label": "格局形制定型", "color": "#254e7a" },
+      { "id": "boom", "label": "鼎盛营建", "color": "#7ebce7" },
+      { "id": "repair", "label": "重修/缮治", "color": "#adbfdd" },
+      { "id": "warfare", "label": "战乱影响", "color": "#c8cedf" },
+      { "id": "other", "label": "其他节点", "color": "#e1e1e1" }
+  ],
+  "sites": [
+    {
+      "id": "hongcun",
+      "name": "宏村古建筑群",
+      "region": "黟县",
+      "segments": [
+        { "startYear": 1131, "endYear": 1279, "dynasty": "南宋", "typeCategory": "综合用途/建筑群" },
+        { "startYear": 1279, "endYear": 1368, "dynasty": "元", "typeCategory": "综合用途/建筑群" },
+        { "startYear": 1368, "endYear": 1607, "dynasty": "明", "typeCategory": "其他" },
+        { "startYear": 1607, "endYear": 1644, "dynasty": "明", "typeCategory": "综合用途/建筑群" },
+        { "startYear": 1644, "endYear": 1911, "dynasty": "清", "typeCategory": "民居" }
+      ],
+      "events": [
+        { "year": 1131, "action": "settle", "label": "汪氏开村建宅（十三间）" },
+        { "year": 1413, "action": "waterworks", "label": "永乐间凿月沼、开水圳，牛形水系奠基" },
+        { "year": 1455, "action": "clan-public", "label": "明中叶乐叙堂（宗祠）、太子庙等公共建筑" },
+        { "year": 1607, "action": "layout", "label": "凿南湖，牛形村落与水系格局成形" },
+        { "year": 1814, "action": "boom", "label": "南湖书院、树人堂、三立堂、德义堂等" },
+        { "year": 1857, "action": "boom", "label": "盐商汪定贵建承志堂" }
+      ]
+    },
+    {
+      "id": "xidi",
+      "name": "西递村古建筑群",
+      "region": "黟县",
+      "segments": [
+        { "startYear": 1049, "endYear": 1279, "dynasty": "北宋-南宋", "typeCategory": "综合用途/建筑群" },
+        { "startYear": 1279, "endYear": 1368, "dynasty": "元", "typeCategory": "综合用途/建筑群" },
+        { "startYear": 1368, "endYear": 1644, "dynasty": "明", "typeCategory": "综合用途/建筑群" },
+        { "startYear": 1644, "endYear": 1911, "dynasty": "清", "typeCategory": "民居" }
+      ],
+      "events": [
+        { "year": 1050, "action": "settle", "label": "胡氏自婺源考水迁西递，村落发端" },
+        { "year": 1578, "action": "edict", "label": "胡文光刺史牌坊（三间四柱五楼）" },
+        { "year": 1662, "action": "boom", "label": "清康熙间履福堂、惇仁堂、旷古斋等" },
+        { "year": 1691, "action": "boom", "label": "大夫第与绣楼、「作退一步想」门额" },
+        { "year": 1787, "action": "boom", "label": "胡贯三建走马楼迎曹振镛" },
+        { "year": 1794, "action": "clan-public", "label": "追慕堂奉祀溯源" },
+        { "year": 1825, "action": "boom", "label": "德义堂、枕石小筑、西园等成局" },
+        { "year": 1856, "action": "warfare", "label": "咸丰间战乱损毁与后续修复交织" }
+      ]
+    },
+    {
+      "id": "xuguo",
+      "name": "许国石坊",
+      "region": "歙县",
+      "segments": [
+        { "startYear": 1584, "endYear": 1644, "dynasty": "明", "typeCategory": "牌坊" }
+      ],
+      "events": [
+        { "year": 1584, "action": "edict", "label": "万历敕建，八月成坊" },
+        { "year": 1590, "action": "other", "label": "八柱形制与「先斩后奏」典故流传" }
+      ]
+    },
+    {
+      "id": "tangyue",
+      "name": "棠樾石牌坊群",
+      "region": "歙县",
+      "segments": [
+        { "startYear": 1420, "endYear": 1644, "dynasty": "明", "typeCategory": "牌坊" },
+        { "startYear": 1644, "endYear": 1820, "dynasty": "清", "typeCategory": "牌坊" }
+      ],
+      "events": [
+        { "year": 1420, "action": "edict", "label": "慈孝里坊（御制）立坊" },
+        { "year": 1534, "action": "edict", "label": "鲍灿坊" },
+        { "year": 1622, "action": "edict", "label": "鲍象贤尚书坊" },
+        { "year": 1776, "action": "edict", "label": "鲍文龄妻汪氏节孝坊" },
+        { "year": 1787, "action": "edict", "label": "鲍文渊继妻吴氏节孝坊" },
+        { "year": 1797, "action": "edict", "label": "鲍逢昌孝子坊" },
+        { "year": 1820, "action": "edict", "label": "乐善好施坊，群坊集齐忠孝节义" },
+        { "year": 1880, "action": "repair", "label": "同治光绪间石刻整修" }
+      ]
+    },
+    {
+      "id": "yuliang",
+      "name": "渔梁坝",
+      "region": "歙县",
+      "segments": [
+        { "startYear": 618, "endYear": 1279, "dynasty": "唐-宋", "typeCategory": "其他" },
+        { "startYear": 1279, "endYear": 1368, "dynasty": "元", "typeCategory": "其他" },
+        { "startYear": 1368, "endYear": 1644, "dynasty": "明", "typeCategory": "其他" },
+        { "startYear": 1644, "endYear": 1911, "dynasty": "清", "typeCategory": "其他" }
+      ],
+      "events": [
+        { "year": 618, "action": "waterworks", "label": "隋末唐初木桩为坝" },
+        { "year": 730, "action": "waterworks", "label": "唐开元间垒石为梁，坝体雏形" },
+        { "year": 1229, "action": "waterworks", "label": "绍定二年改石坝" },
+        { "year": 1501, "action": "waterworks", "label": "弘治间纯石重力滚水坝" },
+        { "year": 1605, "action": "waterworks", "label": "万历大修，花岗岩与「元宝钉」固石" },
+        { "year": 1687, "action": "repair", "label": "康熙间青白石材与榫卯加固" }
+      ]
+    },
+    {
+      "id": "longchuan",
+      "name": "龙川胡氏宗祠",
+      "region": "绩溪县",
+      "segments": [
+        { "startYear": 337, "endYear": 1279, "dynasty": "东晋-宋", "typeCategory": "其他" },
+        { "startYear": 1279, "endYear": 1547, "dynasty": "元-明初", "typeCategory": "祠堂" },
+        { "startYear": 1547, "endYear": 1911, "dynasty": "明-清", "typeCategory": "祠堂" }
+      ],
+      "events": [
+        { "year": 337, "action": "settle", "label": "胡氏迁居龙川" },
+        { "year": 1547, "action": "clan-public", "label": "胡宗宪主持重建宗祠主体" },
+        { "year": 1562, "action": "edict", "label": "奕世尚书坊，文徵明题书" },
+        { "year": 1898, "action": "repair", "label": "光绪大修，明体清饰" }
+      ]
+    },
+    {
+      "id": "chengkan",
+      "name": "呈坎村古建筑群",
+      "region": "徽州区",
+      "segments": [
+        { "startYear": 880, "endYear": 1279, "dynasty": "唐末-宋", "typeCategory": "综合用途/建筑群" },
+        { "startYear": 1279, "endYear": 1498, "dynasty": "元-明初", "typeCategory": "综合用途/建筑群" },
+        { "startYear": 1498, "endYear": 1911, "dynasty": "明-清", "typeCategory": "祠堂" }
+      ],
+      "events": [
+        { "year": 880, "action": "settle", "label": "罗氏兄弟迁居，更名呈坎" },
+        { "year": 1180, "action": "layout", "label": "宋元间「五街九十九巷」格局成熟" },
+        { "year": 1498, "action": "clan-public", "label": "罗东舒祠筹建" },
+        { "year": 1609, "action": "boom", "label": "罗东舒祠续建，规模定型" }
+      ]
+    },
+    {
+      "id": "zhenhaiqiao",
+      "name": "屯溪镇海桥",
+      "region": "屯溪区",
+      "segments": [
+        { "startYear": 1536, "endYear": 1644, "dynasty": "明", "typeCategory": "桥梁" },
+        { "startYear": 1644, "endYear": 1911, "dynasty": "清", "typeCategory": "桥梁" }
+      ],
+      "events": [
+        { "year": 1536, "action": "waterworks", "label": "嘉靖十五年戴时亮创建" },
+        { "year": 1678, "action": "repair", "label": "康熙十五年洪毁，程子谦重建" },
+        { "year": 1699, "action": "repair", "label": "程岳继建，定名镇海桥" },
+        { "year": 1884, "action": "repair", "label": "光绪十年桥墩大修" }
+      ]
+    },
+    {
+      "id": "chengdawei",
+      "name": "程大位故居",
+      "region": "屯溪区",
+      "segments": [
+        { "startYear": 1488, "endYear": 1644, "dynasty": "明", "typeCategory": "民居" },
+        { "startYear": 1644, "endYear": 1911, "dynasty": "清", "typeCategory": "民居" }
+      ],
+      "events": [
+        { "year": 1496, "action": "settle", "label": "弘治间建「维新堂」" },
+        { "year": 1592, "action": "boom", "label": "撰成《直指算法统宗》" }
+      ]
+    }
+  ]
+}

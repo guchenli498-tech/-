@@ -4,14 +4,11 @@ import { ProvinceHeatMap } from '../components/ProvinceHeatMap'
 import { DynastyLineChart } from '../components/DynastyLineChart'
 import { BuildingInfoPanel } from '../components/BuildingInfoPanel'
 import { BuildingCategoryDonut } from '../components/BuildingCategoryDonut'
-import { RegionInsetMap } from '../components/RegionInsetMap'
-import { Module1BottomNarrativePanel } from '../components/Module1BottomNarrativePanel'
-import type { BuildingCategoryDatum, BuildingMarker, CityDynastySeries, CityHeatDatum } from '../types'
+import { HeritageRiverTimeline } from '../components/HeritageRiverTimeline'
+import type { BuildingCategoryDatum, BuildingMarker, CityHeatDatum } from '../types'
 import citiesJson from '../data/cities.json'
-import dynastySeriesJson from '../data/dynasty-series.json'
 import buildingMarkersJson from '../data/building-markers.json'
 import buildingCategoriesJson from '../data/building-categories.json'
-import { module1Overview } from '../data/overview'
 import styles from './Module1Page.module.css'
 
 export function Module1Page() {
@@ -30,7 +27,6 @@ export function Module1Page() {
   }, [])
 
   const cities = citiesJson as CityHeatDatum[]
-  const dynastySeries = dynastySeriesJson as CityDynastySeries[]
   const buildings = buildingMarkersJson as BuildingMarker[]
   const buildingCategories = buildingCategoriesJson as BuildingCategoryDatum[]
 
@@ -58,16 +54,6 @@ export function Module1Page() {
     () => buildings.find((b) => b.id === selectedBuildingId),
     [buildings, selectedBuildingId],
   )
-
-  const activeLine = useMemo(
-    () => dynastySeries.find((s) => s.cityId === selectedCityId),
-    [dynastySeries, selectedCityId],
-  )
-  const lineForChart = activeLine ?? dynastySeries[0]
-
-  const overallTotal = useMemo(() => {
-    return cities.reduce((sum, c) => sum + c.totalBefore1911, 0)
-  }, [cities])
 
   return (
     <div ref={wrapRef} className={styles.module1Page}>
@@ -110,18 +96,13 @@ export function Module1Page() {
 
         <div className={styles.rightCol}>
           <ChartPanel>
-            <BuildingInfoPanel
-              overviewTitle={module1Overview.title}
-              overviewContent={module1Overview.content}
-              city={selectedCity}
-              building={selectedBuilding}
-            />
+            <BuildingInfoPanel city={selectedCity} building={selectedBuilding} />
           </ChartPanel>
         </div>
       </div>
 
       <div className={styles.bottomWrap}>
-        <Module1BottomNarrativePanel />
+        <HeritageRiverTimeline />
       </div>
     </div>
   )

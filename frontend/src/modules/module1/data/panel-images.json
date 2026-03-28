@@ -1,0 +1,21 @@
+{
+  "overview": {
+    "hero": "/module1/panel/overview-hero.jpg",
+    "paragraphImages": [
+      "/module1/panel/overview-para1.jpg",
+      "/module1/panel/overview-para2.jpg"
+    ],
+    "hintStrip": "/module1/panel/overview-hero.jpg"
+  },
+  "county": {
+    "sheXian": "/module1/panel/county-sheXian.jpg",
+    "xiuNing": "/module1/panel/county-xiuNing.jpg",
+    "jiXi": "/module1/panel/county-jiXi.jpg",
+    "huiZhouQu": "/module1/panel/county-huiZhouQu.jpg",
+    "wuYuan": "/module1/panel/county-wuYuan.jpg",
+    "yiXian": "/module1/panel/county-yiXian.jpg",
+    "qiMen": "/module1/panel/county-qiMen.jpg",
+    "huangShanQu": "/module1/panel/county-huangShanQu.jpg",
+    "tunXiQu": "/module1/panel/county-tunXiQu.jpg"
+  }
+}

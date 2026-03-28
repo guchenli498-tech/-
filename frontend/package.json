@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "download:module1-panel-images": "node scripts/download-module1-panel-images.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

@@ -1,0 +1,362 @@
+/* 右侧面板：总述 / 县域 / 单体 — 统一版式与层级 */
+
+.panelRoot {
+  margin: -2px 0 0;
+}
+
+/* —— 总述：顶栏大图 —— */
+.heroWide {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 0 0 0.75rem;
+  border: 1px solid rgba(232, 228, 220, 0.9);
+  box-shadow: 0 8px 28px rgba(74, 74, 72, 0.1);
+}
+
+.heroWideImg {
+  display: block;
+  width: 100%;
+  height: min(168px, 28vw);
+  object-fit: cover;
+}
+
+.heroWideFade {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 40%,
+    rgba(252, 252, 252, 0.35) 100%
+  );
+}
+
+/* 两段正文：左图右文 */
+.prosePairs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.35rem;
+}
+
+.copyPair {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.2fr);
+  gap: 12px;
+  align-items: start;
+}
+
+@media (max-width: 520px) {
+  .copyPair {
+    grid-template-columns: 1fr;
+  }
+}
+
+.copyPairFig {
+  margin: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(232, 228, 220, 0.95);
+  box-shadow: 0 4px 16px rgba(74, 74, 72, 0.08);
+}
+
+.copyPairFig img {
+  display: block;
+  width: 100%;
+  height: 118px;
+  object-fit: cover;
+}
+
+.copyPairText {
+  margin: 0;
+  color: var(--text-secondary, #6e6e6b);
+  line-height: 1.88;
+  font-size: 0.8125rem;
+  max-width: none;
+}
+
+.copyPair:first-of-type .copyPairText {
+  font-size: 0.84375rem;
+  color: #5c5c59;
+}
+
+/* 引导区：缩略图 + 文案 */
+.hintMediaRow {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.hintThumb {
+  width: 92px;
+  height: 68px;
+  object-fit: cover;
+  border-radius: 10px;
+  flex-shrink: 0;
+  border: 1px solid rgba(232, 228, 220, 0.9);
+  box-shadow: 0 2px 10px rgba(74, 74, 72, 0.06);
+}
+
+.hintMediaText {
+  flex: 1;
+  min-width: 0;
+}
+
+/* —— 县域：横幅 + 标题叠字 —— */
+.countyHero {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 0 0 0.65rem;
+  border: 1px solid rgba(232, 228, 220, 0.9);
+  box-shadow: 0 8px 28px rgba(74, 74, 72, 0.1);
+}
+
+.countyHeroImg {
+  display: block;
+  width: 100%;
+  height: min(152px, 30vw);
+  object-fit: cover;
+}
+
+.countyHeroFade {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 25%,
+    rgba(42, 40, 38, 0.55) 100%
+  );
+}
+
+.countyHeroTitle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.65rem 0.85rem 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  font-family:
+    'Noto Serif SC',
+    'Source Han Serif SC',
+    'STSong',
+    'SimSun',
+    serif;
+  color: #fcfcfc;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* —— 单体：顶栏实景 —— */
+.buildingHero {
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 0 0 0.65rem;
+  border: 1px solid rgba(232, 228, 220, 0.9);
+  box-shadow: 0 8px 28px rgba(74, 74, 72, 0.1);
+}
+
+.buildingHeroImg {
+  display: block;
+  width: 100%;
+  height: min(200px, 42vw);
+  object-fit: cover;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  font-family:
+    'Noto Serif SC',
+    'Source Han Serif SC',
+    'STSong',
+    'SimSun',
+    serif;
+  color: var(--ink, #4a4a48);
+  line-height: 1.35;
+  padding-bottom: 0.45rem;
+  margin: 0;
+  border-bottom: 1px solid rgba(184, 119, 72, 0.28);
+  background: linear-gradient(
+    90deg,
+    rgba(184, 119, 72, 0.12) 0,
+    transparent 48%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 3px;
+  background-position: 0 100%;
+  border-bottom-color: transparent;
+  box-shadow: inset 0 -1px 0 rgba(184, 119, 72, 0.22);
+}
+
+/* 县域 meta：总量｜类型｜特征 — 分段强调 */
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.metaChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #6a6a67;
+  background: rgba(252, 252, 252, 0.95);
+  border: 1px solid rgba(232, 228, 220, 0.95);
+  line-height: 1.45;
+  max-width: 100%;
+}
+
+.metaChipStat {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(138, 90, 48, 0.98);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 252, 248, 0.98) 0%,
+    rgba(242, 239, 233, 0.75) 100%
+  );
+  border: 1px solid rgba(184, 119, 72, 0.38);
+  line-height: 1.45;
+  box-shadow: 0 1px 3px rgba(184, 119, 72, 0.12);
+}
+
+/* 单体 detailMeta：地区｜类型｜年代 */
+.detailMetaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: 0.45rem;
+}
+
+.detailMetaItem {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.detailMetaLabel {
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: none;
+  color: rgba(142, 184, 183, 0.95);
+}
+
+.detailMetaValue {
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  color: var(--ink, #4a4a48);
+  line-height: 1.4;
+}
+
+/* 正文内 ** 强调 */
+.emphasis {
+  color: #3d3d3a;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: linear-gradient(
+    180deg,
+    transparent 62%,
+    rgba(184, 119, 72, 0.22) 62%,
+    rgba(184, 119, 72, 0.22) 92%,
+    transparent 92%
+  );
+}
+
+.tagline {
+  margin-top: 0.65rem;
+  padding: 0.5rem 0.75rem 0.5rem 0.85rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: rgba(138, 90, 48, 0.98);
+  letter-spacing: 0.03em;
+  line-height: 1.6;
+  border-left: 3px solid rgba(184, 119, 72, 0.85);
+  background: linear-gradient(
+    90deg,
+    rgba(242, 239, 233, 0.75) 0%,
+    rgba(252, 252, 252, 0.35) 100%
+  );
+  border-radius: 0 10px 10px 0;
+}
+
+.body {
+  margin-top: 0.85rem;
+  color: var(--text-secondary, #6e6e6b);
+  line-height: 1.88;
+  font-size: 0.8125rem;
+  max-width: 36em;
+}
+
+.tagRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 0.85rem;
+}
+
+.tag {
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(232, 230, 225, 0.95);
+  background: rgba(252, 252, 252, 0.9);
+  color: var(--ink, #4a4a48);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow: 0 1px 2px rgba(74, 74, 72, 0.04);
+}
+
+.hint {
+  margin-top: 1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  background: rgba(242, 239, 233, 0.55);
+  border: 1px solid rgba(232, 228, 220, 0.85);
+  border-left: 3px solid rgba(142, 184, 183, 0.65);
+  color: var(--muted, #8a8a87);
+  font-size: 0.75rem;
+  line-height: 1.78;
+}
+
+.hintStrong {
+  margin-top: 1.05rem;
+}
+
+.hintTitle {
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  color: var(--ink, #4a4a48);
+  margin-bottom: 0.35rem;
+}
+
+.fallbackBody {
+  margin-top: 0.65rem;
+  color: var(--text-secondary, #6e6e6b);
+  line-height: 1.88;
+  font-size: 0.8125rem;
+  max-width: 36em;
+}
+
+.hintBlockGap {
+  margin-top: 0.5rem;
+}

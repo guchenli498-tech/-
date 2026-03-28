@@ -10,8 +10,9 @@
   flex-direction: column;
 }
 
+/* 优先保证三列主图完整可见；底部编年在固定高度内自行滚动 */
 .mainGrid {
-  flex: 1;
+  flex: 1 1 0%;
   min-height: 0;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -86,9 +87,10 @@
   padding: 0 !important;
 }
 
+/* 与参考大屏一致：底部为扁时间带，高度由内容密度决定而非大块留白 */
 .bottomWrap {
-  height: 32%;
-  min-height: 0;
+  flex: 0 0 auto;
+  height: clamp(240px, 30vh, 340px);
   padding: 0 6px 6px;
   box-sizing: border-box;
   display: flex;

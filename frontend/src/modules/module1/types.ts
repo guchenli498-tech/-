@@ -29,8 +29,14 @@ export type BuildingMarker = {
   coord: [number, number] // 地图示意坐标
   // 用于 ECharts map 的经纬度（[lon, lat]）
   geoCoord?: [number, number]
+  /** 地图散点用 SVG，如 /huizhou_map_icons/icon-village.svg */
+  mapIcon?: string
   image: string // 图片 URL 或 data URL（MVP 用 mock）
   summary: string
+  /** 右侧面板：地区｜类型｜年代 */
+  detailMeta?: string
+  /** 右侧面板：长篇介绍（优先于 summary） */
+  detailBody?: string
   tags?: string[]
   dynasty?: string
   type?: string
@@ -60,6 +66,68 @@ export type NarrativeCase = {
 export type BottomNarrativeData = {
   tags: NarrativeFilterTag[]
   cases: NarrativeCase[]
+}
+
+/** 与国保名录、环图一致的建筑类型配色键 */
+export type HeritageTypeCategory =
+  | '民居'
+  | '祠堂'
+  | '牌坊'
+  | '桥梁'
+  | '综合用途/建筑群'
+  | '其他'
+
+export type HeritageRiverActionId =
+  | 'settle'
+  | 'waterworks'
+  | 'clan-public'
+  | 'edict'
+  | 'layout'
+  | 'boom'
+  | 'repair'
+  | 'warfare'
+  | 'other'
+
+export type HeritageRiverSegment = {
+  startYear: number
+  endYear: number
+  dynasty: string
+  typeCategory: HeritageTypeCategory
+}
+
+export type HeritageRiverEvent = {
+  year: number
+  action: HeritageRiverActionId
+  label: string
+}
+
+export type HeritageRiverSite = {
+  id: string
+  name: string
+  region: string
+  segments: HeritageRiverSegment[]
+  events: HeritageRiverEvent[]
+}
+
+export type HeritageRiverBand = {
+  id: string
+  label: string
+  startYear: number
+  endYear: number
+}
+
+export type HeritageRiverActionLegendItem = {
+  id: HeritageRiverActionId
+  label: string
+  color: string
+}
+
+export type HeritageRiverDataFile = {
+  title: string
+  timeRange: [number, number]
+  dynastyBands: HeritageRiverBand[]
+  actionLegend: HeritageRiverActionLegendItem[]
+  sites: HeritageRiverSite[]
 }
 
 

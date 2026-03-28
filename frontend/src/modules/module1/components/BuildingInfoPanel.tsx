@@ -1,145 +1,223 @@
 import type { BuildingMarker, CityHeatDatum } from '../types'
-import { appTheme } from '../../../theme/tokens'
+import { module1Overview } from '../data/overview'
+import countyNarrativesJson from '../data/county-narratives.json'
+import panelImagesJson from '../data/panel-images.json'
+import styles from './BuildingInfoPanel.module.css'
+import { parseBoldEmphasis } from './richText'
 
-const DEFAULT_OVERVIEW_IMAGE =
-  'data:image/svg+xml;charset=utf-8,' +
-  encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="600" height="420" viewBox="0 0 600 420">
-      <defs>
-        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#E1F8FA"/>
-          <stop offset="1" stop-color="#F7A072"/>
-        </linearGradient>
-      </defs>
-      <rect x="0" y="0" width="600" height="420" rx="26" fill="url(#g)"/>
-      <path d="M110 290 C190 170, 280 150, 340 210 C400 270, 490 280, 520 190"
-            fill="none" stroke="#4A4A48" stroke-opacity="0.35" stroke-width="6" stroke-linecap="round"/>
-      <text x="52" y="130" font-family="serif" font-size="30" fill="#4A4A48" fill-opacity="0.72">徽派建筑</text>
-      <text x="52" y="170" font-family="serif" font-size="18" fill="#4A4A48" fill-opacity="0.55">整体脉络 · 山水营建 · 荣衔延续</text>
-    </svg>
-  `)
+const countyNarratives = countyNarrativesJson as Record<
+  string,
+  { metaLine: string; tagline: string; body: string }
+>
+
+const panelImages = panelImagesJson as {
+  overview: {
+    hero: string
+    paragraphImages: string[]
+    hintStrip: string
+  }
+  county: Record<string, string>
+}
+
+const DETAIL_META_LABELS = ['地区', '类型', '年代'] as const
+
+function buildingPanelPhoto(id: string) {
+  return `/module1/panel/building-${id}.jpg`
+}
+
+function splitFullWidthBar(s: string) {
+  return s
+    .split('｜')
+    .map((x) => x.trim())
+    .filter(Boolean)
+}
+
+function CountyMetaLine({ line }: { line: string }) {
+  const parts = splitFullWidthBar(line)
+  return (
+    <div className={styles.metaRow}>
+      {parts.map((p, i) => (
+        <span key={i} className={i === 0 ? styles.metaChipStat : styles.metaChip}>
+          {parseBoldEmphasis(p, styles.emphasis)}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+function BuildingDetailMeta({ meta }: { meta: string }) {
+  const parts = splitFullWidthBar(meta)
+  return (
+    <div className={styles.detailMetaRow}>
+      {parts.map((p, i) => (
+        <div key={i} className={styles.detailMetaItem}>
+          <span className={styles.detailMetaLabel}>
+            {DETAIL_META_LABELS[i] ?? '·'}
+          </span>
+          <span className={styles.detailMetaValue}>
+            {parseBoldEmphasis(p, styles.emphasis)}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
 
 export function BuildingInfoPanel(props: {
   city?: CityHeatDatum
   building?: BuildingMarker
-  overviewTitle: string
-  overviewContent: string
 }) {
-  const { city, building, overviewTitle, overviewContent } = props
+  const { city, building } = props
 
   if (building) {
+    const meta = building.detailMeta ?? [
+      city?.cityName ?? building.cityId,
+      building.type ?? '—',
+      building.dynasty ?? '—',
+    ].join('｜')
+    const body = building.detailBody ?? building.summary
+    const photo = buildingPanelPhoto(building.id)
+
     return (
-      <div>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-          <div
-            style={{
-              width: 150,
-              height: 110,
-              borderRadius: 14,
-              border: '1px solid rgba(242,239,233,0.95)',
-              overflow: 'hidden',
-              background: 'rgba(252,252,252,0.8)',
-              flexShrink: 0,
-            }}
-          >
-            <img
-              src={building.image}
-              alt={building.name}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-          </div>
-
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 16, fontWeight: 650, letterSpacing: 1 }}>
-              {building.name}
-            </div>
-            <div style={{ color: 'var(--muted)', fontSize: 12, marginTop: 6, lineHeight: 1.8 }}>
-              <div>{city?.cityName ? `地点：${city.cityName}` : `地点：${building.cityId}`}</div>
-              <div>
-                {building.type ? `类型：${building.type}` : '类型：—'}
-                {building.dynasty ? ` · 朝代：${building.dynasty}` : ''}
-              </div>
-            </div>
-            <div style={{ marginTop: 10, color: appTheme.textSecondary, lineHeight: 1.8 }}>
-              {building.summary}
-            </div>
-
-            {building.tags?.length ? (
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10 }}>
-                {building.tags.slice(0, 5).map((t) => (
-                  <span
-                    key={t}
-                    style={{
-                      padding: '4px 10px',
-                      borderRadius: 999,
-                      border: '1px solid rgba(242,239,233,0.95)',
-                      background: 'rgba(242,239,233,0.65)',
-                      color: 'var(--ink)',
-                      fontSize: 12,
-                    }}
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            ) : null}
-          </div>
+      <div className={styles.panelRoot}>
+        <div className={styles.buildingHero}>
+          <img
+            src={photo}
+            alt={building.name}
+            className={styles.buildingHeroImg}
+            loading="lazy"
+            decoding="async"
+          />
         </div>
+
+        <h2 className={styles.title}>{building.name}</h2>
+        <BuildingDetailMeta meta={meta} />
+        <div className={styles.body}>
+          {parseBoldEmphasis(body, styles.emphasis)}
+        </div>
+
+        {building.tags?.length ? (
+          <div className={styles.tagRow}>
+            {building.tags.slice(0, 6).map((t) => (
+              <span key={t} className={styles.tag}>
+                {t}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </div>
     )
   }
 
   if (city) {
+    const n = countyNarratives[city.cityId]
+    const countyImg = panelImages.county[city.cityId] ?? panelImages.overview.hero
+
     return (
-      <div>
-        <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: 1 }}>
-          {city.cityName}
-          <span style={{ color: 'var(--muted)', fontWeight: 500, marginLeft: 10, fontSize: 12 }}>
-            （{city.province} · 截止1911总量 {city.totalBefore1911}）
-          </span>
+      <div className={styles.panelRoot}>
+        <div className={styles.countyHero}>
+          <img
+            src={countyImg}
+            alt={city.cityName}
+            className={styles.countyHeroImg}
+            loading="lazy"
+            decoding="async"
+          />
+          <div className={styles.countyHeroFade} />
+          <div className={styles.countyHeroTitle}>{city.cityName}</div>
         </div>
-        <div style={{ marginTop: 12, color: appTheme.textSecondary, lineHeight: 1.8 }}>
-          点击城市后，折线图会显示该城市在不同朝代的徽派建筑数量趋势；再次点击重点建筑点位，可切换到建筑叙事介绍。
-        </div>
-        <div style={{ marginTop: 12, color: 'var(--muted)', fontSize: 12, lineHeight: 1.8 }}>
-          提示：你也可以在地图上悬停城市/建筑查看名称与数值。
+
+        {n ? (
+          <>
+            <CountyMetaLine line={n.metaLine} />
+            <div className={styles.tagline}>
+              {parseBoldEmphasis(n.tagline, styles.emphasis)}
+            </div>
+            <div className={styles.body}>
+              {parseBoldEmphasis(n.body, styles.emphasis)}
+            </div>
+          </>
+        ) : (
+          <div className={styles.fallbackBody}>
+            {parseBoldEmphasis(
+              `${city.province} · 截止1911 县域古建筑总量 **${city.totalBefore1911}** 处。本地详细释文待补。`,
+              styles.emphasis
+            )}
+          </div>
+        )}
+
+        <div className={`${styles.hint} ${styles.hintStrong}`}>
+          <div className={styles.hintMediaRow}>
+            <img
+              src={countyImg}
+              alt=""
+              className={styles.hintThumb}
+              loading="lazy"
+              decoding="async"
+            />
+            <div className={styles.hintMediaText}>
+              {parseBoldEmphasis(module1Overview.mapHint, styles.emphasis)}
+            </div>
+          </div>
         </div>
       </div>
     )
   }
 
-  return (
-    <div>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-        <div
-          style={{
-            width: 150,
-            height: 110,
-            borderRadius: 14,
-            border: '1px solid rgba(242,239,233,0.95)',
-            overflow: 'hidden',
-            background: 'rgba(252,252,252,0.8)',
-            flexShrink: 0,
-          }}
-        >
-          <img
-            src={DEFAULT_OVERVIEW_IMAGE}
-            alt={overviewTitle}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        </div>
+  const [img1, img2] = panelImages.overview.paragraphImages
 
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 16, fontWeight: 650, letterSpacing: 1 }}>{overviewTitle}</div>
-          <div style={{ marginTop: 10, color: appTheme.textSecondary, lineHeight: 1.9, fontSize: 13 }}>
-            {overviewContent}
-          </div>
-          <div style={{ marginTop: 12, color: 'var(--muted)', fontSize: 12, lineHeight: 1.8 }}>
-            点击地图城市进入“历朝数量”联动；点击重点建筑进入“建筑叙事”。
+  return (
+    <div className={styles.panelRoot}>
+      <div className={styles.heroWide}>
+        <img
+          src={panelImages.overview.hero}
+          alt="皖南徽派村落"
+          className={styles.heroWideImg}
+          loading="lazy"
+          decoding="async"
+        />
+        <div className={styles.heroWideFade} />
+      </div>
+
+      <h2 className={styles.title}>{module1Overview.title}</h2>
+
+      <div className={styles.prosePairs}>
+        <div className={styles.copyPair}>
+          <figure className={styles.copyPairFig}>
+            <img src={img1} alt="" loading="lazy" decoding="async" />
+          </figure>
+          <p className={styles.copyPairText}>
+            {parseBoldEmphasis(module1Overview.paragraphs[0], styles.emphasis)}
+          </p>
+        </div>
+        <div className={styles.copyPair}>
+          <figure className={styles.copyPairFig}>
+            <img src={img2} alt="" loading="lazy" decoding="async" />
+          </figure>
+          <p className={styles.copyPairText}>
+            {parseBoldEmphasis(module1Overview.paragraphs[1], styles.emphasis)}
+          </p>
+        </div>
+      </div>
+
+      <div className={styles.hint}>
+        <div className={styles.hintTitle}>怎样浏览</div>
+        <div className={styles.hintMediaRow}>
+          <img
+            src={panelImages.overview.hintStrip}
+            alt=""
+            className={styles.hintThumb}
+            loading="lazy"
+            decoding="async"
+          />
+          <div className={styles.hintMediaText}>
+            <div>{parseBoldEmphasis(module1Overview.mapHint, styles.emphasis)}</div>
+            <div className={styles.hintBlockGap}>
+              {parseBoldEmphasis(module1Overview.countyHint, styles.emphasis)}
+            </div>
           </div>
         </div>
       </div>
     </div>
   )
 }
-
