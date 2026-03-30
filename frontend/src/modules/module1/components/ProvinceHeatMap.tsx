@@ -126,6 +126,16 @@ export function ProvinceHeatMap(props: {
     onBuildingClick,
   } = props
 
+  const filteredBuildings = useMemo(
+    () =>
+      buildings.filter((b) => {
+        if (b.type === '祠堂') return false
+        const file = b.mapIcon ? mapIconFileFromPath(b.mapIcon) : ''
+        return file !== 'icon-citang.svg'
+      }),
+    [buildings],
+  )
+
   const [ready, setReady] = useState(false)
   /** 地图实例首次就绪后只设一次默认缩放；后续 option 合并不再写死 zoom，避免 roam 被刷新掉 */
   const didApplyInitialGeoZoom = useRef(false)
@@ -160,13 +170,13 @@ export function ProvinceHeatMap(props: {
   }, [values])
 
   const scatterBuildingData = useMemo(() => {
-    const withCoord = buildings
+    const withCoord = filteredBuildings
       .filter((b) => b.geoCoord)
       .map((b) => ({
         id: b.id,
         coord: b.geoCoord as [number, number],
       }))
-    return buildings
+    return filteredBuildings
       .filter((b) => b.geoCoord)
       .map((b) => {
         const isSel = b.id === selectedBuildingId
@@ -210,7 +220,7 @@ export function ProvinceHeatMap(props: {
             symbolSize: isSel ? 20 : isHover ? 16 : 12,
           }
         })
-  }, [buildings, selectedBuildingId, hoveredBuildingId])
+  }, [filteredBuildings, selectedBuildingId, hoveredBuildingId])
 
   const option = useMemo((): EChartsOption => ({
       animation: false,
@@ -451,7 +461,7 @@ export function ProvinceHeatMap(props: {
 
   const usedHeritageLegendItems = useMemo(() => {
     const seen = new Map<string, { file: string; label: string; src: string }>()
-    for (const b of buildings) {
+    for (const b of filteredBuildings) {
       if (!b.mapIcon) continue
       const file = mapIconFileFromPath(b.mapIcon)
       const label = HERITAGE_ICON_FILE_LABEL[file]
@@ -460,7 +470,7 @@ export function ProvinceHeatMap(props: {
       seen.set(file, { file, label, src })
     }
     return [...seen.values()].sort((a, b) => a.label.localeCompare(b.label, 'zh-CN'))
-  }, [buildings])
+  }, [filteredBuildings])
 
   return (
     <div className={styles.wrap}>

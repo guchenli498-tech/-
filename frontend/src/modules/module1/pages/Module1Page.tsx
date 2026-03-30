@@ -95,7 +95,7 @@ export function Module1Page() {
         </div>
 
         <div className={styles.rightCol}>
-          <ChartPanel>
+          <ChartPanel bodyClassName={styles.scrollBody}>
             <BuildingInfoPanel city={selectedCity} building={selectedBuilding} />
           </ChartPanel>
         </div>

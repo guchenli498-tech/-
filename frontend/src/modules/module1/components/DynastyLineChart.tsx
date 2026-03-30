@@ -109,21 +109,23 @@ export function DynastyLineChart(props: {
     title: {
       text: title,
       textStyle: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#4A4A48',
-        fontFamily: 'SimHei, 黑体, 微软雅黑, Microsoft YaHei, sans-serif',
+        fontSize: 16,
+        fontWeight: 600,
+        color: '#4B463F',
+        fontFamily:
+          "'Noto Serif SC','Source Han Serif SC','STSong','SimSun',serif",
+        letterSpacing: 0.02,
       },
-      left: 8,
-      top: 4,
+      left: 12,
+      top: 6,
     },
-    grid: { left: 44, right: 14, top: 40, bottom: 42 },
+    grid: { left: 52, right: 14, top: 44, bottom: 26, containLabel: false },
     tooltip: {
       trigger: 'axis',
-      backgroundColor: 'rgba(250,247,240,0.95)',
-      borderColor: 'rgba(212,191,167,0.95)',
+      backgroundColor: 'rgba(251, 248, 242, 0.98)',
+      borderColor: 'rgba(222, 215, 203, 0.95)',
       borderWidth: 1,
-      textStyle: { color: '#4A4A48', fontFamily: 'SimSun, 宋体, serif' },
+      textStyle: { color: '#4B463F', fontFamily: 'SimSun, 宋体, serif' },
       formatter: (params: any) => {
         const p = params?.[0]
         if (!p) return ''
@@ -136,8 +138,8 @@ export function DynastyLineChart(props: {
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: 'rgba(74,74,72,0.72)',
-        fontSize: 11,
+        color: 'rgba(124,116,104,0.95)',
+        fontSize: 10,
         interval: 0,
       },
     },
@@ -145,8 +147,12 @@ export function DynastyLineChart(props: {
       type: 'value',
       axisLine: { show: false },
       axisTick: { show: false },
-      splitLine: { lineStyle: { color: 'rgba(247,160,114,0.18)' } },
-      axisLabel: { color: 'rgba(74,74,72,0.55)', fontSize: 10 },
+      splitLine: {
+        show: true,
+        lineStyle: { color: '#E8E1D6', width: 1 },
+      },
+      axisLabel: { color: 'rgba(124,116,104,0.85)', fontSize: 10 },
+      splitNumber: 3,
     },
     series: [
       {
@@ -154,10 +160,10 @@ export function DynastyLineChart(props: {
         type: 'line',
         data: y,
         smooth: true,
-        symbolSize: 6,
+        symbolSize: 4,
         symbol: 'circle',
-        lineStyle: { width: 2.5, color: '#F7A072' },
-        itemStyle: { color: '#F7A072' },
+        lineStyle: { width: 3, color: '#E09A63' },
+        itemStyle: { color: '#E09A63' },
         areaStyle:
           mode === 'area'
             ? {
@@ -165,8 +171,8 @@ export function DynastyLineChart(props: {
                   type: 'linear',
                   x: 0, y: 0, x2: 0, y2: 1,
                   colorStops: [
-                    { offset: 0, color: 'rgba(247,160,114,0.28)' },
-                    { offset: 1, color: 'rgba(247,160,114,0.04)' },
+                    { offset: 0, color: 'rgba(224,154,99,0.14)' },
+                    { offset: 1, color: 'rgba(224,154,99,0.02)' },
                   ],
                 },
               }

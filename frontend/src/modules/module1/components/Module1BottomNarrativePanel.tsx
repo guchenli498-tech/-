@@ -11,10 +11,11 @@ import styles from './Module1BottomNarrativePanel.module.css'
 const bottomNarrative = bottomNarrativeJson as BottomNarrativeData
 
 export function Module1BottomNarrativePanel() {
-  const [activeTagId, setActiveTagId] = useState(bottomNarrative.tags[0]?.id ?? 't-all')
-  const [activeCaseId, setActiveCaseId] = useState(bottomNarrative.cases[0]?.id ?? 'c-1')
+  const tags = bottomNarrative.tags.filter((t) => t.label !== '祠堂')
+  const baseCases = bottomNarrative.cases.filter((c) => c.type !== '祠堂')
 
-  const tags = bottomNarrative.tags
+  const [activeTagId, setActiveTagId] = useState(tags[0]?.id ?? 't-all')
+  const [activeCaseId, setActiveCaseId] = useState(baseCases[0]?.id ?? 'c-1')
 
   const activeTag = useMemo(
     () => tags.find((t) => t.id === activeTagId) ?? tags[0],
@@ -22,8 +23,8 @@ export function Module1BottomNarrativePanel() {
   )
 
   const cases = useMemo(() => {
-    if (!activeTag) return bottomNarrative.cases
-    if (activeTag.id === 't-all') return bottomNarrative.cases
+    if (!activeTag) return baseCases
+    if (activeTag.id === 't-all') return baseCases
     const mappedType =
       activeTag.label === '民居'
         ? '民居'
@@ -34,8 +35,8 @@ export function Module1BottomNarrativePanel() {
             : activeTag.label === '书院'
               ? '书院'
               : activeTag.label
-    return bottomNarrative.cases.filter((c) => c.type === mappedType) ?? bottomNarrative.cases
-  }, [activeTag, activeTagId])
+    return baseCases.filter((c) => c.type === mappedType) ?? baseCases
+  }, [activeTag])
 
   const activeCase = useMemo(
     () => cases.find((c) => c.id === activeCaseId) ?? cases[0],

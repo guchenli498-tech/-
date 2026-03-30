@@ -10,15 +10,15 @@
     { "id": "qing", "label": "清", "startYear": 1644, "endYear": 1911 }
   ],
   "actionLegend": [
-      { "id": "settle", "label": "开村聚落", "color": "#76a1d1" },
-      { "id": "waterworks", "label": "水利/路桥工程", "color": "#c5e1ef" },
-      { "id": "clan-public", "label": "宗族公共建筑", "color": "#517fab" },
-      { "id": "edict", "label": "敕建旌表/牌坊", "color": "#f5d8c8" },
-      { "id": "layout", "label": "格局形制定型", "color": "#254e7a" },
-      { "id": "boom", "label": "鼎盛营建", "color": "#7ebce7" },
-      { "id": "repair", "label": "重修/缮治", "color": "#adbfdd" },
-      { "id": "warfare", "label": "战乱影响", "color": "#c8cedf" },
-      { "id": "other", "label": "其他节点", "color": "#e1e1e1" }
+      { "id": "settle", "label": "开村聚落", "color": "#C48E52" },
+      { "id": "waterworks", "label": "水利/路桥工程", "color": "#D7AE72" },
+      { "id": "clan-public", "label": "宗族公共建筑", "color": "#D7AE72" },
+      { "id": "edict", "label": "敕建旌表/牌坊", "color": "#6F8E89" },
+      { "id": "layout", "label": "格局形制定型", "color": "#D7AE72" },
+      { "id": "boom", "label": "鼎盛营建", "color": "#D7AE72" },
+      { "id": "repair", "label": "重修/缮治", "color": "#B8784B" },
+      { "id": "warfare", "label": "战乱影响", "color": "#8C4E3B" },
+      { "id": "other", "label": "其他节点", "color": "#6F8E89" }
   ],
   "sites": [
     {

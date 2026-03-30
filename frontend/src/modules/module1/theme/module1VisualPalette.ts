@@ -43,23 +43,24 @@ export const MAP_GEO_THEME = {
 
 /** 遗存类型（六类） */
 export const TYPE_COLOR: Record<HeritageTypeCategory, string> = {
-  民居: '#76a1d1',
-  祠堂: '#254e7a',
-  牌坊: '#f5d8c8',
-  桥梁: '#7ebce7',
-  '综合用途/建筑群': '#517fab',
-  其他: '#c8cedf',
+  民居: '#5D9EA3',
+  祠堂: '#35666B',
+  牌坊: '#D2B06A',
+  桥梁: '#7EA9C7',
+  '综合用途/建筑群': '#738B78',
+  其他: '#BEB7AA',
 }
 
 /** 沿革节点图例（九类，色值互不重复） */
 export const ACTION_LEGEND_COLORS: Record<HeritageRiverActionId, string> = {
-  settle: '#76a1d1',
-  waterworks: '#c5e1ef',
-  'clan-public': '#517fab',
-  edict: '#f5d8c8',
-  layout: '#254e7a',
-  boom: '#7ebce7',
-  repair: '#adbfdd',
-  warfare: '#c8cedf',
-  other: '#e1e1e1',
+  // 颜色尽量收敛：颜色只做“大类主次”，精细区分由形状完成
+  settle: '#6F928C',
+  waterworks: '#6F928C',
+  'clan-public': '#B7925D',
+  edict: '#B7925D',
+  layout: '#A86F4D',
+  boom: '#B7925D',
+  repair: '#A86F4D',
+  warfare: '#A86F4D',
+  other: '#6F928C',
 }

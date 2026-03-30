@@ -12,13 +12,11 @@
   height: 100%;
   border-radius: 20px;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse 85% 70% at 50% 108%, rgba(225, 248, 250, 0.55), transparent 52%),
-    linear-gradient(168deg, #f7f9fc 0%, var(--m1-panel) 42%, #dde6f0 100%);
-  border: 1px solid var(--m1-edge);
+  background: rgba(252, 252, 252, 0.92);
+  border: 1px solid rgba(242, 239, 233, 0.95);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.65),
-    0 8px 32px rgba(74, 132, 138, 0.09),
+    0 8px 32px rgba(74, 74, 72, 0.08),
     0 2px 0 rgba(255, 255, 255, 0.4);
 }
 

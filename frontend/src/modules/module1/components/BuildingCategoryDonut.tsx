@@ -1,52 +1,112 @@
 import ReactECharts from 'echarts-for-react'
 import type { BuildingCategoryDatum } from '../types'
 
+const CATEGORY_COLORS: Record<string, string> = {
+  民居: '#517fab',
+  桥梁: '#c9a227',
+  '综合用途/建筑群': '#7ebce7',
+  其他: '#e8c36a',
+}
+const FALLBACK_COLORS = ['#517fab', '#c9a227', '#7ebce7', '#e8c36a', '#254e7a']
+
 export function BuildingCategoryDonut(props: {
   data: BuildingCategoryDatum[]
 }) {
   const { data } = props
 
-  const categories = data.map((d) => d.category)
-  const values = data.map((d) => d.value)
-
-  const colors = ['#8EB8B7', '#77ACA9', '#F7A072', '#F25C33', '#A9C1C0']
-
   const option = {
     backgroundColor: 'transparent',
     tooltip: {
       trigger: 'item',
-      backgroundColor: 'rgba(250,247,240,0.95)',
-      borderColor: 'rgba(212,191,167,0.95)',
+      backgroundColor: 'rgba(248, 251, 255, 0.97)',
+      borderColor: 'rgba(81, 127, 171, 0.38)',
       borderWidth: 1,
-      textStyle: { color: '#4A4A48', fontFamily: 'SimSun, 宋体, serif' },
-      formatter: (p: any) => `<b>${p.name}</b><br/>占比数值：${p.value}`,
+      padding: [10, 14],
+      extraCssText:
+        'border-radius:10px; box-shadow:0 8px 28px rgba(37,78,122,0.13),0 2px 6px rgba(37,78,122,0.07);',
+      textStyle: {
+        color: '#254e7a',
+        fontFamily: "'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif",
+        fontSize: 13,
+      },
+      formatter: (p: any) =>
+        `<div style="font-weight:700;margin-bottom:3px;color:#254e7a">${p.name}</div>` +
+        `<span style="opacity:.75">数量：</span><b style="color:#c9a227">${p.value}</b>` +
+        `<span style="opacity:.6;margin-left:8px">(${p.percent?.toFixed(1)}%)</span>`,
+    },
+    title: {
+      text: '建筑类型分布',
+      left: 10,
+      top: 8,
+      textStyle: {
+        fontSize: 13,
+        fontWeight: 700,
+        color: '#254e7a',
+        letterSpacing: 4,
+        fontFamily: "'Noto Serif SC','Source Han Serif SC','STSong','SimSun',serif",
+      },
     },
     legend: { show: false },
     series: [
       {
         type: 'pie',
-        radius: ['40%', '78%'],
-        center: ['50%', '52%'],
+        roseType: 'radius',
+        radius: ['18%', '78%'],
+        center: ['50%', '54%'],
         avoidLabelOverlap: true,
-        labelLine: { length: 14, length2: 10, smooth: true },
+        startAngle: 60,
+        labelLine: {
+          length: 10,
+          length2: 8,
+          smooth: true,
+          lineStyle: { color: 'rgba(81,127,171,0.4)', width: 1 },
+        },
         label: {
           show: true,
-          formatter: (p: any) => p.name as string,
-          color: 'rgba(74,74,72,0.85)',
-          fontSize: 12,
-          fontWeight: 500,
-          lineHeight: 16,
+          formatter: (p: any) => {
+            const pct = p.percent?.toFixed(0) ?? ''
+            return `{name|${p.name}}\n{pct|${pct}%}`
+          },
+          rich: {
+            name: {
+              color: '#254e7a',
+              fontSize: 11,
+              fontWeight: 600,
+              lineHeight: 17,
+              fontFamily: "'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif",
+            },
+            pct: {
+              color: 'rgba(81,127,171,0.75)',
+              fontSize: 10,
+              lineHeight: 14,
+              fontFamily: "'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif",
+            },
+          },
           overflow: 'break',
         },
         itemStyle: {
-          borderRadius: 8,
-          borderColor: 'rgba(252,252,252,0.95)',
+          borderRadius: 5,
+          borderColor: 'rgba(252,250,244,0.98)',
           borderWidth: 2,
+          shadowBlur: 10,
+          shadowColor: 'rgba(37,78,122,0.14)',
+          shadowOffsetY: 2,
         },
-        data: categories.map((c, i) => ({
-          name: c,
-          value: values[i],
-          itemStyle: { color: colors[i % colors.length] },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 22,
+            shadowColor: 'rgba(81,127,171,0.28)',
+            borderWidth: 3,
+            borderColor: 'rgba(255,255,255,0.98)',
+          },
+          label: { show: true },
+        },
+        data: data.map((d, i) => ({
+          name: d.category,
+          value: d.value,
+          itemStyle: {
+            color: CATEGORY_COLORS[d.category] ?? FALLBACK_COLORS[i % FALLBACK_COLORS.length],
+          },
         })),
       },
     ],
@@ -58,4 +118,3 @@ export function BuildingCategoryDonut(props: {
     </div>
   )
 }
-
