@@ -2,107 +2,1750 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>模块三</title>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --bg: #E8E6E1;
-      --panel: #FCFCFC;
-      --ink: #4A4A48;
-      --muted: #8EB8B7;
-      --border: #F2EFE9;
-      --accent: #F25C33;
+      --bg: #f2eee6;
+      --panel: #f7f3ea;
+      --ink: #4a4a48;
+      --muted: #8eb8b7;
+      --border: #e7dfd2;
+      --accent: #f25c33;
+      --shadow: rgba(74, 74, 72, 0.18);
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-sm: 8px;
+      --radius-xs: 6px;
+      --stroke-soft: 1px solid rgba(214, 201, 184, 0.55);
+      --stroke-faint: 1px solid rgba(214, 201, 184, 0.38);
+      --elev-soft: 0 10px 22px -18px var(--shadow);
+      --elev-float: 0 8px 20px -14px rgba(50, 47, 43, 0.55);
     }
-    html, body { height: 100%; }
-    body {
-      margin: 0;
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
       background: var(--bg);
       color: var(--ink);
-      font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
-      overflow-x: hidden;
+      font-family: Georgia, 'KaiTi', '楷体', '华文楷体', STKaiti, serif;
     }
-    header {
-      padding: 18px 16px 10px;
-      max-width: 1200px;
-      margin: 0 auto;
+
+    .canvas {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-rows: 43% 57%;
+      gap: 8px;
+      padding: 8px;
     }
-    h1 {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 500;
-      letter-spacing: 2px;
-    }
-    .hint {
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.8;
-    }
-    .main {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 16px 60px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+
     .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: 0 25px 45px -20px rgba(74,74,72,0.20);
+      background: #f5f0e7;
+      border: var(--stroke-soft);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--elev-soft);
+      min-height: 360px;
       overflow: hidden;
     }
-    .panel-title {
-      padding: 12px 14px;
-      border-bottom: 1px solid rgba(242,239,233,0.9);
-      background: rgba(242, 239, 233, 0.8);
-      font-size: 14px;
-      letter-spacing: 1px;
+
+    /* 上半：卡片区 */
+    .top {
+      display: grid;
+      grid-template-rows: 38px 1fr;
+      gap: 8px;
+      padding: 8px;
+      min-height: 0;
     }
-    .panel-body iframe {
+
+    .top-tabs {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .tab-btn {
+      border: 1px solid rgba(150, 136, 116, 0.32);
+      background: rgba(255, 255, 255, 0.35);
+      color: #5a534a;
+      border-radius: var(--radius-sm);
+      padding: 5px 14px;
+      font-size: 13px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: rgba(110, 88, 63, 0.12);
+      border-color: rgba(110, 88, 63, 0.48);
+      color: #473d33;
+      font-weight: 700;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.33);
+      border: var(--stroke-faint);
+      border-radius: var(--radius-md);
+      padding: 10px 10px 8px;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 6px;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .card h3 {
+      font-size: 15px;
+      line-height: 1.2;
+      color: #3f3f3d;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card .meta {
+      font-size: 12px;
+      color: #8a7a64;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card .desc {
+      font-size: 12px;
+      line-height: 1.35;
+      color: #5a5854;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+
+    /* 下半：三雕三列 */
+    .bottom {
+      display: grid;
+      grid-template-columns: 1.4fr 1.2fr 1.4fr;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .side-panel {
+      background: #f5efe5;
+      border: var(--stroke-soft);
+      border-radius: var(--radius-lg);
+      min-height: 0;
+      display: grid;
+      grid-template-rows: 40px 1fr;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 0 12px;
+      border-bottom: 1px solid rgba(214, 201, 184, 0.55);
+      font-size: 13px;
+      color: #5b554e;
+      letter-spacing: 1px;
+      background: rgba(249, 243, 234, 0.6);
+    }
+
+    .panel-head small {
+      color: #8f877d;
+      letter-spacing: 0;
+      font-size: 12px;
+    }
+
+    .graph-head-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .graph-action {
+      border: 1px solid rgba(143, 114, 80, 0.2);
+      background: transparent;
+      color: #6b5f52;
+      border-radius: var(--radius-xs);
+      font-size: 11px;
+      padding: 2px 7px;
+      cursor: pointer;
+      font-family: inherit;
+      line-height: 1.2;
+      transition: all .2s ease;
+    }
+
+    .graph-action:hover {
+      border-color: rgba(143, 114, 80, 0.45);
+      color: #433d36;
+      background: rgba(255, 255, 255, 0.26);
+    }
+
+    .graph-action.active {
+      background: rgba(143, 114, 80, 0.12);
+      border-color: rgba(143, 114, 80, 0.5);
+      color: #4a3f34;
+      font-weight: 700;
+    }
+
+    .center {
+      background: #f5f0e8;
+      border: var(--stroke-soft);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--elev-soft);
+      min-height: 0;
+      padding: 8px;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) 34px 62px 34px 34px;
+      gap: 8px;
+      position: relative;
+    }
+
+    .carving-image-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      min-height: 0;
+      background: #ebe1d5;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .carving-image {
       width: 100%;
-      border: 0;
+      height: 100%;
+      object-fit: cover;
       display: block;
+    }
+
+    .carving-name {
+      text-align: center;
+      font-size: 24px;
+      letter-spacing: 4px;
+      color: #5b5046;
+      line-height: 30px;
+      user-select: none;
+    }
+
+    .switch-btn {
+      width: 100%;
+      height: 34px;
+      border-radius: 0;
+      border: 0;
+      border-bottom: 1px solid rgba(143, 114, 80, 0.26);
+      background: transparent;
+      color: #655b50;
+      font-size: 13px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .switch-btn.active {
+      background: rgba(143, 114, 80, 0.06);
+      border-bottom: 2px solid #8f7250;
+      color: #453a30;
+      font-weight: 700;
+    }
+
+    .center-brief {
+      font-size: 12px;
+      line-height: 1.45;
+      color: #5f5a53;
+      background: #f8f3ea;
+      border: 1px solid #e8e1d6;
+      border-radius: var(--radius-md);
+      padding: 8px 10px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+
+    .triangle-btn {
+      position: absolute;
+      top: 42%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid rgba(143, 114, 80, 0.32);
+      background: rgba(245, 240, 232, 0.74);
+      cursor: pointer;
+      z-index: 5;
+      padding: 0;
+      color: #8f7250;
+      line-height: 22px;
+      font-size: 14px;
+    }
+
+    .triangle-btn.left {
+      left: -10px;
+    }
+
+    .triangle-btn.right {
+      right: -10px;
+    }
+
+    .triangle-btn.left::before {
+      content: '‹';
+      display: inline-block;
+      transform: translateX(-1px);
+    }
+
+    .triangle-btn.right::before {
+      content: '›';
+      display: inline-block;
+      transform: translateX(1px);
+    }
+
+    .triangle-btn:hover {
+      border-color: rgba(143, 114, 80, 0.55);
+      color: #5b4b3d;
+      background: rgba(255, 255, 255, 0.75);
+    }
+
+    .graph-wrap {
+      min-height: 0;
+      padding: 8px;
+      background: #f4efea;
+      position: relative;
+    }
+
+    .graph-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .graph-legend {
+      position: absolute;
+      left: 14px;
+      top: 12px;
+      z-index: 6;
+      background: rgba(246, 241, 232, 0.62);
+      border: 0;
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+      display: grid;
+      gap: 4px;
+      font-size: 11px;
+      color: #585147;
+      pointer-events: none;
+      box-shadow: inset 0 0 0 1px rgba(217, 208, 193, 0.3);
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    .legend-line {
+      width: 24px;
+      height: 0;
+      border-top: 2px solid #8f867b;
+    }
+
+    .legend-line.dashed {
+      border-top-style: dashed;
+    }
+
+    .legend-line.dotted {
+      border-top-style: dotted;
+    }
+
+    .legend-dot {
+      border-radius: 50%;
+      background: #7f7468;
+      display: inline-block;
+    }
+
+    .legend-dot.lg { width: 10px; height: 10px; }
+    .legend-dot.md { width: 8px; height: 8px; }
+    .legend-dot.sm { width: 6px; height: 6px; }
+
+    .graph-tooltip {
+      position: absolute;
+      max-width: 240px;
+      background: #F5F4EE;
+      border: 1px solid #D9D0C1;
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #333;
+      box-shadow: var(--elev-float);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity .12s ease, transform .12s ease;
+      z-index: 10;
+      white-space: normal;
+    }
+
+    .graph-tooltip.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .tooltip-media {
+      width: 100%;
+      height: 76px;
+      border: 1px solid #d8cebf;
+      border-radius: var(--radius-xs);
+      margin-bottom: 6px;
+      overflow: hidden;
+      background: #faf6ee;
+      display: grid;
+      place-items: center;
+      color: #8e8578;
+      font-size: 11px;
+    }
+
+    .tooltip-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .right-wrap {
+      min-height: 0;
+      padding: 24px 24px 20px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 16px;
+      background: #f4efea;
+    }
+
+    .detail-top-nav {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e7ddd0;
+    }
+
+    .detail-top-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .mini-btn {
+      border: 1px solid rgba(199, 185, 164, 0.45);
+      background: rgba(247, 242, 233, 0.44);
+      color: #5a5248;
+      border-radius: var(--radius-sm);
+      min-height: 40px;
+      padding: 0 18px;
+      font-size: 12px;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
+      position: relative;
+      overflow: visible;
+    }
+
+    .mini-btn:hover {
+      transform: translateY(-1px) scale(1.02);
+      border-color: rgba(143, 114, 80, 0.42);
+      background: rgba(255, 255, 255, 0.62);
+    }
+
+    .mini-btn.active {
+      color: #3f342b;
+      border-color: rgba(143, 114, 80, 0.38);
+      background: rgba(143, 114, 80, 0.12);
+      box-shadow: inset 0 -2px 0 rgba(143, 114, 80, 0.7);
+      font-weight: 700;
+    }
+
+    .mini-btn.active::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      bottom: -5px;
+      height: 8px;
+      border: 1px solid rgba(180, 161, 132, 0.45);
+      border-top: 0;
+      border-radius: 0 0 6px 6px;
+      background: linear-gradient(180deg, rgba(245, 236, 223, 0.92) 0%, rgba(236, 223, 204, 0.92) 100%);
+      z-index: -1;
+      pointer-events: none;
+      transform-origin: 50% 50%;
+      transform: scaleX(1);
+    }
+
+    .mini-btn::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: -5px;
+      height: 8px;
+      border: 1px solid rgba(180, 161, 132, 0.38);
+      border-top: 0;
+      border-radius: 0 0 6px 6px;
+      background: linear-gradient(180deg, rgba(245, 236, 223, 0.6) 0%, rgba(236, 223, 204, 0.6) 100%);
+      z-index: -1;
+      pointer-events: none;
+      transform-origin: 50% 50%;
+      transform: scaleX(0);
+      transition: transform .18s ease, opacity .18s ease;
+      opacity: 0;
+    }
+
+    .mini-btn:hover::before {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+
+    .mini-btn.active::before {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+
+
+    .detail-content {
+      border: 0;
+      border-radius: 0;
+      background: #F5F4EE;
+      box-shadow: none;
+      padding: 24px 24px 20px;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.95;
+      color: #4f4a43;
+      min-height: 340px;
+      opacity: 0;
+      transform: translateY(5px);
+      transition: opacity .3s ease, transform .3s ease;
+    }
+
+    .detail-content.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .detail-content ul {
+      padding-left: 18px;
+    }
+
+    .detail-content li + li {
+      margin-top: 2px;
+    }
+
+    .detail-content p,
+    .detail-content span,
+    .detail-content li,
+    .detail-content div {
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    }
+
+    .detail-content strong,
+    .step-title,
+    .gallery-tag,
+    .timeline-item strong,
+    .intro-dropcap,
+    .intro-stamp {
+      font-family: "STSong", "SimSun", "KaiTi", serif;
+    }
+
+    .detail-step-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .detail-step {
+      display: grid;
+      grid-template-columns: 30px 78px 1fr;
+      gap: 12px;
+      align-items: center;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      padding: 7px 0 12px;
+      border-bottom: 1px solid #D9D0C1;
+    }
+
+    .expand-item {
+      cursor: pointer;
+    }
+
+    .expand-more {
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.75;
+      color: #6b6258;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(2px);
+      transition: max-height .22s ease, opacity .22s ease, transform .22s ease;
+    }
+
+    .expand-item.is-open .expand-more {
+      max-height: 220px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .detail-step:last-child {
+      border-bottom: 0;
+    }
+
+    .step-no {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      border: 1px solid #8f7250;
+      color: #5f4a34;
+      font-size: 14px;
+      line-height: 34px;
+      text-align: center;
+      background: rgba(183, 146, 93, 0.16);
+      font-weight: 700;
+    }
+
+    .step-title {
+      font-weight: 700;
+      color: #463e35;
+      margin-bottom: 2px;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .item-media {
+      width: 100%;
+      height: 48px;
+      border: 1px solid #E6DED1;
+      border-radius: 3px;
+      background: #F9F7F3;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      color: #7d7366;
+      font-size: 11px;
+      line-height: 1.2;
+      text-align: center;
+      padding: 0;
+      position: relative;
+    }
+
+    .item-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      padding: 1px;
+      background: #f9f7f3;
+      display: block;
+    }
+
+    .item-media::before,
+    .item-media::after {
+      content: none;
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      border-color: rgba(143, 114, 80, 0.55);
+      border-style: solid;
+      pointer-events: none;
+    }
+
+    .item-media::before {
+      top: 2px;
+      left: 2px;
+      border-width: 1px 0 0 1px;
+    }
+
+    .item-media::after {
+      right: 2px;
+      bottom: 2px;
+      border-width: 0 1px 1px 0;
+    }
+
+    .detail-step .item-media {
+      height: 70px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px 14px;
+    }
+
+    .grid-item {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 6px 6px 10px;
+      min-height: 84px;
+      display: grid;
+      align-content: center;
+      gap: 5px;
+      text-align: center;
+      border-bottom: 1px solid #D9D0C1;
+    }
+
+    .grid-item .item-media {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 4px;
+      margin-bottom: 2px;
+    }
+
+    .grid-item strong {
+      font-size: 14px;
+      color: #3f372f;
+      font-weight: 700;
+    }
+
+    .grid-item span {
+      font-size: 12px;
+      color: #8a8176;
+      line-height: 1.45;
+    }
+
+    .detail-gallery {
+      display: grid;
+      gap: 10px;
+    }
+
+    .gallery-item {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 8px 0 10px;
+      display: grid;
+      grid-template-columns: max-content 58px 1fr;
+      gap: 10px;
+      align-items: center;
+      border-bottom: 1px solid #D9D0C1;
+    }
+
+    .gallery-text {
+      display: grid;
+      gap: 2px;
+    }
+
+    .gallery-sub {
+      font-size: 12px;
+      color: #7f756a;
+      line-height: 1.6;
+    }
+
+    .gallery-tag {
+      border-radius: 2px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: #5d4f40;
+      color: #f8f2e8;
+      padding: 4px 12px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      width: max-content;
+      white-space: nowrap;
+    }
+
+    .timeline-item .item-media {
+      width: 78px;
+      height: 44px;
+      margin-top: 7px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+      padding-left: 4px;
+      border-left: 3px solid rgba(143, 114, 80, 0.66);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding: 10px 10px 10px 26px;
+      background: rgba(255, 255, 255, 0.28);
+      border: 1px solid #e2d9cd;
+      border-radius: var(--radius-sm);
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -8px;
+      top: 8px;
+      width: 10px;
+      height: 10px;
+      transform: rotate(45deg);
+      background: #8f7250;
+      box-shadow: 0 0 0 2px #f5f4ee;
+    }
+
+    .timeline-item strong {
+      display: block;
+      font-size: 15px;
+      color: #3f3327;
+      margin-bottom: 2px;
+    }
+
+    .timeline-detail {
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.75;
+      color: #5b544c;
+    }
+
+    .intro-block {
+      max-width: 82%;
+      margin: 0 auto;
+      position: relative;
+      padding-right: 8px;
+      line-height: 2;
+    }
+
+    .intro-main {
+      position: relative;
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .intro-tags {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .intro-tag {
+      border: 1px solid #9b7b58;
+      border-radius: 2px;
+      padding: 3px 10px 4px;
+      font-size: 12px;
+      color: #f6efe4;
+      background: linear-gradient(180deg, #6e543f 0%, #5c4636 100%);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 1px 1px rgba(70, 54, 40, 0.18);
+      font-family: "STSong", "SimSun", "KaiTi", serif;
+      letter-spacing: 1px;
+      position: relative;
+    }
+
+    .intro-tag::before,
+    .intro-tag::after {
+      content: '';
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-color: rgba(214, 186, 150, 0.55);
+      border-style: solid;
+      pointer-events: none;
+    }
+
+    .intro-tag::before {
+      top: 1px;
+      left: 1px;
+      border-width: 1px 0 0 1px;
+    }
+
+    .intro-tag::after {
+      right: 1px;
+      bottom: 1px;
+      border-width: 0 1px 1px 0;
+    }
+
+    .intro-block.vertical {
+      max-width: none;
+      margin: 0 auto;
+      min-height: 360px;
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding: 10px 18px 12px;
+    }
+
+    .intro-block.vertical .intro-main {
+      writing-mode: vertical-lr;
+      text-orientation: mixed;
+      line-height: 1.6;
+      letter-spacing: 0.2px;
+      font-size: 19px;
+      color: #3f3a34;
+      max-height: 330px;
+      max-width: 92%;
+      margin-left: 8px;
+    }
+
+    .intro-dropcap {
+      font-size: 34px;
+      line-height: 1;
+      float: left;
+      margin: 3px 6px 0 0;
+      color: #7b2f28;
+      font-weight: 700;
+    }
+
+    .intro-stamp {
+      width: 40px;
+      height: 28px;
+      margin-right: 4px;
+      transform: rotate(-3deg);
+      object-fit: contain;
+      display: inline-block;
+      flex: 0 0 auto;
+    }
+
+    .intro-watermark {
+      position: absolute;
+      right: 0;
+      bottom: -6px;
+      font-size: 44px;
+      color: rgba(93, 79, 64, 0.06);
+      font-family: "STSong", "KaiTi", serif;
+      letter-spacing: 2px;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .intro-block.vertical .intro-dropcap {
+      display: none;
+    }
+
+    .intro-block.vertical .intro-watermark {
+      right: 8px;
+      left: auto;
+      top: 8px;
+      bottom: auto;
+      writing-mode: vertical-lr;
+      font-size: 24px;
+      opacity: 0.7;
+    }
+
+    .intro-block.vertical .intro-stamp {
+      display: none;
+    }
+
+    .process-rail {
+      border-left: 1px solid rgba(143, 114, 80, 0.5);
+      margin-left: 10px;
+      padding-left: 14px;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>模块三 · 三雕介绍卡片 + 旭日图（现有 iframe 嵌入版）</h1>
-    <div class="hint">当前仓库里发现了 `科学家著作家卡片.html` 和 `三雕旭日图.html`，先把它们嵌入模块三入口；后续如果补齐玫瑰图/散点联动 HTML，我会再继续接上。</div>
-  </header>
-
-  <div class="main">
-    <section class="panel">
-      <div class="panel-title">营造学脉卡片区（科学家 / 著作）</div>
-      <div class="panel-body">
-        <iframe
-          title="科学家著作家卡片"
-          src="./科学家著作家卡片.html"
-          loading="lazy"
-          style="height: 640px;"
-          referrerpolicy="no-referrer"
-        ></iframe>
+  <div class="canvas">
+    <section class="panel top">
+      <div class="top-tabs">
+        <button class="tab-btn active" id="btnScientist">营建先哲</button>
+        <button class="tab-btn" id="btnWork">珍籍撷英</button>
       </div>
+      <div class="card-grid" id="cardGrid"></div>
     </section>
 
-    <section class="panel">
-      <div class="panel-title">徽派三雕 · 旭日图</div>
-      <div class="panel-body">
-        <iframe
-          title="三雕旭日图"
-          src="./三雕旭日图.html"
-          loading="lazy"
-          style="height: 850px;"
-          referrerpolicy="no-referrer"
-        ></iframe>
+    <section class="bottom">
+      <div class="side-panel">
+        <div class="panel-head">
+          <span>传承关系网络</span>
+          <div class="graph-head-right">
+            <small id="graphHint">当前：木雕</small>
+            <button id="btnAutoLayout" class="graph-action" type="button">自动布局</button>
+            <button id="btnToggleFix" class="graph-action" type="button">固定节点</button>
+            <button id="btnResetLayout" class="graph-action" type="button">重置布局</button>
+          </div>
+        </div>
+        <div class="graph-wrap">
+          <div class="graph-legend">
+            <div class="legend-row"><span class="legend-line"></span><span>师承/归属</span></div>
+            <div class="legend-row"><span class="legend-line dashed"></span><span>指导</span></div>
+            <div class="legend-row"><span class="legend-line dotted"></span><span>家族</span></div>
+            <div class="legend-row"><span class="legend-dot lg"></span><span>国家级</span><span class="legend-dot md"></span><span>省级</span><span class="legend-dot sm"></span><span>一般</span></div>
+          </div>
+          <svg id="graphSvg" class="graph-svg" viewBox="0 0 560 360" preserveAspectRatio="xMidYMid meet"></svg>
+          <div id="graphTooltip" class="graph-tooltip"></div>
+        </div>
+      </div>
+
+      <div class="center">
+        <button class="triangle-btn left" id="btnPrev" aria-label="上一雕"></button>
+        <button class="triangle-btn right" id="btnNext" aria-label="下一雕"></button>
+
+        <div class="carving-image-wrap">
+          <img id="carvingImage" class="carving-image" src="/charts/三雕图片/木雕.png" alt="木雕" />
+        </div>
+
+        <div class="carving-name" id="carvingName">木雕</div>
+        <div class="center-brief" id="carvingBrief"></div>
+
+        <button class="switch-btn active" id="btnIntro">介绍</button>
+        <button class="switch-btn" id="btnProcess">工艺流程</button>
+      </div>
+
+      <div class="side-panel">
+        <div class="panel-head">
+          <span>三雕知识面板</span>
+          <small id="detailHint">简介</small>
+        </div>
+        <div class="right-wrap">
+          <div class="detail-top-nav" id="detailTabs"></div>
+          <div class="detail-content show" id="detailContent"></div>
+        </div>
       </div>
     </section>
   </div>
+
   <script>
-    // 预留：后续可在这里做“卡片点击 -> 联动图表”的跨 iframe 通信。
+    const scientists = [
+      { name: '李诫 (1035–1110)', meta: '《营造法式》编撰者', desc: '北宋官式营造体系奠基者，提出材份制，对徽派祠堂木构影响深远。' },
+      { name: '喻皓 (约960–1004)', meta: '《木经》作者', desc: '总结木构比例法则，梁柱尺度关系成为徽派民居木作的重要参照。' },
+      { name: '雷发达 (1619–1693)', meta: '样式雷奠基人', desc: '推动官式营造与地域工艺融合，促进徽派形制与装饰技法传播。' },
+      { name: '计成 (1582–约1642)', meta: '《园冶》作者', desc: '系统阐释园林营造思想，借景与理水观念深刻影响徽州聚落空间。' }
+    ];
+
+    const works = [
+      { name: '《营造法式》', meta: '1103年刊行', desc: '中国现存最早建筑技术官书，确立制度化营造标准。' },
+      { name: '《木经》', meta: '约980年成书', desc: '聚焦木构尺度与构造比例，是后世匠作实践的重要源头。' },
+      { name: '《园冶》', meta: '1634年刊行', desc: '明代造园经典，提出相地、借景、掇山等系统方法。' },
+      { name: '《长物志》', meta: '1635年成书', desc: '记录室庐与陈设美学，对民居空间营造与审美有持续影响。' }
+    ];
+
+    const cardGrid = document.getElementById('cardGrid');
+    const btnScientist = document.getElementById('btnScientist');
+    const btnWork = document.getElementById('btnWork');
+
+    function renderCards(list) {
+      cardGrid.innerHTML = list.map(item => `
+        <article class="card">
+          <h3>${item.name}</h3>
+          <div class="meta">${item.meta}</div>
+          <p class="desc">${item.desc}</p>
+        </article>
+      `).join('');
+    }
+
+    btnScientist.addEventListener('click', () => {
+      btnScientist.classList.add('active');
+      btnWork.classList.remove('active');
+      renderCards(scientists);
+    });
+
+    btnWork.addEventListener('click', () => {
+      btnWork.classList.add('active');
+      btnScientist.classList.remove('active');
+      renderCards(works);
+    });
+
+    renderCards(scientists);
+
+    const craftOrder = ['wood', 'stone', 'brick'];
+    const detailTabs = ['intro', 'process', 'pattern', 'tools', 'theme', 'history'];
+    const detailName = {
+      intro: '简介',
+      process: '工艺流程',
+      pattern: '常用纹样',
+      tools: '使用工具',
+      theme: '常用题材',
+      history: '历史发展'
+    };
+
+    const craftData = {
+      wood: {
+        name: '木雕',
+        src: '/charts/三雕图片/木雕.png',
+        palette: { main: '#5C2C26', soft: '#D4A373' },
+        intro: '徽州木雕是明清徽派建筑和家具的核心装饰，以枫木、樟木、楠木等为材，常见于梁架、雀替、隔扇与家具面板，兼具审美与教化功能。',
+        introTags: ['建筑装饰', '梁架雀替', '透雕浮雕', '教化寓意'],
+        process: [
+          { title: '选料与干燥', desc: '选择无裂木材，先行阴干定性。', detail: '控制含水率，避免后期开裂翘曲；阴干与回潮能让木材应力释放，保证雕刻稳定。', image: '/charts/module3-assets/wood_material_logs.svg' },
+          { title: '放样起稿', desc: '按构件比例在木面布图，确定层次。', detail: '先定对称轴与主体位置，再分前中后景，提前规划透雕镂空区域，避免后续刀路拥挤。', image: '/charts/module3-assets/wood_process_bench.svg' },
+          { title: '打坯定形', desc: '粗凿出体块关系，建立主轮廓。', detail: '粗凿先立“势”，把大起伏与主轮廓做准确，为细部留余量，防止过度削薄。', image: '/charts/module3-assets/wood_relief_carve.svg' },
+          { title: '分层精雕', desc: '细凿衣纹羽毛等细节，形成透雕层次。', detail: '通过穿插、镂空、起伏形成层次；关键在人物面相、花叶筋脉与边饰组织的节奏统一。', image: '/charts/module3-assets/wood_tool_chisel.svg' },
+          { title: '打磨上油', desc: '逐级打磨后上桐油/生漆，突出木纹。', detail: '由粗到细逐级收光，最后薄涂养护，让木纹与明暗层次更温润耐看。', image: '/charts/module3-assets/wood_polish.svg' }
+        ],
+        pattern: [
+          { name: '龙凤纹', note: '尊贵祥瑞，常见于梁架节点。', detail: '常作中心主题或顶角构图，配云纹、卷草形成“主—辅—边”层级，提升仪式感。', image: '/charts/module3-assets/wood_pattern_dragonphoenix.svg' },
+          { name: '蝙蝠纹', note: '“蝠”谐“福”，寓意纳福。', detail: '常与寿字、如意、莲花组合，构成“福寿双全”等吉语表达。', image: '/charts/module3-assets/wood_pattern_sketch.svg' },
+          { name: '回字纹', note: '连绵不断，常作边框组织纹。', detail: '用来稳住画面外缘与节奏，防止主画面发散，是典型的组织纹样。', image: '/charts/module3-assets/wood_pattern_hui.svg' },
+          { name: '卷草纹', note: '生命繁茂，常用于过渡带。', detail: '适合连接人物与器物、边饰与主体，让转场自然，画面更“连贯”。', image: '/charts/module3-assets/wood_pattern_floral.svg' }
+        ],
+        tools: [
+          { name: '平凿', note: '开面与修平', detail: '用于压地与平面整理，是建立层次“底板”的基础工具。', image: '/charts/module3-assets/wood_tool_chisel.svg' },
+          { name: '圆凿', note: '弧面与曲线', detail: '处理花瓣、云头、衣褶等圆转起伏，让光影更柔和。', image: '/charts/module3-assets/wood_tool_hatchet.svg' },
+          { name: '斜口凿', note: '细部切角', detail: '适合转折、棱角与边线收口，决定画面“刀味”的利落程度。', image: '/charts/module3-assets/wood_tool_saw.svg' },
+          { name: '木槌', note: '控制敲击力度', detail: '配合凿具控制入刀深浅；力度均匀才能避免崩口与拉裂。', image: '/charts/module3-assets/wood_tool_mallet.svg' },
+          { name: '砂纸', note: '精磨收光', detail: '用于最后收束与细节统一，让纹样边缘更干净、触感更温润。', image: '/charts/module3-assets/wood_tool_sandpaper.svg' }
+        ],
+        theme: [
+          { name: '儒学文化', note: '忠孝节义、理学教化。', sub: '常用于祠堂与厅堂核心界面。', image: '/charts/module3-assets/wood_process_bench.svg' },
+          { name: '祥禽瑞兽', note: '麒麟、龙凤、蝙蝠。', sub: '以谐音与象征表达吉庆愿景。', image: '/charts/module3-assets/wood_pattern_dragonphoenix.svg' },
+          { name: '历史典故', note: '戏文与历史场景。', sub: '通过叙事图像传递伦理秩序。', image: '/charts/module3-assets/wood_relief_carve.svg' },
+          { name: '花鸟鱼虫', note: '文人自然审美。', sub: '梅兰竹菊等母题高频出现。', image: '/charts/module3-assets/wood_pattern_sketch.svg' }
+        ],
+        history: [
+          { period: '宋代起源', desc: '匠作规则初步出现。', detail: '以木作营造为核心的规范意识开始形成，工序与构件比例逐步标准化。', image: '/charts/module3-assets/history-web-huizhou-wood-real.jpg', source: 'China Daily / Amazing Huangshan' },
+          { period: '宋元基础', desc: '木作制度化经验逐步积累。', detail: '木构尺度与榫卯规范在这一阶段逐渐成型，为徽州木雕进入建筑核心构件奠定了技术底板。', image: '/charts/module3-assets/history-web-huizhou-wood-real.jpg', source: 'China Daily / Amazing Huangshan' },
+          { period: '明清高峰', desc: '多层透雕成熟，装饰体系完整。', detail: '梁架、雀替、隔扇等部位形成稳定的“叙事+纹样”双重表达，木雕成为徽派空间气质的核心视觉语言。', image: '/charts/module3-assets/history-web-huizhou-wood-real.jpg', source: 'China Daily / Amazing Huangshan' },
+          { period: '当代传承', desc: '非遗保护与师徒体系并进。', detail: '在传统师徒制基础上，叠加院校课程、展陈传播与数字记录，形成“活态传承+现代转译”并行路径。', image: '/charts/module3-assets/history-web-huizhou-mansion-real.jpg', source: 'China Daily / Amazing Huangshan' }
+        ]
+      },
+      stone: {
+        name: '石雕',
+        src: '/charts/三雕图片/石雕.png',
+        palette: { main: '#5B6770', soft: '#B8C0C8' },
+        intro: '徽州石雕多用青石、茶园石，风格古朴厚重，广泛用于牌坊、柱础、抱鼓石、石窗和栏杆，是徽派建筑外部识别度最高的装饰系统之一。',
+        introTags: ['牌坊石作', '柱础栏板', '高浮雕', '礼制象征'],
+        process: [
+          { title: '选荒料', desc: '挑选纹理顺直、无暗裂石材。', detail: '常见黟县青、茶园石等；避开暗裂与砂眼，确保耐候与可雕性。', image: '/charts/module3-assets/stone_material_rocks.svg' },
+          { title: '切割整形', desc: '按构件尺度处理体量。', detail: '先定外轮廓与结构尺寸（柱础/抱鼓石/栏板），为纹样留足厚度。', image: '/charts/module3-assets/stone_rough_shape_hammer.svg' },
+          { title: '墨线起稿', desc: '将图样准确转绘到石面。', detail: '以墨线分区定位，先定对称轴与关键节点，确保构图稳重不偏斜。', image: '/charts/module3-assets/stone_draft_relief.svg' },
+          { title: '打荒定形', desc: '大錾去料，确立体积关系。', detail: '先粗后细建立主要起伏，避免直接入细导致边缘崩裂。', image: '/charts/module3-assets/stone_tool_hatchet.svg' },
+          { title: '细部精雕', desc: '小錾修纹样，强化层次。', detail: '通过线刻与浅透结合形成细密石面肌理，让纹样更耐看。', image: '/charts/module3-assets/stone_fine_carve_relief.svg' },
+          { title: '打磨收光', desc: '保持古朴肌理与耐候性。', detail: '保留适度工具纹路与磨面过渡，既有手工味也便于户外长期风化。', image: '/charts/module3-assets/stone_grind_stones.svg' }
+        ],
+        pattern: [
+          { name: '莲花纹', note: '清净吉祥，常用于柱础。', image: '/charts/module3-assets/stone_pattern_floral.svg' },
+          { name: '云水纹', note: '流动感强，适合边带。', image: '/charts/module3-assets/stone_pattern_taotie.svg' },
+          { name: '八仙器纹', note: '寓意庇佑与福泽。', image: '/charts/module3-assets/stone_pattern_dragonphoenix.svg' },
+          { name: '回纹', note: '规整克制，适配石面构图。', image: '/charts/module3-assets/stone_draft_relief.svg' }
+        ],
+        tools: [
+          { name: '大錾', note: '打荒去料', detail: '用于快速去除大体量，决定整体起伏关系。', image: '/charts/module3-assets/stone_tool_chisel.svg' },
+          { name: '扁錾', note: '平面与转折', detail: '处理平面、转折与边线，形成清晰结构骨架。', image: '/charts/module3-assets/stone_tool_knife.svg' },
+          { name: '剁斧', note: '粗肌理塑造', detail: '用于背景肌理与粗面效果，增强古朴厚重的质感。', image: '/charts/module3-assets/stone_tool_hatchet.svg' },
+          { name: '小锤', note: '精细敲击', detail: '与小錾配合控制细部节奏，减少毛边与碎裂。', image: '/charts/module3-assets/stone_tool_mallet.svg' },
+          { name: '磨石', note: '收面处理', detail: '用于收口与过渡，控制亮暗对比与触感。', image: '/charts/module3-assets/stone_grind_stones.svg' }
+        ],
+        theme: [
+          { name: '儒家伦理', note: '忠孝节义叙事。', sub: '强化教化功能与空间秩序。', image: '/charts/module3-assets/stone_draft_relief.svg' },
+          { name: '宗族文化', note: '祠堂与牌坊语义。', sub: '聚焦家族荣誉与谱系记忆。', image: '/charts/module3-assets/stone_fine_carve_relief.svg' },
+          { name: '吉祥寓意', note: '福禄寿与瑞兽符号。', sub: '通过图像符号承载祈愿。', image: '/charts/module3-assets/stone_pattern_dragonphoenix.svg' },
+          { name: '乡土生活', note: '劳作与地域记忆。', sub: '体现地方生活与景观经验。', image: '/charts/module3-assets/stone_pattern_floral.svg' }
+        ],
+        history: [
+          { period: '宋代起源', desc: '石构细部开始分工。', detail: '早期石作从结构支撑扩展到装饰表达，门头、台基与栏板工艺趋于成熟。', image: '/charts/module3-assets/history-web-huizhou-stone-real.jpg', source: 'China Daily / Amazing Huangshan' },
+          { period: '宋元阶段', desc: '石作技艺稳定发展。', detail: '青石构件在门头、柱础、栏板等部位广泛应用，工艺从粗放营造转向结构与装饰并重。', image: '/charts/module3-assets/history-web-huizhou-stone-real.jpg', source: 'China Daily / Amazing Huangshan' },
+          { period: '明清繁荣', desc: '牌坊石雕达到工艺高峰。', detail: '高浮雕与透雕叠加使用，石坊系统形成完整礼制语义，成为徽州外部空间最具识别度的文化符号。', image: '/charts/module3-assets/history-web-huizhou-stone-real.jpg', source: 'China Daily / Amazing Huangshan' },
+          { period: '现代应用', desc: '用于修复与景观转译。', detail: '当代石雕以文保修缮为核心，同时在公共景观中进行尺度、纹样与材料语言的再设计。', image: '/charts/module3-assets/history-web-huizhou-mansion-real.jpg', source: 'China Daily / Amazing Huangshan' }
+        ]
+      },
+      brick: {
+        name: '砖雕',
+        src: '/charts/三雕图片/砖雕.png',
+        palette: { main: '#5A5550', soft: '#8A7F75' },
+        intro: '徽州砖雕以水磨青砖为主材，多用于门楼、门罩、墀头和屋檐，擅长多层透雕，是徽派立面视觉“点睛”部位。',
+        introTags: ['门楼系统', '多层透雕', '叙事构图', '青砖材性'],
+        process: [
+          { title: '制坯烧砖', desc: '黄黏土制坯，控温烧成青砖。', detail: '砖质需细密坚实、敲击有声；烧成与养护决定后续雕刻是否易崩裂。', image: '/charts/module3-assets/brick_material_tree.svg' },
+          { title: '验砖窨水', desc: '检测致密度，稳定材性。', detail: '通过窨水与阴干控制砖体硬度与韧性，让刀口更顺、纹样更干净。', image: '/charts/module3-assets/brick_level_block.svg' },
+          { title: '放样布局', desc: '确定门楼构图与叙事层次。', detail: '门楼砖雕多为段落式叙事：先定主题，再组织边饰与云纹过渡，层级更清楚。', image: '/charts/module3-assets/brick_arch_processing.svg' },
+          { title: '打坯分层', desc: '先开大形，再分深浅层。', detail: '先定前后景深浅，控制镂空层数与薄厚，避免局部薄弱导致断裂。', image: '/charts/module3-assets/brick_draft_relief.svg' },
+          { title: '出细精雕', desc: '人物面部与叶脉细节成形。', detail: '重点在眉眼口鼻与衣纹折线的刀路节奏，决定作品神韵与“活气”。', image: '/charts/module3-assets/brick_fine_carve_relief.svg' },
+          { title: '拼装挂镶', desc: '复杂构件组合安装。', detail: '多块砖雕需对缝咬合；安装后整体画面才连贯，边饰与主画面不“断”。', image: '/charts/module3-assets/brick_paint_bucket.svg' }
+        ],
+        pattern: [
+          { name: '卷草纹', note: '柔性边带，常作过渡。', image: '/charts/module3-assets/brick_pattern_plant.svg' },
+          { name: '云纹', note: '强化屋檐与门罩节奏。', image: '/charts/module3-assets/brick_pattern_geometric.svg' },
+          { name: '缠枝纹', note: '连续组织，适配长条面。', image: '/charts/module3-assets/brick_pattern_plant.svg' },
+          { name: '福寿字纹', note: '直接表达吉祥主题。', image: '/charts/module3-assets/brick_pattern_animal.svg' }
+        ],
+        tools: [
+          { name: '平凿', note: '基层塑形', detail: '用于压地与大面塑形，先把背景打稳，主纹样才立得住。', image: '/charts/module3-assets/brick_tool_chisel.svg' },
+          { name: '细凿', note: '纹样刻画', detail: '刻画叶脉、衣纹、云头等细节，决定精致度与层次。', image: '/charts/module3-assets/brick_tool_gimlet.svg' },
+          { name: '刻刀', note: '转角细节', detail: '处理转折与边线收口，让人物五官与边饰更干净。', image: '/charts/module3-assets/brick_tool_plane.svg' },
+          { name: '小锤', note: '力度控制', detail: '砖材易崩，敲击更轻更稳，避免炸口与掉角。', image: '/charts/module3-assets/brick_tool_charcoal.svg' },
+          { name: '磨料', note: '收边修光', detail: '用于最后修边与过渡，统一整套砖雕的观感与质感。', image: '/charts/module3-assets/brick_tool_brush.svg' }
+        ],
+        theme: [
+          { name: '人物故事', note: '戏文、典故叙事强。', sub: '门楼中段常作完整场景表达。', image: '/charts/module3-assets/brick_arch_processing.svg' },
+          { name: '吉祥图案', note: '双龙、五福等主题。', sub: '以祝愿性图像强化门第象征。', image: '/charts/module3-assets/brick_pattern_animal.svg' },
+          { name: '山水建筑', note: '门楼景窗常见母题。', sub: '构成立面叙事层次与节奏。', image: '/charts/module3-assets/brick_level_block.svg' },
+          { name: '民俗场景', note: '生活理想的图像化。', sub: '贴近日常经验的寓意表达。', image: '/charts/module3-assets/brick_draft_relief.svg' }
+        ],
+        history: [
+          { period: '明初形成', desc: '门楼砖雕体系起步。', detail: '砖雕从局部纹样走向整门楼构图，工匠开始建立分层、分段的叙事组织方式。', image: '/charts/module3-assets/history-web-huizhou-brick-real.jpg', source: 'China Daily / Amazing Huangshan' },
+          { period: '明代成型', desc: '门楼砖雕系统化出现。', detail: '砖雕从局部装饰走向门楼系统，题材与构图开始围绕家族伦理与吉祥叙事进行组织。', image: '/charts/module3-assets/history-web-huizhou-brick-real.jpg', source: 'China Daily / Amazing Huangshan' },
+          { period: '清代成熟', desc: '多层透雕与叙事并重。', detail: '砖材处理与层次控制技术成熟，人物故事、植物纹与文字纹在立面中形成复合视觉秩序。', image: '/charts/module3-assets/history-web-huizhou-brick-real.jpg', source: 'China Daily / Amazing Huangshan' },
+          { period: '当代修复', desc: '以数字测绘辅助复原。', detail: '通过三维测绘、病害记录与构件级建档，砖雕修复更重视“原工艺逻辑”的可追溯与可复现。', image: '/charts/module3-assets/history-web-huizhou-mansion-real.jpg', source: 'China Daily / Amazing Huangshan' }
+        ]
+      }
+    };
+
+    let graphData = { nodes: [], links: [] };
+    let graphInitialData = null;
+
+    const state = {
+      activeCraft: 'wood',
+      activeDetailTab: 'intro',
+      activeNodeId: null,
+      hoverNodeId: null,
+      expandedKey: null
+    };
+
+    const carvingImage = document.getElementById('carvingImage');
+    const carvingName = document.getElementById('carvingName');
+    const carvingBrief = document.getElementById('carvingBrief');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const graphSvg = document.getElementById('graphSvg');
+    const graphHint = document.getElementById('graphHint');
+    const detailTabsEl = document.getElementById('detailTabs');
+    const detailContentEl = document.getElementById('detailContent');
+    const detailHint = document.getElementById('detailHint');
+    const graphTooltip = document.getElementById('graphTooltip');
+    const graphWrap = document.querySelector('.graph-wrap');
+    const btnAutoLayout = document.getElementById('btnAutoLayout');
+    const btnToggleFix = document.getElementById('btnToggleFix');
+    const btnResetLayout = document.getElementById('btnResetLayout');
+
+    const relationMeta = {
+      'master-apprentice': { label: '师承', dash: '', width: 2.1 },
+      guidance: { label: '指导', dash: '6 4', width: 1.9 },
+      family: { label: '家族', dash: '2 3', width: 1.9 },
+      affiliation: { label: '归属', dash: '', width: 1.4 }
+    };
+    let dragNodeId = null;
+    let dragMoved = false;
+    let layoutLocked = false;
+    let layoutRunning = false;
+    let layoutFrame = null;
+
+    function cloneGraphData(data) {
+      return {
+        nodes: data.nodes.map(n => ({ ...n })),
+        links: data.links.map(l => ({ ...l }))
+      };
+    }
+
+    function updateLayoutButtons() {
+      btnToggleFix.classList.toggle('active', layoutLocked);
+      btnToggleFix.textContent = layoutLocked ? '已固定' : '固定节点';
+      btnAutoLayout.textContent = layoutRunning ? '布局中...' : '自动布局';
+      btnAutoLayout.classList.toggle('active', layoutRunning);
+    }
+
+    function getNodeRadius(node) {
+      if (node.level === 'root') return 16;
+      if (node.level === 'national') return 13;
+      if (node.level === 'provincial') return 11.5;
+      if (node.level === 'work') return 10;
+      return 9.5;
+    }
+
+    function getNodeTooltip(node) {
+      const typeLabel = node.type === 'craft'
+        ? '雕种节点'
+        : (node.type === 'inheritor' ? '传承人节点' : '传世名作节点');
+      const levelLabel = {
+        root: '核心',
+        national: '国家级',
+        provincial: '省级',
+        general: '一般',
+        work: '代表作'
+      }[node.level] || '一般';
+      const media = node.image
+        ? `<div class="tooltip-media"><img src="${node.image}" alt="${node.name}" loading="lazy" /></div>`
+        : '';
+      return `${media}<strong>${node.name}</strong><br/>${craftData[node.craft].name} · ${typeLabel} · ${levelLabel}<br/>${node.desc || ''}`;
+    }
+
+    function showGraphTooltip(html, x, y) {
+      graphTooltip.innerHTML = html;
+      graphTooltip.classList.add('show');
+
+      const pad = 8;
+      const tw = graphTooltip.offsetWidth || 220;
+      const th = graphTooltip.offsetHeight || 60;
+      const wrapW = graphWrap.clientWidth;
+      const wrapH = graphWrap.clientHeight;
+
+      const clampedX = Math.max(pad, Math.min(wrapW - tw - pad, x));
+      const clampedY = Math.max(pad, Math.min(wrapH - th - pad, y));
+
+      graphTooltip.style.left = `${clampedX}px`;
+      graphTooltip.style.top = `${clampedY}px`;
+    }
+
+    function setCraft(craftId) {
+      state.activeCraft = craftId;
+      if (state.activeNodeId) {
+        const node = graphData.nodes.find(n => n.id === state.activeNodeId);
+        if (!node || node.craft !== craftId) state.activeNodeId = null;
+      }
+      renderAll();
+    }
+
+    function cycleCraft(step) {
+      const idx = craftOrder.indexOf(state.activeCraft);
+      const nextIdx = (idx + step + craftOrder.length) % craftOrder.length;
+      setCraft(craftOrder[nextIdx]);
+    }
+
+    function setDetailTab(tabId) {
+      state.activeDetailTab = tabId;
+      renderAll();
+    }
+
+    function renderCarving() {
+      const current = craftData[state.activeCraft];
+      carvingImage.src = current.src;
+      carvingImage.alt = current.name;
+      carvingName.textContent = current.name;
+      carvingBrief.textContent = current.intro;
+
+      btnIntro.classList.toggle('active', state.activeDetailTab === 'intro');
+      btnProcess.classList.toggle('active', state.activeDetailTab === 'process');
+    }
+
+    function renderItemMedia(item, altText = '示意图') {
+      if (item && item.image) {
+        return `<div class="item-media"><img src="${item.image}" alt="${altText}" loading="lazy" /></div>`;
+      }
+      return `<div class="item-media">待补图</div>`;
+    }
+
+    function renderRightPanel() {
+      detailTabsEl.innerHTML = detailTabs.map(id => {
+        const active = id === state.activeDetailTab;
+        return `<button class="mini-btn ${active ? 'active' : ''}" data-tab="${id}">${detailName[id]}</button>`;
+      }).join('');
+
+      const current = craftData[state.activeCraft];
+      const value = current[state.activeDetailTab];
+      detailHint.textContent = `${current.name} · ${detailName[state.activeDetailTab]}`;
+      const isIntro = state.activeDetailTab === 'intro';
+
+      detailContentEl.classList.remove('show');
+      let html = '';
+      if (isIntro) {
+        const first = value.slice(0, 1);
+        const rest = value.slice(1);
+        const tags = (current.introTags || []).map(tag => `<span class="intro-tag">${tag}</span>`).join('');
+        html = `
+          <article class="intro-block">
+            <div class="intro-main"><span class="intro-dropcap">${first}</span>${rest}</div>
+            <div class="intro-tags">${tags}</div>
+            <div class="intro-watermark">${current.name}</div>
+          </article>
+        `;
+      } else if (state.activeDetailTab === 'process') {
+        const seq = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+        html = `<div class="detail-step-list process-rail">${value.map((step, idx) => `
+          <article class="detail-step expand-item ${state.expandedKey === `process:${idx}` ? 'is-open' : ''}" data-expand-key="process:${idx}">
+            <div class="step-no">${seq[idx] || (idx + 1)}</div>
+            ${renderItemMedia(step, step.title)}
+            <div>
+              <div class="step-title">${step.title}</div>
+              <div>${step.desc}</div>
+              ${step.detail ? `<div class="expand-more">${step.detail}</div>` : ''}
+            </div>
+          </article>
+        `).join('')}</div>`;
+      } else if (state.activeDetailTab === 'tools') {
+        html = `<div class="detail-grid">${value.map((item, idx) => `
+          <article class="grid-item expand-item ${state.expandedKey === `tools:${idx}` ? 'is-open' : ''}" data-expand-key="tools:${idx}">
+            ${renderItemMedia(item, item.name)}
+            <strong>${item.name}</strong>
+            <span>${item.note}</span>
+            ${item.detail ? `<div class="expand-more">${item.detail}</div>` : ''}
+          </article>
+        `).join('')}</div>`;
+      } else if (state.activeDetailTab === 'pattern' || state.activeDetailTab === 'theme') {
+        html = `<div class="detail-gallery">${value.map((item, idx) => `
+          <article class="gallery-item expand-item ${state.expandedKey === `${state.activeDetailTab}:${idx}` ? 'is-open' : ''}" data-expand-key="${state.activeDetailTab}:${idx}">
+            <div class="gallery-tag">${item.name}</div>
+            ${renderItemMedia(item, item.name)}
+            <div class="gallery-text">
+              <div>${item.note}</div>
+              ${item.sub ? `<div class="gallery-sub">${item.sub}</div>` : ''}
+              ${item.detail ? `<div class="expand-more">${item.detail}</div>` : ''}
+            </div>
+          </article>
+        `).join('')}</div>`;
+      } else if (state.activeDetailTab === 'history') {
+        html = `<div class="timeline">${value.map(item => `
+          <article class="timeline-item">
+            <strong>${item.period}</strong>
+            <span>${item.desc}</span>
+            <div class="timeline-detail">${item.detail || ''}</div>
+          </article>
+        `).join('')}</div>`;
+      }
+      detailContentEl.innerHTML = html;
+      requestAnimationFrame(() => detailContentEl.classList.add('show'));
+
+      detailTabsEl.querySelectorAll('[data-tab]').forEach(btn => {
+        btn.addEventListener('click', () => setDetailTab(btn.getAttribute('data-tab')));
+      });
+
+      detailContentEl.querySelectorAll('[data-expand-key]').forEach(el => {
+        el.addEventListener('click', () => {
+          const key = el.getAttribute('data-expand-key');
+          state.expandedKey = (state.expandedKey === key) ? null : key;
+          renderRightPanel();
+        });
+      });
+    }
+
+    function renderGraph() {
+      if (!graphData.nodes.length) {
+        graphSvg.innerHTML = `<text x="280" y="180" text-anchor="middle" font-size="14" fill="#8a8277">关系数据加载中...</text>`;
+        return;
+      }
+      const nodeMap = new Map(graphData.nodes.map(n => [n.id, n]));
+      const activeCraft = state.activeCraft;
+      const activeNodeId = state.activeNodeId;
+      const focusNodeId = activeNodeId || state.hoverNodeId;
+      const linkSet = new Set();
+      const neighborSet = new Set();
+      if (focusNodeId) {
+        neighborSet.add(focusNodeId);
+        graphData.links.forEach(l => {
+          if (l.source === focusNodeId || l.target === focusNodeId) {
+            linkSet.add(`${l.source}|${l.target}`);
+            linkSet.add(`${l.target}|${l.source}`);
+            neighborSet.add(l.source);
+            neighborSet.add(l.target);
+          }
+        });
+      }
+
+      const linksSvg = graphData.links.map(link => {
+        const s = nodeMap.get(link.source);
+        const t = nodeMap.get(link.target);
+        const rel = relationMeta[link.relationType] || relationMeta.affiliation;
+        const isCraftFocus = s.craft === activeCraft;
+        const isActiveLink = focusNodeId && linkSet.has(`${link.source}|${link.target}`);
+        const color = isActiveLink ? '#A9332A' : craftData[s.craft].palette.soft;
+        const opacity = focusNodeId
+          ? (isActiveLink ? 1 : (isCraftFocus ? 0.25 : 0.06))
+          : (isCraftFocus ? 0.8 : 0.1);
+        const width = isActiveLink ? 2.7 : rel.width;
+        const dash = rel.dash ? `stroke-dasharray="${rel.dash}"` : '';
+        return `<line x1="${s.x}" y1="${s.y}" x2="${t.x}" y2="${t.y}" stroke="${color}" stroke-width="${width}" stroke-opacity="${opacity}" ${dash} data-link="${link.source}|${link.target}" data-link-label="${rel.label}" />`;
+      }).join('');
+
+      const nodesSvg = graphData.nodes.map(node => {
+        const r = getNodeRadius(node);
+        const color = craftData[node.craft].palette.main;
+        const isFocusCraft = node.craft === activeCraft;
+        const isActiveNode = node.id === activeNodeId;
+        const isNeighbor = focusNodeId ? neighborSet.has(node.id) : false;
+        const opacity = focusNodeId
+          ? (isNeighbor ? 1 : (isFocusCraft ? 0.26 : 0.08))
+          : (isActiveNode ? 1 : (isFocusCraft ? 1 : 0.15));
+        const stroke = isActiveNode || (focusNodeId && node.id === focusNodeId) ? '#A9332A' : 'rgba(0,0,0,0.18)';
+        const strokeW = isActiveNode ? 3 : 1;
+        const labelOnRight = node.x < 280;
+        const labelX = labelOnRight ? node.x + r + 7 : node.x - r - 7;
+        const labelAnchor = labelOnRight ? 'start' : 'end';
+        const labelY = node.y + 4;
+        const labelColor = isFocusCraft ? '#2A2A2A' : '#888';
+        const labelOpacity = isFocusCraft ? 1 : 0.35;
+        return `
+          <g data-node="${node.id}" style="cursor:pointer" data-tooltip='${getNodeTooltip(node).replace(/'/g, '&apos;')}'>
+            <circle cx="${node.x}" cy="${node.y}" r="${r}" fill="${color}" fill-opacity="${opacity}" stroke="${stroke}" stroke-width="${strokeW}" />
+            <text
+              x="${labelX}"
+              y="${labelY}"
+              text-anchor="${labelAnchor}"
+              font-size="12"
+              fill="${labelColor}"
+              fill-opacity="${labelOpacity}"
+              stroke="#F4EFEA"
+              stroke-width="2.4"
+              paint-order="stroke fill"
+            >
+              ${node.name}
+            </text>
+          </g>
+        `;
+      }).join('');
+
+      graphSvg.innerHTML = linksSvg + nodesSvg;
+      graphHint.textContent = `当前：${craftData[activeCraft].name}`;
+    }
+
+    function getCraftCenter(craft) {
+      if (craft === 'wood') return { x: 145, y: 88 };
+      if (craft === 'stone') return { x: 155, y: 280 };
+      return { x: 455, y: 186 };
+    }
+
+    function runAutoLayout(iterations = 180) {
+      if (!graphData.nodes.length || layoutLocked) return;
+      if (layoutFrame) cancelAnimationFrame(layoutFrame);
+      layoutRunning = true;
+      updateLayoutButtons();
+
+      const nodeMap = new Map(graphData.nodes.map(n => [n.id, n]));
+      graphData.nodes.forEach(n => {
+        n.vx = n.vx || 0;
+        n.vy = n.vy || 0;
+      });
+
+      let step = 0;
+      const tick = () => {
+        if (layoutLocked) {
+          layoutRunning = false;
+          updateLayoutButtons();
+          return;
+        }
+
+        for (let i = 0; i < graphData.nodes.length; i++) {
+          const a = graphData.nodes[i];
+          for (let j = i + 1; j < graphData.nodes.length; j++) {
+            const b = graphData.nodes[j];
+            let dx = b.x - a.x;
+            let dy = b.y - a.y;
+            const d2 = dx * dx + dy * dy + 0.01;
+            const d = Math.sqrt(d2);
+            const sameCraftBoost = a.craft === b.craft ? 1.15 : 2.1;
+            const rep = (2600 * sameCraftBoost) / d2;
+            dx /= d;
+            dy /= d;
+            a.vx -= dx * rep;
+            a.vy -= dy * rep;
+            b.vx += dx * rep;
+            b.vy += dy * rep;
+          }
+        }
+
+        graphData.links.forEach(link => {
+          const s = nodeMap.get(link.source);
+          const t = nodeMap.get(link.target);
+          if (!s || !t) return;
+          let dx = t.x - s.x;
+          let dy = t.y - s.y;
+          const d = Math.sqrt(dx * dx + dy * dy) || 1;
+          const desired = link.relationType === 'affiliation' ? 72 : 58;
+          const spring = (d - desired) * 0.011;
+          dx /= d;
+          dy /= d;
+          s.vx += dx * spring;
+          s.vy += dy * spring;
+          t.vx -= dx * spring;
+          t.vy -= dy * spring;
+        });
+
+        graphData.nodes.forEach(n => {
+          const c = getCraftCenter(n.craft);
+          n.vx += (c.x - n.x) * 0.0042;
+          n.vy += (c.y - n.y) * 0.0042;
+          n.vx *= 0.79;
+          n.vy *= 0.79;
+          n.x = Math.max(24, Math.min(536, n.x + n.vx));
+          n.y = Math.max(24, Math.min(336, n.y + n.vy));
+        });
+
+        renderGraph();
+        step += 1;
+        if (step < iterations) {
+          layoutFrame = requestAnimationFrame(tick);
+        } else {
+          layoutRunning = false;
+          layoutFrame = null;
+          updateLayoutButtons();
+        }
+      };
+
+      layoutFrame = requestAnimationFrame(tick);
+    }
+
+    function resetLayout() {
+      if (!graphInitialData) return;
+      if (layoutFrame) cancelAnimationFrame(layoutFrame);
+      layoutFrame = null;
+      layoutRunning = false;
+      graphData = cloneGraphData(graphInitialData);
+      state.activeNodeId = null;
+      state.hoverNodeId = null;
+      graphTooltip.classList.remove('show');
+      updateLayoutButtons();
+      renderAll();
+    }
+
+    async function loadGraphData() {
+      const res = await fetch('/charts/module3-graph-data.json', { cache: 'no-store' });
+      if (!res.ok) throw new Error(`graph data load failed: ${res.status}`);
+      const json = await res.json();
+      graphData = cloneGraphData(json);
+      graphInitialData = cloneGraphData(json);
+    }
+
+    function getSvgPoint(evt) {
+      const pt = graphSvg.createSVGPoint();
+      pt.x = evt.clientX;
+      pt.y = evt.clientY;
+      const matrix = graphSvg.getScreenCTM();
+      if (!matrix) return { x: 0, y: 0 };
+      const res = pt.matrixTransform(matrix.inverse());
+      return {
+        x: Math.max(24, Math.min(536, res.x)),
+        y: Math.max(24, Math.min(336, res.y))
+      };
+    }
+
+    function initGraphInteractions() {
+      graphSvg.addEventListener('mousedown', (e) => {
+        if (layoutLocked) return;
+        const target = e.target.closest('[data-node]');
+        if (!target) return;
+        dragNodeId = target.getAttribute('data-node');
+        dragMoved = false;
+      });
+
+      graphSvg.addEventListener('mousemove', (e) => {
+        const nodeEl = e.target.closest('[data-node]');
+        const linkEl = e.target.closest('[data-link]');
+
+        if (dragNodeId) {
+          const p = getSvgPoint(e);
+          const node = graphData.nodes.find(n => n.id === dragNodeId);
+          if (node) {
+            node.x = p.x;
+            node.y = p.y;
+            node.vx = 0;
+            node.vy = 0;
+            dragMoved = true;
+            graphTooltip.classList.remove('show');
+            renderGraph();
+          }
+          return;
+        }
+
+        if (nodeEl) {
+          const id = nodeEl.getAttribute('data-node');
+          if (state.hoverNodeId !== id) {
+            state.hoverNodeId = id;
+            renderGraph();
+          }
+          const tip = nodeEl.getAttribute('data-tooltip').replace(/&apos;/g, "'");
+          showGraphTooltip(tip, e.offsetX + 12, e.offsetY + 12);
+          return;
+        }
+
+        if (linkEl) {
+          if (state.hoverNodeId !== null) {
+            state.hoverNodeId = null;
+            renderGraph();
+          }
+          const label = linkEl.getAttribute('data-link-label');
+          showGraphTooltip(`<strong>关系类型</strong><br/>${label}`, e.offsetX + 10, e.offsetY + 10);
+          return;
+        }
+
+        if (state.hoverNodeId !== null) {
+          state.hoverNodeId = null;
+          renderGraph();
+        }
+        graphTooltip.classList.remove('show');
+      });
+
+      graphSvg.addEventListener('mouseup', () => {
+        dragNodeId = null;
+      });
+
+      graphSvg.addEventListener('mouseleave', () => {
+        dragNodeId = null;
+        if (state.hoverNodeId !== null) {
+          state.hoverNodeId = null;
+          renderGraph();
+        }
+        graphTooltip.classList.remove('show');
+      });
+
+      graphSvg.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-node]');
+        if (target) {
+          if (dragMoved) {
+            dragMoved = false;
+            return;
+          }
+          const id = target.getAttribute('data-node');
+          const node = graphData.nodes.find(n => n.id === id);
+          state.activeNodeId = id;
+          if (node && node.craft !== state.activeCraft) state.activeCraft = node.craft;
+          renderAll();
+          return;
+        }
+        state.activeNodeId = null;
+        renderAll();
+      });
+    }
+
+    function renderAll() {
+      renderCarving();
+      renderRightPanel();
+      renderGraph();
+    }
+
+    btnPrev.addEventListener('click', () => {
+      cycleCraft(-1);
+    });
+
+    btnNext.addEventListener('click', () => {
+      cycleCraft(1);
+    });
+
+    const btnIntro = document.getElementById('btnIntro');
+    const btnProcess = document.getElementById('btnProcess');
+
+    btnIntro.addEventListener('click', () => {
+      setDetailTab('intro');
+    });
+
+    btnProcess.addEventListener('click', () => {
+      setDetailTab('process');
+    });
+
+    btnAutoLayout.addEventListener('click', () => {
+      runAutoLayout();
+    });
+    btnToggleFix.addEventListener('click', () => {
+      layoutLocked = !layoutLocked;
+      updateLayoutButtons();
+    });
+    btnResetLayout.addEventListener('click', () => {
+      resetLayout();
+    });
+
+    initGraphInteractions();
+    updateLayoutButtons();
+    (async () => {
+      try {
+        await loadGraphData();
+        renderAll();
+      } catch (err) {
+        graphSvg.innerHTML = `<text x="280" y="180" text-anchor="middle" font-size="13" fill="#8e3e30">关系数据加载失败，请检查 JSON 文件</text>`;
+      }
+    })();
   </script>
 </body>
 </html>
-

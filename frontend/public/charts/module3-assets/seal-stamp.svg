@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 84" role="img" aria-label="seal stamp">
+  <rect x="7" y="7" width="106" height="70" rx="7" fill="#A9332A" stroke="#8B2D24" stroke-width="4"/>
+  <rect x="14" y="14" width="92" height="56" rx="4" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2"/>
+  <g fill="none" stroke="#F8EFE3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M30 28h24v10H30z"/>
+    <path d="M42 28v28"/>
+    <path d="M30 44h24"/>
+    <path d="M66 28h24v10H66z"/>
+    <path d="M78 28v28"/>
+    <path d="M66 44h24"/>
+  </g>
+</svg>
