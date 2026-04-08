@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>粉墙图A · 美化版</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #f8f4ec 0%, #f4efe5 100%);
+      font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+    }
+
+    #main {
+      width: 100%;
+      height: 100vh;
+      min-height: 720px;
+    }
+  </style>
+</head>
+<body>
+  <div id="main"></div>
+
+  <script>
+    const chartDom = document.getElementById('main');
+    const myChart = echarts.init(chartDom, null, {
+      renderer: 'canvas',
+      devicePixelRatio: window.devicePixelRatio
+    });
+
+    const walls = [
+      '传统青砖\n空斗黄泥',
+      '水墨宏村\n外保温',
+      '际村自建房\n实砌做法',
+      '新型水泥砖\n空斗砌法'
+    ];
+
+    const heatResistance = [0.379, 0.345, 0.129, 0.205];
+    const heatTransferCoeff = [1.892, 2.024, 3.588, 2.821];
+
+    const rMax = 0.45;
+    const kMax = 4.0;
+    const heatTransferScaled = heatTransferCoeff.map(v => (v / kMax) * rMax);
+
+    const colorR = ['#4A848A', '#4A848A', '#8CAF63', '#8CAF63'];
+    const colorK = ['#7CC8CE', '#7CC8CE', '#B6DB8D', '#B6DB8D'];
+
+    const seriesDataR = heatResistance.map((val, idx) => ({
+      value: val,
+      realValue: val,
+      itemStyle: {
+        color: colorR[idx],
+        shadowBlur: 10,
+        shadowColor: 'rgba(74,132,138,0.20)'
+      }
+    }));
+
+    const seriesDataK = heatTransferScaled.map((val, idx) => ({
+      value: val,
+      realValue: heatTransferCoeff[idx],
+      itemStyle: {
+        color: colorK[idx],
+        shadowBlur: 10,
+        shadowColor: 'rgba(124,200,206,0.18)'
+      }
+    }));
+
+    const option = {
+      backgroundColor: 'transparent',
+      animationDuration: 900,
+      animationEasing: 'cubicOut',
+
+      title: {
+        text: '粉墙热工性能对比',
+        subtext: '四种墙体 × 热阻 R / 传热系数 K',
+        left: 'center',
+        top: 20,
+        textStyle: {
+          color: '#2f2a24',
+          fontSize: 22,
+          fontWeight: 600
+        },
+        subtextStyle: {
+          color: '#7b7266',
+          fontSize: 13,
+          lineHeight: 20
+        }
+      },
+
+      legend: {
+        top: 80,
+        left: 'center',
+        itemWidth: 14,
+        itemHeight: 14,
+        icon: 'roundRect',
+        textStyle: {
+          color: '#5a5146',
+          fontSize: 13
+        },
+        data: ['热阻 R', '传热系数 K（已归一化显示）']
+      },
+
+      tooltip: {
+        trigger: 'item',
+        backgroundColor: 'rgba(255,252,246,0.96)',
+        borderColor: '#d7cbb8',
+        borderWidth: 1,
+        padding: [10, 12],
+        textStyle: { color: '#3f382f', fontSize: 13 },
+        extraCssText: 'box-shadow:0 6px 20px rgba(80,60,30,0.10); border-radius:10px;',
+        formatter: function (p) {
+          if (p.seriesName === '热阻 R') {
+            return [
+              `<div style="font-weight:600;margin-bottom:6px;">${p.name}</div>`,
+              `热阻 R：<b>${p.data.realValue.toFixed(3)}</b> m²·K/W`,
+              `<div style="margin-top:4px;color:#8a7f72;font-size:12px;">R 值越大，保温性能越好</div>`
+            ].join('');
+          }
+          return [
+            `<div style="font-weight:600;margin-bottom:6px;">${p.name}</div>`,
+            `传热系数 K：<b>${p.data.realValue.toFixed(3)}</b> W/(m²·K)`,
+            `<div style="margin-top:4px;color:#8a7f72;font-size:12px;">K 值越小，隔热性能越好</div>`
+          ].join('');
+        }
+      },
+
+      polar: {
+        center: ['50%', '54%'],
+        radius: ['24%', '67%']
+      },
+
+      angleAxis: {
+        type: 'category',
+        data: walls,
+        startAngle: 90,
+        axisLine: { show: false },
+        axisTick: { show: false },
+        axisLabel: {
+          interval: 0,
+          color: '#4e463d',
+          fontSize: 13,
+          fontWeight: 500,
+          margin: 30,
+          lineHeight: 18,
+          align: 'center'
+        }
+      },
+
+      radiusAxis: {
+        min: 0,
+        max: rMax,
+        axisLine: { show: false },
+        axisTick: { show: false },
+        axisLabel: { show: false },
+        splitNumber: 4,
+        splitLine: {
+          lineStyle: {
+            color: ['rgba(130,118,100,0.10)'],
+            type: 'dashed'
+          }
+        },
+        splitArea: {
+          show: true,
+          areaStyle: {
+            color: ['rgba(255,255,255,0.00)', 'rgba(255,255,255,0.18)']
+          }
+        }
+      },
+
+      graphic: [
+        {
+          type: 'circle',
+          left: 'center',
+          top: '43.2%',
+          shape: { r: 72 },
+          style: {
+            fill: '#fbf8f1',
+            stroke: '#ddd1bf',
+            lineWidth: 1.2,
+            shadowBlur: 12,
+            shadowColor: 'rgba(80,60,30,0.08)'
+          },
+          silent: true,
+          z: 1
+        },
+        {
+          type: 'text',
+          left: 'center',
+          top: '47.3%',
+          style: {
+            text: 'R ↑ 越大越优\nK ↓ 越小越优',
+            textAlign: 'center',
+            fill: '#6c6256',
+            font: '600 14px Microsoft YaHei',
+            lineHeight: 22
+          },
+          silent: true,
+          z: 2
+        },
+        {
+          type: 'group',
+          left: 'center',
+          bottom: 34,
+          children: [
+            {
+              type: 'text',
+              style: {
+                x: -205,
+                y: 0,
+                text: '组A：传统青砖空斗黄泥 / 水墨宏村外保温',
+                fill: '#5e5549',
+                font: '13px Microsoft YaHei'
+              }
+            },
+            {
+              type: 'text',
+              style: {
+                x: 60,
+                y: 0,
+                text: '组B：际村自建房实砌做法 / 新型水泥砖空斗砌法',
+                fill: '#5e5549',
+                font: '13px Microsoft YaHei'
+              }
+            }
+          ],
+          silent: true,
+          z: 2
+        }
+      ],
+
+      series: [
+        {
+          name: '热阻 R',
+          type: 'bar',
+          coordinateSystem: 'polar',
+          roundCap: true,
+          barWidth: 22,
+          barGap: '35%',
+          data: seriesDataR,
+          z: 3
+        },
+        {
+          name: '传热系数 K（已归一化显示）',
+          type: 'bar',
+          coordinateSystem: 'polar',
+          roundCap: true,
+          barWidth: 22,
+          barGap: '35%',
+          data: seriesDataK,
+          z: 3
+        }
+      ]
+    };
+
+    myChart.setOption(option);
+    window.addEventListener('resize', function () {
+      myChart.resize();
+    });
+  </script>
+</body>
+</html>

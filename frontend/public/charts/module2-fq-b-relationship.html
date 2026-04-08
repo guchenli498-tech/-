@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>粉墙关系图 · 图B</title>
+    <script src="../echarts.min.js"></script>
+    <style>
+      :root {
+        --paper-bg: #f2eee6;
+        --title-color: #24303a;
+        --subtitle-color: #7b8792;
+        --line-color: #5f7283;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: var(--paper-bg);
+        font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      }
+      .wrap {
+        width: 100%;
+        height: 100%;
+        padding: 20px 24px 18px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        background: transparent;
+      }
+      .header {
+        margin-bottom: 12px;
+        position: relative;
+        padding-left: 12px;
+      }
+      .header::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 4px;
+        bottom: 2px;
+        width: 4px;
+        border-radius: 2px;
+        background: var(--line-color);
+      }
+      .title {
+        font-size: 19px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--title-color);
+        margin: 0 0 4px 0;
+      }
+      .subtitle { display: none; }
+      #chart {
+        flex: 1;
+        width: 100%;
+        border: 1px solid rgba(221, 226, 232, 0.95);
+        border-radius: 12px;
+        background: #f7f3ea;
+        box-shadow: 0 10px 26px -22px rgba(33, 46, 58, 0.35);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <div class="title">粉墙关键词关系图</div>
+        <div class="subtitle">Knowledge Graph of Thermal-Material Logic</div>
+      </div>
+      <div id="chart"></div>
+    </div>
+
+    <script>
+      (function () {
+        const dom = document.getElementById("chart");
+        const chart = echarts.init(dom, null, {
+          renderer: "canvas",
+          devicePixelRatio: Math.max(1, window.devicePixelRatio || 1),
+        });
+
+        const colors = {
+          col1: "#33495C",
+          col2: "#8C4F45",
+          col3: "#5B6D7C",
+          col4: "#8B7560",
+          col5: "#4E6C5C",
+          edge: "rgba(127, 140, 151, 0.28)",
+          edgeHi: "#B06A56",
+        };
+
+        const col1 = [
+          { id: "g_perf", name: "热工性能" },
+          { id: "g_mat", name: "材料工艺" },
+          { id: "g_env", name: "环境耦合" },
+          { id: "g_cul", name: "审美文化" },
+        ];
+
+        const col2 = [
+          { id: "k_r", name: "热阻R", freq: 16 },
+          { id: "k_k", name: "传热系数K", freq: 16 },
+          { id: "k_reflect", name: "反射", freq: 14 },
+          { id: "k_shade", name: "外遮阳", freq: 13 },
+          { id: "k_storage", name: "蓄热", freq: 11 },
+          { id: "k_vent", name: "自然通风", freq: 15 },
+          { id: "k_evap", name: "水体蒸发", freq: 10 },
+          { id: "k_humi", name: "相对湿度", freq: 12 },
+        ];
+
+        const col3 = [
+          { id: "t_wall", name: "墙体构造" },
+          { id: "t_surface", name: "表层机理" },
+          { id: "t_transfer", name: "传热路径" },
+          { id: "t_space", name: "空间调节" },
+          { id: "t_comfort", name: "舒适评价" },
+          { id: "t_style", name: "风貌表达" },
+        ];
+
+        const col4 = [
+          { id: "s_qingzhuan", name: "青砖空斗黄泥" },
+          { id: "s_shuini", name: "水泥砖空斗" },
+          { id: "s_composite", name: "外保温复合墙" },
+          { id: "s_shiqi", name: "实砌墙体" },
+          { id: "s_huijiang", name: "白灰/灰浆体系" },
+        ];
+
+        const col5 = [
+          { id: "c_best", name: "保温最优", freq: 15 },
+          { id: "c_second", name: "综合次优", freq: 12 },
+          { id: "c_weak", name: "性能较弱", freq: 10 },
+          { id: "c_worst", name: "保温最差", freq: 14 },
+          { id: "c_summer", name: "夏季降温", freq: 13 },
+          { id: "c_winter", name: "冬季失热", freq: 13 },
+          { id: "c_humidity", name: "湿度偏高", freq: 11 },
+          { id: "c_aesthetic", name: "粉墙黛瓦", freq: 9 },
+        ];
+
+        const links = [
+          ["g_perf", "k_r"], ["g_perf", "k_k"], ["g_perf", "k_reflect"], ["g_perf", "k_shade"], ["g_perf", "k_storage"],
+          ["g_env", "k_vent"], ["g_env", "k_evap"], ["g_env", "k_humi"],
+          ["g_mat", "k_reflect"], ["g_mat", "k_k"], ["g_cul", "k_humi"],
+
+          ["k_r", "t_transfer"], ["k_k", "t_transfer"], ["k_reflect", "t_surface"], ["k_shade", "t_space"],
+          ["k_storage", "t_wall"], ["k_vent", "t_space"], ["k_evap", "t_space"], ["k_humi", "t_comfort"],
+          ["k_r", "t_comfort"], ["k_k", "t_comfort"],
+
+          ["t_wall", "s_qingzhuan"], ["t_wall", "s_shuini"], ["t_wall", "s_composite"], ["t_wall", "s_shiqi"],
+          ["t_surface", "s_huijiang"], ["t_transfer", "s_qingzhuan"], ["t_transfer", "s_shiqi"],
+          ["t_space", "s_composite"], ["t_style", "s_huijiang"], ["t_style", "s_composite"],
+
+          ["s_qingzhuan", "c_best"], ["s_qingzhuan", "c_summer"],
+          ["s_composite", "c_second"], ["s_composite", "c_aesthetic"],
+          ["s_shuini", "c_weak"], ["s_shiqi", "c_worst"],
+          ["s_shiqi", "c_winter"], ["s_huijiang", "c_humidity"],
+        ].map(([source, target]) => ({ source, target, value: 1 }));
+
+        function layoutColumn(items, x, containerH, symbol, color, labelPos, fixedSize) {
+          const out = [];
+          const n = items.length;
+          const step = Math.min(45, (containerH * 0.9) / Math.max(n - 1, 1));
+          const totalHeight = (n - 1) * step;
+          const startY = (containerH - totalHeight) / 2;
+
+          items.forEach((it, idx) => {
+            const nodeSize = it.freq ? fixedSize + (it.freq / 16) * 5 : fixedSize;
+            out.push({
+              id: it.id,
+              name: it.name,
+              x,
+              y: startY + idx * step,
+              value: it.freq,
+              symbol,
+              symbolSize: nodeSize,
+              itemStyle: {
+                color,
+                opacity: 0.95,
+                borderColor: "#F7F5EE",
+                borderWidth: 2,
+                shadowBlur: 8,
+                shadowOffsetY: 4,
+                shadowColor: "rgba(0,0,0,0.1)",
+              },
+              label: {
+                show: true,
+                position: labelPos,
+                color: "#2B333E",
+                fontSize: 12.5,
+                fontWeight: 600,
+                distance: 10,
+              },
+            });
+          });
+          return out;
+        }
+
+        function buildOption() {
+          const w = chart.getWidth();
+          const h = chart.getHeight();
+          const x1 = w * 0.08;
+          const x2 = w * 0.26;
+          const x3 = w * 0.46;
+          const x4 = w * 0.67;
+          const x5 = w * 0.88;
+
+          const nodes = [
+            ...layoutColumn(col1, x1, h, "circle", colors.col1, "left", 12),
+            ...layoutColumn(col2, x2, h, "circle", colors.col2, "right", 11),
+            ...layoutColumn(col3, x3, h, "circle", colors.col3, "right", 13),
+            ...layoutColumn(col4, x4, h, "circle", colors.col4, "right", 12),
+            ...layoutColumn(col5, x5, h, "circle", colors.col5, "right", 11),
+          ];
+
+          return {
+            backgroundColor: "transparent",
+            animationDurationUpdate: 1000,
+            animationEasingUpdate: "quinticInOut",
+            tooltip: {
+              trigger: "item",
+              backgroundColor: "rgba(250,247,240,0.98)",
+              borderColor: "rgba(180,170,150,0.6)",
+              borderWidth: 1,
+              textStyle: { color: "#2B333E", fontSize: 13 },
+              formatter: function (p) {
+                const d = p.data || {};
+                if (typeof d.value === "number") {
+                  return `<b>${d.name}</b><br/>出现频率：<span style="color:#A34343;font-weight:700">${d.value}</span>`;
+                }
+                return `<b>${d.name}</b>`;
+              },
+            },
+            series: [
+              {
+                type: "graph",
+                layout: "none",
+                roam: false,
+                draggable: false,
+                edgeSymbol: ["none", "none"],
+                lineStyle: {
+                  width: 1.5,
+                  color: colors.edge,
+                  opacity: 0.9,
+                  curveness: 0.35,
+                },
+                emphasis: {
+                  focus: "adjacency",
+                  lineStyle: { width: 3.5, color: colors.edgeHi, opacity: 0.9 },
+                  label: { show: true, color: "#111", fontWeight: 900 },
+                },
+                blur: {
+                  itemStyle: { opacity: 0.2 },
+                  lineStyle: { opacity: 0.05 },
+                },
+                label: { show: true },
+                data: nodes,
+                links,
+              },
+            ],
+          };
+        }
+
+        function render() {
+          chart.clear();
+          chart.setOption(buildOption(), true);
+        }
+
+        render();
+        let timer = null;
+        window.addEventListener("resize", () => {
+          clearTimeout(timer);
+          timer = setTimeout(() => {
+            chart.resize();
+            render();
+          }, 180);
+        });
+      })();
+    </script>
+  </body>
+</html>

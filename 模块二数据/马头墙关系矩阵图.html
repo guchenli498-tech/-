@@ -1,0 +1,110 @@
+<div id="fullHeatMatrix" style="width: 900px; height: 600px;"></div>
+<script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+<script>
+    var heatChart = echarts.init(document.getElementById('fullHeatMatrix'));
+
+    // 完整数据：[蔓延方式-马头墙形式, 位置, 提升率(%)]
+    var heatData = [
+        // 热辐射
+        ['热辐射-一阶', '屋脊处', 62.76], ['热辐射-一阶', '前檐处', -3.42], ['热辐射-一阶', '后檐处', 38.23], ['热辐射-一阶', '平均值', 41.47],
+        ['热辐射-三阶', '屋脊处', 84.14], ['热辐射-三阶', '前檐处', 61.18], ['热辐射-三阶', '后檐处', 66.13], ['热辐射-三阶', '平均值', 75.25],
+        ['热辐射-五阶', '屋脊处', 87.86], ['热辐射-五阶', '前檐处', 82.52], ['热辐射-五阶', '后檐处', 62.95], ['热辐射-五阶', '平均值', 82.50],
+        // 热羽流
+        ['热羽流-一阶', '屋脊处', 16.88], ['热羽流-一阶', '前檐处', -26.81], ['热羽流-一阶', '后檐处', 36.51], ['热羽流-一阶', '平均值', 11.99],
+        ['热羽流-三阶', '屋脊处', 43.75], ['热羽流-三阶', '前檐处', -23.46], ['热羽流-三阶', '后檐处', 39.47], ['热羽流-三阶', '平均值', 24.63],
+        ['热羽流-五阶', '屋脊处', 53.93], ['热羽流-五阶', '前檐处', 29.78], ['热羽流-五阶', '后檐处', 29.60], ['热羽流-五阶', '平均值', 39.40],
+        // 飞火
+        ['飞火-一阶', '屋脊处', 0.54], ['飞火-一阶', '前檐处', -3.60], ['飞火-一阶', '后檐处', 3.48], ['飞火-一阶', '平均值', 0.22],
+        ['飞火-三阶', '屋脊处', 3.84], ['飞火-三阶', '前檐处', -4.76], ['飞火-三阶', '后檐处', 6.19], ['飞火-三阶', '平均值', 1.90],
+        ['飞火-五阶', '屋脊处', 4.98], ['飞火-五阶', '前檐处', 0.36], ['飞火-五阶', '后檐处', 0.69], ['飞火-五阶', '平均值', 2.05]
+    ];
+
+    // X轴：蔓延方式+马头墙形式
+    var xAxisData = [
+        '热辐射-一阶', '热辐射-三阶', '热辐射-五阶',
+        '热羽流-一阶', '热羽流-三阶', '热羽流-五阶',
+        '飞火-一阶', '飞火-三阶', '飞火-五阶'
+    ];
+
+    // Y轴：位置
+    var yAxisData = ['屋脊处', '前檐处', '后檐处', '平均值'];
+
+    var option = {
+        title: {
+            text: '马头墙三种蔓延方式的阻隔提升率热力矩阵',
+            subtext: '单位：% | 颜色越深代表阻隔提升率越高',
+            left: 'center',
+            textStyle: { fontSize: 18, fontWeight: 'bold' },
+            subtextStyle: { fontSize: 13, color: '#666' }
+        },
+        tooltip: {
+            trigger: 'item',
+            position: 'top',
+            formatter: function (params) {
+                return `${params.name[0]}<br/>${params.name[1]}：${params.value[2]}%`;
+            }
+        },
+        grid: {
+            top: '15%',
+            left: '12%',
+            right: '5%',
+            bottom: '18%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            data: xAxisData,
+            axisLine: { show: false },
+            axisTick: { show: false },
+            axisLabel: {
+                fontSize: 12,
+                interval: 0,
+                rotate: 30
+            }
+        },
+        yAxis: {
+            type: 'category',
+            data: yAxisData,
+            axisLine: { show: false },
+            axisTick: { show: false },
+            axisLabel: { fontSize: 13, fontWeight: '500' }
+        },
+        visualMap: {
+            min: -30,
+            max: 90,
+            calculable: true,
+            orient: 'horizontal',
+            left: 'center',
+            bottom: '3%',
+            inRange: {
+                // 专业学术配色：从深蓝（负提升）到深红（高提升）
+                color: ['#313695', '#4575b4', '#91bfdb', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027']
+            },
+            text: ['高提升率(%)', '低提升率(%)'],
+            textStyle: { fontSize: 12 }
+        },
+        series: [
+            {
+                name: '阻隔提升率',
+                type: 'heatmap',
+                data: heatData,
+                label: {
+                    show: true,
+                    fontSize: 11,
+                    formatter: function (params) {
+                        return params.value[2].toFixed(2);
+                    }
+                },
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowColor: 'rgba(0,0,0,0.3)'
+                    }
+                }
+            }
+        ]
+    };
+
+    heatChart.setOption(option);
+    window.addEventListener('resize', () => heatChart.resize());
+</script>

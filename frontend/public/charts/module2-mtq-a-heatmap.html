@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>马头墙 · 图A/图B切换</title>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: transparent;
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      }
+
+      .wrap {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+
+      .toolbar {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        display: flex;
+        gap: 10px;
+        z-index: 10;
+        user-select: none;
+      }
+
+      .btn {
+        border: 1px solid rgba(215, 195, 165, 0.75);
+        background: rgba(247, 241, 231, 0.65);
+        color: rgba(74, 74, 72, 0.95);
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+        white-space: nowrap;
+      }
+
+      .btn:active {
+        transform: scale(0.98);
+      }
+
+      .btn.active {
+        background: rgba(169, 193, 192, 0.28);
+        border-color: rgba(169, 193, 192, 0.95);
+      }
+
+      .frame {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="toolbar">
+        <div id="btnA" class="btn active" role="button" tabindex="0">图表一</div>
+        <div id="btnB" class="btn" role="button" tabindex="0">图表二</div>
+      </div>
+
+      <iframe
+        id="frameA"
+        class="frame"
+        title="mtq-heatmap"
+        src="/charts/module2-mtq-a-matrix.html"
+        style="display:block"
+      ></iframe>
+
+      <iframe
+        id="frameB"
+        class="frame"
+        title="mtq-polar"
+        src="/charts/module2-mtq-b-polar.html"
+        style="display:none"
+      ></iframe>
+    </div>
+
+    <script>
+      (function () {
+        const btnA = document.getElementById("btnA");
+        const btnB = document.getElementById("btnB");
+        const frameA = document.getElementById("frameA");
+        const frameB = document.getElementById("frameB");
+
+        function setMode(mode) {
+          const isA = mode === "A";
+          if (btnA) btnA.classList.toggle("active", isA);
+          if (btnB) btnB.classList.toggle("active", !isA);
+
+          if (frameA) frameA.style.display = isA ? "block" : "none";
+          if (frameB) frameB.style.display = isA ? "none" : "block";
+        }
+
+        btnA && btnA.addEventListener("click", () => setMode("A"));
+        btnB && btnB.addEventListener("click", () => setMode("B"));
+      })();
+    </script>
+  </body>
+</html>
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>马头墙 A图 · 关系矩阵热力图</title>
+    <script src="../echarts.min.js"></script>
+    <style>
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: transparent;
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      }
+      .wrap {
+        height: 100%;
+        width: 100%;
+        padding: 12px 12px 8px;
+        box-sizing: border-box;
+      }
+      .title {
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: 3px;
+        color: rgba(74, 74, 72, 0.95);
+        margin: 0 0 8px 6px;
+        position: relative;
+      }
+      .title::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -6px;
+        width: 40px;
+        height: 2px;
+        background: rgba(169, 193, 192, 0.95);
+      }
+      #chart {
+        height: calc(100% - 32px);
+        width: 100%;
+      }
+
+      .toolbar {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        z-index: 10;
+      }
+
+      .btn {
+        border: 1px solid rgba(215, 195, 165, 0.75);
+        background: rgba(247, 241, 231, 0.65);
+        color: rgba(74, 74, 72, 0.95);
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+        user-select: none;
+      }
+
+      .btn:active {
+        transform: scale(0.98);
+      }
+
+      .btn.active {
+        background: rgba(169, 193, 192, 0.28);
+        border-color: rgba(169, 193, 192, 0.95);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="title">马头墙 · 关系矩阵热力图（示例数据）</div>
+      <div class="toolbar">
+        <div id="btnA" class="btn active" role="button" tabindex="0">图表一</div>
+        <div id="btnB" class="btn" role="button" tabindex="0">图表二</div>
+      </div>
+      <div id="chart"></div>
+    </div>
+
+    <script>
+      ;(function () {
+        const dom = document.getElementById("chart");
+        const chart = echarts.init(dom, null, {
+          renderer: "canvas",
+          // 提高清晰度：尤其在 iframe 内缩放时
+          devicePixelRatio: Math.max(1, window.devicePixelRatio || 1),
+        });
+
+        // X轴：蔓延方式 + 马头墙阶数（热辐射/热羽流/飞火 + 一阶/三阶/五阶）
+        const mechs = ["热辐射", "热羽流", "飞火"];
+        const levels = ["一阶", "三阶", "五阶"];
+        const xCats = [];
+        mechs.forEach((m) => {
+          levels.forEach((l) => {
+            xCats.push(`${m}${l}`);
+          });
+        });
+
+        // Y轴：检测位置（屋脊处/前檐处/后檐处/三处平均值）
+        const yCats = ["屋脊处", "前檐处", "后檐处", "三处平均值"];
+
+        // 切换按钮
+        const btnA = document.getElementById("btnA");
+        const btnB = document.getElementById("btnB");
+        let mode = "A";
+
+        // 说明：文档给了“维度结构”，但“表二数据”数值未在可读文本中出现。
+        // 这里先用可复现的示例值把图表跑通（你后续把真实矩阵替换掉 value 计算部分即可）。
+        const mechFactor = { "热辐射": 1.03, "热羽流": 0.96, "飞火": 1.12 };
+        const levelFactor = { "一阶": 0.92, "三阶": 1.05, "五阶": 1.16 };
+        const yFactor = { "屋脊处": 1.08, "前檐处": 0.98, "后檐处": 0.95, "三处平均值": 1.00 };
+
+        function round2(n) {
+          return Math.round(n * 100) / 100;
+        }
+
+        const data = [];
+        yCats.forEach((yName, yi) => {
+          mechs.forEach((mName, mi) => {
+            levels.forEach((lName, li) => {
+              // 示例阻隔提升率（%）：组合维度乘积 + 少量位置扰动，便于看出差异
+              const v = 18.0 * mechFactor[mName] * levelFactor[lName] * yFactor[yName];
+              const wobble = (yi - 1.5) * 0.9 + (mi - 1) * 0.6 + (li - 1) * 0.4;
+              const value = round2(v + wobble);
+              data.push([mi * levels.length + li, yi, value]);
+            });
+          });
+        });
+
+        const values = data.map((d) => d[2]);
+        const minV = Math.min(...values);
+        const maxV = Math.max(...values);
+
+        // 色号参考：沿用你给的调色板（用于热力图 visualMap）
+        const palette = [
+          "#313695",
+          "#4575b4",
+          "#91bfdb",
+          "#e0f3f8",
+          "#ffffbf",
+          "#fee090",
+          "#fdae61",
+          "#f46d43",
+          "#d73027",
+          "#C97E5A",
+          "#7E9A6B",
+          "#D4A373",
+          "#2F6B5E",
+          "#5A8F7C",
+          "#C28A5C",
+          "rgba(250, 247, 240, 0.85)",
+          "#EFE8DD",
+          "#D1C7B6",
+          "#B8AA92",
+          "#5B5543",
+          "#9B8F76",
+        ];
+
+        function buildOptionA() {
+          return {
+            backgroundColor: "transparent",
+            animation: false,
+            animationDuration: 0,
+            animationDurationUpdate: 0,
+            tooltip: {
+              position: "top",
+              formatter: function (params) {
+                const xIndex = params.data[0];
+                const yIndex = params.data[1];
+                const value = params.data[2];
+                const xName = xCats[xIndex];
+                const yName = yCats[yIndex];
+                return `${yName}<br/>${xName}<br/>阻隔提升率：${Number(value).toFixed(2)}%`;
+              },
+            },
+            grid: {
+              top: 26,
+              left: 60,
+              right: 20,
+              bottom: 80,
+              containLabel: true,
+            },
+            xAxis: {
+              type: "category",
+              data: xCats,
+              axisLabel: {
+                color: "rgba(74,74,72,0.72)",
+                fontSize: 10,
+                rotate: 35,
+                interval: 0,
+              },
+              axisLine: { lineStyle: { color: "rgba(74,74,72,0.18)" } },
+              axisTick: { show: false },
+            },
+            yAxis: {
+              type: "category",
+              data: yCats,
+              axisLabel: {
+                color: "rgba(74,74,72,0.72)",
+                fontSize: 12,
+              },
+              axisLine: { lineStyle: { color: "rgba(74,74,72,0.18)" } },
+              axisTick: { show: false },
+            },
+            visualMap: {
+              type: "continuous",
+              min: Math.floor(minV),
+              max: Math.ceil(maxV),
+              calculable: true,
+              orient: "horizontal",
+              bottom: 18,
+              left: "center",
+              inRange: {
+                color: palette,
+              },
+              outOfRange: {
+                color: "rgba(250, 247, 240, 0.85)",
+                symbol: "rect",
+                opacity: 0.15,
+              },
+              textStyle: {
+                color: "rgba(74,74,72,0.75)",
+                fontSize: 11,
+              },
+            },
+            series: [
+              {
+                name: "阻隔提升率",
+                type: "heatmap",
+                data: data,
+                xAxisIndex: 0,
+                yAxisIndex: 0,
+                label: { show: false },
+                progressive: 0,
+                itemStyle: {
+                  borderColor: "rgba(255,255,255,0.85)",
+                  borderWidth: 1,
+                  shadowBlur: 0,
+                  opacity: 1,
+                },
+                emphasis: {
+                  focus: "self",
+                  itemStyle: {
+                    borderWidth: 2,
+                    borderColor: "rgba(74,74,72,0.75)",
+                    shadowBlur: 0,
+                  },
+                },
+                blur: {
+                  itemStyle: {
+                    opacity: 0.18,
+                  },
+                },
+              },
+            ],
+          };
+        }
+
+        // 图表二：极坐标玫瑰图 + 极坐标折线图（示例结构）
+        // 注：缺少“表二/表三”真实数值时，这里仍使用可运行示例值；拿到真实值后替换相应 arrays 即可。
+        function buildOptionB() {
+          const polarMechs = ["热辐射", "热羽流", "飞火"];
+          const oneData = [42.5, 38.2, 33.1];
+          const threeData = [56.2, 51.0, 44.6];
+          const fiveData = [68.4, 62.7, 55.0];
+
+          // 4条折线：综合/屋脊/前檐/后檐（示例）
+          const lineSeries = [
+            { name: "综合阻隔提升率", color: "#9B8F76", data: [48, 44, 39] },
+            { name: "屋脊处阻隔率", color: "#fdae61", data: [60, 55, 48] },
+            { name: "前檐处阻隔率", color: "#91bfdb", data: [36, 34, 30] },
+            { name: "后檐处阻隔率", color: "#f46d43", data: [28, 25, 24] },
+          ];
+
+          const series = [
+            {
+              name: "一阶",
+              type: "bar",
+              coordinateSystem: "polar",
+              barWidth: 10,
+              itemStyle: { color: palette[0] },
+              data: polarMechs.map((_, i) => ({
+                value: oneData[i],
+                itemStyle: { color: palette[0] },
+              })),
+              emphasis: { focus: "series" },
+            },
+            {
+              name: "三阶",
+              type: "bar",
+              coordinateSystem: "polar",
+              barWidth: 10,
+              itemStyle: { color: palette[10] },
+              data: polarMechs.map((_, i) => ({
+                value: threeData[i],
+                itemStyle: { color: palette[10] },
+              })),
+              emphasis: { focus: "series" },
+            },
+            {
+              name: "五阶",
+              type: "bar",
+              coordinateSystem: "polar",
+              barWidth: 10,
+              itemStyle: { color: palette[8] },
+              data: polarMechs.map((_, i) => ({
+                value: fiveData[i],
+                itemStyle: { color: palette[8] },
+              })),
+              emphasis: { focus: "series" },
+            },
+            ...lineSeries.map((ls) => ({
+              name: ls.name,
+              type: "line",
+              coordinateSystem: "polar",
+              symbol: "circle",
+              symbolSize: 6,
+              showSymbol: true,
+              lineStyle: { color: ls.color, width: 2.6 },
+              itemStyle: { color: ls.color },
+              data: polarMechs.map((_, i) => ({ value: ls.data[i] })),
+              emphasis: { focus: "series" },
+            })),
+          ];
+
+          return {
+            backgroundColor: "transparent",
+            animation: false,
+            animationDuration: 0,
+            tooltip: {
+              trigger: "axis",
+              axisPointer: { type: "shadow" },
+              formatter: function (params) {
+                const angleName = polarMechs[params[0].dataIndex] || "";
+                const lines = params
+                  .filter((p) => p.seriesName)
+                  .map((p) => `${p.seriesName}：${Number(p.value).toFixed(1)}%`);
+                return `${angleName}<br/>${lines.join("<br/>")}`;
+              },
+            },
+            legend: {
+              top: 10,
+              left: 10,
+              type: "scroll",
+              orient: "vertical",
+              textStyle: { color: "rgba(74,74,72,0.85)", fontSize: 12 },
+              selectedMode: "multiple",
+            },
+            polar: {
+              radius: ["10%", "82%"],
+              center: ["50%", "56%"],
+            },
+            angleAxis: {
+              type: "category",
+              data: polarMechs,
+              axisLabel: { color: "rgba(74,74,72,0.75)", fontSize: 12 },
+              axisLine: { lineStyle: { color: "rgba(74,74,72,0.18)" } },
+              axisTick: { show: false },
+            },
+            radiusAxis: {
+              axisLabel: { color: "rgba(74,74,72,0.55)", fontSize: 10 },
+              splitLine: { lineStyle: { color: "rgba(74,74,72,0.08)" } },
+              axisLine: { show: false },
+            },
+            series,
+          };
+        }
+
+        function applyMode(nextMode) {
+          mode = nextMode;
+          if (btnA) btnA.classList.toggle("active", mode === "A");
+          if (btnB) btnB.classList.toggle("active", mode === "B");
+          if (mode === "A") {
+            chart.setOption(buildOptionA(), true);
+          } else {
+            chart.setOption(buildOptionB(), true);
+          }
+        }
+
+        applyMode("A");
+
+        if (btnA) btnA.addEventListener("click", () => applyMode("A"));
+        if (btnB) btnB.addEventListener("click", () => applyMode("B"));
+
+        // 图二：点击数据点/柱子锁定高亮（示例）
+        chart.off("click");
+        chart.on("click", function (params) {
+          if (!params || !params.seriesName) return;
+          if (mode !== "B") return;
+
+          // 鼠标点了哪个 seriesName，就高亮该 series，其他 series 轻量淡出
+          const toEmphasis = params.seriesIndex;
+          const dispatchActions = [];
+          chart._model && chart._model.getSeriesByIndex && chart._model.getSeriesByIndex(toEmphasis);
+
+          chart.dispatchAction({ type: "highlight", seriesIndex: params.seriesIndex, dataIndex: params.dataIndex });
+          // 关闭其他高亮（简化处理）
+          try {
+            chart.dispatchAction({ type: "downplay", seriesIndex: params.seriesIndex === undefined ? 0 : (params.seriesIndex + 1) });
+          } catch (e) {
+            // ignore
+          }
+        });
+
+        window.addEventListener("resize", function () {
+          chart.resize();
+        });
+      })();
+    </script>
+  </body>
+</html>
+

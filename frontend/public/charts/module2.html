@@ -3,272 +3,471 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>模块二</title>
+    <title>模块二占位布局</title>
     <style>
       :root {
         --bg: #f2eee6;
-        --panel: #f7f3ea;
+        --panel: #ffffff;
         --ink: #4a4a48;
-        --muted: #8eb8b7;
-        --border: #e7dfd2;
-        --accent: #f25c33;
-        --shadow: rgba(74, 74, 72, 0.18);
+        --border: #dde3ea;
+        --shadow: rgba(74, 74, 72, 0.12);
+        --fan-1: rgba(173, 145, 112, 0.14);
+        --fan-2: rgba(142, 122, 107, 0.14);
+        --fan-3: rgba(151, 108, 92, 0.16);
+        --fan-4: rgba(108, 122, 137, 0.14);
+        --fan-active: rgba(151, 108, 92, 0.95);
+        --fan-size: clamp(340px, 27vw, 410px);
       }
 
-      html,
-      body {
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        width: 100%;
         height: 100%;
-        min-height: 100vh;
-        margin: 0;
-        padding: 0;
         overflow: hidden;
-      }
-
-      ::-webkit-scrollbar {
-        display: none;
-      }
-
-      body {
-        margin: 0;
-        background: var(--bg);
+        background: radial-gradient(circle at 50% 8%, #f6f2ea 0%, var(--bg) 62%, #ece5d8 100%);
         color: var(--ink);
         font-family: Georgia, 'KaiTi', '楷体', '华文楷体', STKaiti, serif;
-        overflow: hidden; /* iframe 内部不让滚动影响外部排版 */
       }
 
-      .canvas {
-        height: 100%;
+      ::-webkit-scrollbar { display: none; }
+
+      .page {
         width: 100%;
+        height: 100%;
         display: grid;
-        grid-template-columns: 28% 32% 40%;
-        grid-template-rows: 44% 56%;
-        gap: 6px;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      .slot {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        box-shadow: 0 25px 45px -20px var(--shadow);
-        overflow: hidden;
+        grid-template-rows: 1fr;
         position: relative;
       }
 
-      .slot iframe {
+      .content {
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        padding: 8px 10px 10px;
+        box-sizing: border-box;
+        display: grid;
+        grid-template-rows: 52% 48%;
+        gap: 10px;
+        opacity: 0;
+        transform: translateY(12px) scale(0.996);
+        transition: opacity 500ms ease, transform 620ms cubic-bezier(0.2, 0.7, 0.12, 1);
+      }
+
+      .page.ready .content {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      .topRow {
+        min-height: 0;
+        display: grid;
+        /* 上层：A 占 3/7，B 占 4/7（宽度比例） */
+        grid-template-columns: minmax(0, 3fr) minmax(0, 4fr);
+        gap: 10px;
+      }
+
+      .bottomRow {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: minmax(240px, var(--fan-size)) minmax(0, 0.77fr) minmax(0, 1.23fr);
+        gap: 10px;
+        align-items: stretch;
+      }
+
+      .panel {
+        min-width: 0;
+        min-height: 0;
+        background: var(--panel);
+        border: 1px solid rgba(221, 226, 232, 0.95);
+        border-radius: 16px;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.64),
+          0 14px 28px -24px rgba(33, 46, 58, 0.35);
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(12px) scale(0.992);
+        transition: opacity 420ms ease, transform 520ms cubic-bezier(0.2, 0.7, 0.12, 1), border-color 240ms ease, box-shadow 260ms ease;
+      }
+
+      .page.ready .panel {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      .panelA { border-top-left-radius: 0; }
+      .panelB { border-top-right-radius: 0; }
+      .panelC {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+      .panelD {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
+      .placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 16px;
+        color: rgba(60, 60, 56, 0.95);
+        font-size: 18px;
+        letter-spacing: 1px;
+        line-height: 1.8;
+        user-select: none;
+        background: linear-gradient(180deg, rgba(249, 245, 237, 0.94), rgba(245, 239, 229, 0.9));
+        transition: opacity 200ms ease, transform 240ms ease;
+        z-index: 2;
+      }
+
+      .panel-iframe {
+        position: absolute;
+        inset: 0;
         width: 100%;
         height: 100%;
         border: 0;
-        display: block;
+        z-index: 1;
+        opacity: 0;
+        transform: scale(1.009);
+        transition: opacity 280ms ease, transform 360ms ease;
       }
 
-      .tl {
-        grid-column: 1;
-        grid-row: 1;
-      }
-      .tr {
-        grid-column: 2 / 4;
-        grid-row: 1;
+      .panel-iframe.ready {
+        opacity: 1;
+        transform: scale(1);
       }
 
       .fanWrap {
-        grid-column: 1;
-        grid-row: 2;
-        background: var(--bg);
-        border: none;
         position: relative;
-        overflow: visible;
-        display: flex;
-        align-items: flex-end;
-        justify-content: flex-start;
-      }
-
-      .bottomRight {
-        grid-column: 2 / 4;
-        grid-row: 2;
-        display: grid;
-        grid-template-columns: 42% 58%;
-        grid-template-rows: 100%;
-        gap: 6px;
-      }
-
-      /* SVG 扇形切换器 */
-      .fanSwitch {
-        width: 100%;
+        overflow: hidden;
         height: 100%;
+        background: linear-gradient(145deg, rgba(250, 246, 239, 0.6), rgba(241, 233, 222, 0.42));
       }
 
-      .fanSwitch svg {
+      .fanSwitch {
         width: 100%;
         height: 100%;
         display: block;
       }
 
       .fan-path {
-        fill: rgba(201, 230, 176, 0.72);
-        stroke: rgba(255,255,255,0.9);
-        stroke-width: 2;
+        fill: transparent;
+        stroke: rgba(255, 255, 255, 0.92);
+        stroke-width: 2.4;
         cursor: pointer;
-        transition: fill 180ms ease, transform 180ms ease;
-        transform-origin: 0px 400px;
+        transition: fill 160ms ease;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.06));
       }
 
-      .fan-path:hover {
-        fill: rgba(180, 220, 155, 0.85);
+      .fan-path[data-key="tj"],
+      .fan-path[data-key="fq"],
+      .fan-path[data-key="mtq"],
+      .fan-path[data-key="wd"] {
+        /* 纯色填充改为透明，显示下方 <image> */
+        fill: transparent;
       }
 
       .fan-path.active {
-        fill: rgba(140, 200, 110, 0.95);
+        stroke: var(--fan-active);
+        stroke-width: 3.4;
+        filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.12));
+        fill: rgba(151, 108, 92, 0.12);
+      }
+
+      .fan-path.hover {
+        fill: rgba(151, 108, 92, 0.08);
+        stroke-width: 3.3;
       }
 
       .fan-label {
-        font-family: Georgia, 'KaiTi', '楷体', serif;
+        font-size: 14px;
+        fill: rgba(46, 52, 40, 0.92);
+        font-weight: 600;
+        pointer-events: none;
+        opacity: 0.72;
+        paint-order: stroke fill;
+        stroke: rgba(247, 243, 234, 0.95);
+        stroke-width: 3px;
+        transition: opacity 180ms ease, font-size 180ms ease, fill 180ms ease;
+      }
+
+      .fan-label.active {
+        opacity: 1;
         font-size: 16px;
-        fill: rgba(36, 44, 32, 0.9);
-        pointer-events: none;
-        font-weight: 500;
+        fill: rgba(46, 52, 40, 1);
+        stroke: rgba(247, 243, 234, 1);
+        stroke-width: 3.6px;
       }
 
-      .fan-path.active + .fan-label {
-        font-weight: 700;
+      .fan-img {
+        transition: opacity 260ms ease, filter 420ms ease;
+        opacity: 0.55;
+        filter: saturate(0.76) blur(1px);
       }
 
-      .caption {
+      .fanWrap.images-ready .fan-img {
+        filter: saturate(1) blur(0);
+      }
+
+      .entryMask {
         position: absolute;
-        left: 16px;
-        top: 14px;
-        font-size: 12px;
-        color: rgba(110, 110, 107, 1);
-        pointer-events: none;
-        letter-spacing: 1px;
-        z-index: 2;
-        display: none;
+        inset: 0;
+        background: radial-gradient(circle at 50% 42%, rgba(248, 244, 236, 0.98), rgba(237, 229, 216, 0.98));
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 420ms ease, visibility 420ms ease;
+      }
+
+      .entryMask.hide {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .entryBox {
+        text-align: center;
+        color: rgba(74, 74, 72, 0.88);
+      }
+
+      .entryTitle {
+        font-size: 15px;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+      }
+
+      .entryBar {
+        width: 180px;
+        height: 3px;
+        border-radius: 999px;
+        background: rgba(209, 199, 182, 0.55);
+        overflow: hidden;
+      }
+
+      .entryBar::after {
+        content: "";
+        display: block;
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(126, 154, 107, 0.2), rgba(47, 107, 94, 0.85), rgba(126, 154, 107, 0.2));
+        animation: loadingSlide 900ms ease-in-out infinite;
+      }
+
+      @keyframes loadingSlide {
+        0% { transform: translateX(-140%); }
+        100% { transform: translateX(280%); }
       }
     </style>
   </head>
+
   <body>
-    <div class="canvas" id="canvas">
-      <div class="slot tl" id="slotTL">
-        <div class="caption" id="tlCaption">当前构件信息</div>
-      </div>
-      <div class="slot tr" id="slotTR">
-        <div class="caption" id="trCaption">Sankey</div>
-      </div>
-
-      <div class="fanWrap" id="fanWrap">
-        <svg class="fanSwitch" id="fanSwitch" viewBox="0 0 400 400" preserveAspectRatio="xMinYMax meet" aria-label="模块二构件切换器">
-          <!-- 圆心在左下角 (0, 400)，半径380，均匀5片，每片18度，带圆弧 -->
-          <!-- 天井: 0-18度 -->
-          <path class="fan-path" data-key="tj" d=""/>
-          <text class="fan-label" data-key="tj" text-anchor="middle">天井</text>
-
-          <!-- 粉墙: 18-36度 -->
-          <path class="fan-path" data-key="fq" d=""/>
-          <text class="fan-label" data-key="fq" text-anchor="middle">粉墙</text>
-
-          <!-- 马头墙: 36-54度 -->
-          <path class="fan-path" data-key="mtq" d=""/>
-          <text class="fan-label" data-key="mtq" text-anchor="middle">马头墙</text>
-
-          <!-- 屋顶: 54-72度 -->
-          <path class="fan-path" data-key="wd" d=""/>
-          <text class="fan-label" data-key="wd" text-anchor="middle">屋顶</text>
-
-          <!-- 水圳系统: 72-90度 -->
-          <path class="fan-path" data-key="sz" d=""/>
-          <text class="fan-label" data-key="sz" text-anchor="middle">水圳系统</text>
-        </svg>
-      </div>
-
-      <div class="bottomRight">
-        <div class="slot bc" id="slotBC">
-          <div class="caption" id="bcCaption">副图</div>
+    <div class="page">
+      <div class="entryMask" id="entryMask">
+        <div class="entryBox">
+          <div class="entryTitle">模块二内容加载中</div>
+          <div class="entryBar"></div>
         </div>
-        <div class="slot br" id="slotBR">
-          <div class="caption" id="brCaption">词云</div>
+      </div>
+      <div class="content">
+        <div class="topRow">
+          <div class="panel panelA" id="panelA">
+            <iframe
+              id="frameA"
+              class="panel-iframe"
+              title="module2-panelA"
+              src=""
+              style="display:none"
+            ></iframe>
+            <div class="placeholder" id="phA">图A占位</div>
+          </div>
+          <div class="panel panelB" id="panelB">
+            <iframe
+              id="frameB"
+              class="panel-iframe"
+              title="module2-panelB"
+              src=""
+              style="display:none"
+            ></iframe>
+            <div class="placeholder" id="phB">图B占位</div>
+          </div>
+        </div>
+
+        <div class="bottomRow">
+          <div class="panel fanWrap" id="fanWrap">
+            <svg
+              class="fanSwitch"
+              id="fanSwitch"
+              viewBox="-4 -4 408 408"
+              preserveAspectRatio="xMinYMax meet"
+              aria-label="模块二构件切换器"
+            >
+              <defs>
+                <clipPath id="clip-tj" clipPathUnits="userSpaceOnUse">
+                  <path id="clippath-tj" d=""></path>
+                </clipPath>
+                <clipPath id="clip-fq" clipPathUnits="userSpaceOnUse">
+                  <path id="clippath-fq" d=""></path>
+                </clipPath>
+                <clipPath id="clip-mtq" clipPathUnits="userSpaceOnUse">
+                  <path id="clippath-mtq" d=""></path>
+                </clipPath>
+                <clipPath id="clip-wd" clipPathUnits="userSpaceOnUse">
+                  <path id="clippath-wd" d=""></path>
+                </clipPath>
+              </defs>
+
+              <!-- 扇形分区图像填充：用 path 作为 clip 形状 -->
+              <image
+                href="/charts/module2-fan-images/tj.jpeg"
+                class="fan-img"
+                data-key="tj"
+                x="-4"
+                y="-4"
+                width="408"
+                height="408"
+                preserveAspectRatio="xMidYMid slice"
+                clip-path="url(#clip-tj)"
+                style="pointer-events:none; opacity:0.98;"
+              />
+              <image
+                href="/charts/module2-fan-images/fq.jpg"
+                class="fan-img"
+                data-key="fq"
+                x="-4"
+                y="-4"
+                width="408"
+                height="408"
+                preserveAspectRatio="xMidYMid slice"
+                clip-path="url(#clip-fq)"
+                style="pointer-events:none; opacity:0.98;"
+              />
+              <image
+                href="/charts/module2-fan-images/mtq.jpg"
+                class="fan-img"
+                data-key="mtq"
+                x="-4"
+                y="-4"
+                width="408"
+                height="408"
+                preserveAspectRatio="xMidYMid slice"
+                clip-path="url(#clip-mtq)"
+                style="pointer-events:none; opacity:0.98;"
+              />
+              <image
+                href="/charts/module2-fan-images/wd.jpg"
+                class="fan-img"
+                data-key="wd"
+                x="-4"
+                y="-4"
+                width="408"
+                height="408"
+                preserveAspectRatio="xMidYMid slice"
+                clip-path="url(#clip-wd)"
+                style="pointer-events:none; opacity:0.98;"
+              />
+
+              <path id="seg-tj" class="fan-path" data-key="tj" d=""></path>
+              <text class="fan-label" data-key="tj" text-anchor="middle">天井</text>
+
+              <path id="seg-fq" class="fan-path" data-key="fq" d=""></path>
+              <text class="fan-label" data-key="fq" text-anchor="middle">粉墙</text>
+
+              <path id="seg-mtq" class="fan-path" data-key="mtq" d=""></path>
+              <text class="fan-label" data-key="mtq" text-anchor="middle">马头墙</text>
+
+              <path id="seg-wd" class="fan-path" data-key="wd" d=""></path>
+              <text class="fan-label" data-key="wd" text-anchor="middle">屋顶</text>
+            </svg>
+          </div>
+
+          <div class="panel panelC" id="panelC">
+            <iframe
+              id="frameC"
+              class="panel-iframe"
+              title="module2-panelC"
+              src=""
+              style="display:none"
+            ></iframe>
+            <div class="placeholder" id="phC">词云C占位</div>
+          </div>
+
+          <div class="panel panelD" id="panelD">
+            <iframe
+              id="frameD"
+              class="panel-iframe"
+              title="module2-panelD"
+              src=""
+              style="display:none"
+            ></iframe>
+            <div class="placeholder" id="phD">图D占位</div>
+          </div>
         </div>
       </div>
     </div>
 
     <script>
       (function () {
-        const mapping = {
-          mtq: {
-            tr: './马头墙桑葚图.html',
-            bc: './马头墙花纹样式旭日图.html',
-            br: './词云图.html#mtq',
-            // 左上“波浪曲线概览”（匹配参考截图的左上视觉结构）
-            tlSrc: './马头墙波浪概览图.html',
-            tl: '马头墙：概览',
-          },
-          tj: {
-            tr: './天井桑葚图.html',
-            bc: './天井弦图.html',
-            br: './词云图.html#tj',
-            tlSrc: './天井桑葚图.html',
-            tl: '天井：功能链路概览',
-          },
-          fq: {
-            tr: './粉墙桑葚图.html',
-            bc: './粉墙雷达图.html',
-            br: './词云图.html#fq',
-            tlSrc: './粉墙雷达图.html',
-            tl: '粉墙：装饰构成概览',
-          },
-          wd: {
-            tr: './屋顶桑葚图.html',
-            bc: './屋顶半环图.html',
-            br: './词云图.html#wd',
-            tlSrc: './屋顶桑葚图.html',
-            tl: '屋顶：空间适配概览',
-          },
-          sz: {
-            tr: './水圳系统桑葚图.html',
-            bc: './水圳系统桑葚图.html',
-            br: './水圳词云图.html',
-            tlSrc: './水圳系统桑葚图.html',
-            tl: '水圳系统：结构构成概览',
-          },
-        }
-
-        const slotTL = document.getElementById('slotTL')
-        const slotTR = document.getElementById('slotTR')
-        const slotBC = document.getElementById('slotBC')
-        const slotBR = document.getElementById('slotBR')
-
-        const tlCaption = document.getElementById('tlCaption')
-        const trCaption = document.getElementById('trCaption')
-        const bcCaption = document.getElementById('bcCaption')
-        const brCaption = document.getElementById('brCaption')
-
         const fanSwitch = document.getElementById('fanSwitch')
-        const segs = Array.from(fanSwitch.querySelectorAll('.fan-path'))
-        const labels = Array.from(fanSwitch.querySelectorAll('.fan-label'))
+        const pageEl = document.querySelector('.page')
+        const entryMask = document.getElementById('entryMask')
+        const fanWrapEl = document.getElementById('fanWrap')
+        const frameA = document.getElementById('frameA')
+        const frameB = document.getElementById('frameB')
+        const frameC = document.getElementById('frameC')
+        const frameD = document.getElementById('frameD')
+        const phA = document.getElementById('phA')
+        const phB = document.getElementById('phB')
+        const phC = document.getElementById('phC')
+        const phD = document.getElementById('phD')
 
-        const R = 380
-        const CX = 0, CY = 400  // 圆心（左下角）
-        const KEYS = ['tj', 'fq', 'mtq', 'wd', 'sz']
-        const ACTIVE_DEG = 28   // 选中片的角度
-        const NORMAL_DEG = (90 - ACTIVE_DEG) / 4  // 其余四片均分剩余角度
+        const names = { tj: '天井', fq: '粉墙', mtq: '马头墙', wd: '屋顶' }
+        const KEYS = ['tj', 'fq', 'mtq', 'wd']
+        const ACTIVE_DEG = 34
+        const NORMAL_DEG = (90 - ACTIVE_DEG) / 3
+        const segEls = {}
+        const labelEls = {}
+        const clipPathEls = {}
+        const imgEls = {}
+        const panelCEl = document.getElementById('panelC')
+        const panelDEl = document.getElementById('panelD')
+        const panels = Array.from(document.querySelectorAll('.panel'))
 
-        // 标签在扇形中间偏外侧的位置
-        const LABEL_R = 260
-        const LABEL_CONFIGS = {
-          tj:  { vertical: false },
-          fq:  { vertical: false },
-          mtq: { vertical: false },
-          wd:  { vertical: false },
-          sz:  { vertical: true  },
+        const keyAccent = {
+          tj: 'rgba(106, 127, 149, 0.55)',
+          fq: 'rgba(143, 122, 107, 0.55)',
+          mtq: 'rgba(151, 108, 92, 0.58)',
+          wd: 'rgba(173, 139, 87, 0.55)'
         }
 
-        function degToRad(d) { return d * Math.PI / 180 }
+        let hoveredKey = null
 
-        // 从圆心出发，角度从水平（0度=右）逆时针算，但我们从水平向右开始，向上为正
-        // 扇形从 startAngle 到 endAngle（相对水平，逆时针）
+        KEYS.forEach((k) => {
+          segEls[k] = fanSwitch.querySelector(`.fan-path[data-key="${k}"]`)
+          labelEls[k] = fanSwitch.querySelector(`.fan-label[data-key="${k}"]`)
+          clipPathEls[k] = fanSwitch.querySelector(`#clippath-${k}`)
+          imgEls[k] = fanSwitch.querySelector(`image.fan-img[data-key="${k}"]`)
+        })
+
+        panels.forEach((p, idx) => {
+          p.style.transitionDelay = `${80 + idx * 55}ms`
+        })
+
+        const R = 400
+        const CX = 0
+        const CY = 400
+        const LABEL_R = 270
+
+        const degToRad = (d) => d * Math.PI / 180
+
         function fanPath(startDeg, endDeg) {
-          // startDeg=0 => 水平向右 => SVG中 (CX+R, CY)
-          // 逆时针增大 => 向上
           const s = degToRad(startDeg)
           const e = degToRad(endDeg)
           const x1 = CX + R * Math.cos(s)
@@ -280,101 +479,237 @@
 
         function labelPos(midDeg) {
           const r = degToRad(midDeg)
-          return {
-            x: CX + LABEL_R * Math.cos(r),
-            y: CY - LABEL_R * Math.sin(r)
-          }
+          return { x: CX + LABEL_R * Math.cos(r), y: CY - LABEL_R * Math.sin(r) }
         }
 
-        function updateFan(activeKey) {
-          // 计算每片角度
-          const angles = KEYS.map(k => k === activeKey ? ACTIVE_DEG : NORMAL_DEG)
-          // 从0度（水平右）开始，逆时针排列
+        function computeAngles(activeKey) {
+          return KEYS.map(k => (k === activeKey ? ACTIVE_DEG : NORMAL_DEG))
+        }
+
+        function setFanByAngles(angles, activeKey) {
           let cursor = 0
           KEYS.forEach((k, i) => {
-            const seg = fanSwitch.querySelector(`.fan-path[data-key="${k}"]`)
-            const lbl = fanSwitch.querySelector(`.fan-label[data-key="${k}"]`)
+            const seg = segEls[k]
+            const lbl = labelEls[k]
+            const clipEl = clipPathEls[k]
             const start = cursor
             const end = cursor + angles[i]
             cursor = end
-            if (seg) seg.setAttribute('d', fanPath(start, end))
+
+            if (seg) {
+              const d = fanPath(start, end)
+              seg.setAttribute('d', d)
+              seg.classList.toggle('active', k === activeKey)
+              seg.classList.toggle('hover', hoveredKey === k && k !== activeKey)
+            }
+            if (clipEl) {
+              clipEl.setAttribute('d', fanPath(start, end))
+            }
+
             if (lbl) {
               const mid = (start + end) / 2
               const pos = labelPos(mid)
               lbl.setAttribute('x', pos.x.toFixed(1))
               lbl.setAttribute('y', pos.y.toFixed(1))
-              if (LABEL_CONFIGS[k] && LABEL_CONFIGS[k].vertical) {
-                lbl.setAttribute('writing-mode', 'tb')
-              } else {
-                lbl.removeAttribute('writing-mode')
-              }
+              lbl.classList.toggle('active', k === activeKey)
             }
-            if (seg) seg.classList.toggle('active', k === activeKey)
-          })
-        }
 
-        function renderIFrame(slotEl, src, scale, center) {
-          slotEl.querySelectorAll('iframe').forEach((x) => x.remove())
-          const iframe = document.createElement('iframe')
-          iframe.src = src
-          iframe.loading = 'eager'
-          iframe.referrerPolicy = 'no-referrer'
-          iframe.setAttribute('scrolling', 'no')
-          if (typeof scale === 'number' && scale > 0 && scale <= 1) {
-            const inv = 100 / scale
-            iframe.style.width = `${inv}%`
-            iframe.style.height = `${inv}%`
-            if (center) {
-              iframe.style.position = 'absolute'
-              iframe.style.top = '50%'
-              iframe.style.left = '50%'
-              iframe.style.transform = `translate(-50%, -50%) scale(${scale})`
-              iframe.style.transformOrigin = 'center center'
-            } else {
-              iframe.style.transform = `scale(${scale})`
-              iframe.style.transformOrigin = 'top left'
+            const img = imgEls[k]
+            if (img) {
+              const opacity = (k === activeKey) ? 1 : (hoveredKey === k ? 0.85 : 0.55)
+              img.style.opacity = opacity
             }
-          } else {
-            // 无缩放，直接铺满容器
-            iframe.style.width = '100%'
-            iframe.style.height = '100%'
-            iframe.style.border = '0'
-            iframe.style.display = 'block'
-          }
-          slotEl.appendChild(iframe)
+          })
         }
 
         function render(key) {
-          const page = mapping[key]
-          if (!page) return
+          const name = names[key] || key
 
-          currentKey = key
-          renderIFrame(slotTL, page.tlSrc, 0.55)
-          renderIFrame(slotTR, page.tr, 0.64)
-          renderIFrame(slotBC, page.bc, null, true)
-          renderIFrame(slotBR, page.br, 0.60)
+          function mountFrame(frameEl, url, visible) {
+            if (!frameEl) return
+            if (!visible) {
+              frameEl.style.display = 'none'
+              frameEl.classList.remove('ready')
+              frameEl.removeAttribute('src')
+              return
+            }
+            const oldSrc = frameEl.getAttribute('src') || ''
+            if (oldSrc !== url) {
+              frameEl.classList.remove('ready')
+              frameEl.setAttribute('src', url)
+            }
+            frameEl.style.display = 'block'
+            // fallback，避免个别浏览器 load 事件慢触发导致白屏突兀
+            setTimeout(() => frameEl.classList.add('ready'), 260)
+          }
+
+          // panelA：马头墙 / 粉墙各自展示 A 图
+          const panelAVisible = key === 'mtq' || key === 'fq'
+          const panelAUrl = key === 'mtq'
+            ? '/charts/module2-mtq-a-heatmap.html'
+            : '/charts/module2-fq-a-radial.html'
+          mountFrame(frameA, panelAUrl, panelAVisible)
+          if (phA) {
+            phA.style.display = panelAVisible ? 'none' : 'flex'
+          }
+
+          // panelB：马头墙 / 粉墙各自展示 B 图
+          const panelBVisible = key === 'mtq' || key === 'fq'
+          const panelBUrl = key === 'mtq'
+            ? '/charts/module2-mtq-b-relationship.html'
+            : '/charts/module2-fq-b-relationship.html'
+          mountFrame(frameB, panelBUrl, panelBVisible)
+          if (phB) {
+            phB.style.display = panelBVisible ? 'none' : 'flex'
+          }
+
+          // panelC：马头墙 / 粉墙各自词云
+          const panelCVisible = key === 'mtq' || key === 'fq'
+          const panelCUrl = key === 'mtq'
+            ? '/charts/module2-mtq-c-wordcloud.html'
+            : '/charts/module2-fq-c-wordcloud.html'
+          mountFrame(frameC, panelCUrl, panelCVisible)
+          if (phC) {
+            phC.style.display = panelCVisible ? 'none' : 'flex'
+          }
+
+          // panelD：马头墙 / 粉墙 各自 D 图
+          const panelDVisible = key === 'mtq' || key === 'fq'
+          const panelDUrl = key === 'mtq'
+            ? '/charts/module2-mtq-d-summary.html'
+            : '/charts/module2-fq-d-structure.html'
+          mountFrame(frameD, panelDUrl, panelDVisible)
+          if (phD) {
+            phD.style.display = panelDVisible ? 'none' : 'flex'
+          }
+
+          ;[phA, phB, phC, phD].forEach((el) => {
+            if (!el) return
+            el.style.opacity = '0'
+            el.style.transform = 'translateY(6px)'
+          })
+
+          requestAnimationFrame(() => {
+            phA.textContent = `图A占位：${name}`
+            phB.textContent = `图B占位：${name}`
+            phC.textContent = `词云C占位：${name}`
+            phD.textContent = `图D占位：${name}`
+            ;[phA, phB, phC, phD].forEach((el) => {
+              if (!el) return
+              el.style.opacity = '1'
+              el.style.transform = 'translateY(0)'
+            })
+          })
+
+          if (panelCEl && panelDEl && keyAccent[key]) {
+            panelCEl.style.borderColor = keyAccent[key]
+            panelDEl.style.borderColor = keyAccent[key]
+          }
         }
 
         let currentKey = 'mtq'
+        let currentAngles = computeAngles(currentKey)
+        setFanByAngles(currentAngles, currentKey)
+        render(currentKey)
 
-        function layoutSegments(key) {
-          updateFan(key)
-        }
-
-        segs.forEach((seg) => {
-          seg.addEventListener('click', function () {
-            const key = seg.dataset.key
-            currentKey = key
-            updateFan(key)
-            render(key)
+        ;[frameA, frameB, frameC, frameD].forEach((f) => {
+          if (!f) return
+          f.addEventListener('load', () => {
+            f.classList.add('ready')
           })
         })
 
-        updateFan('mtq')
-        render('mtq')
+        function preloadImages(urls) {
+          return Promise.allSettled(
+            urls.map((url) => new Promise((resolve) => {
+              const img = new Image()
+              img.onload = () => resolve(true)
+              img.onerror = () => resolve(false)
+              img.src = url
+            }))
+          )
+        }
 
-        window.addEventListener('resize', function () {
-          updateFan(currentKey)
+        async function runEntryAnimation() {
+          const urls = [
+            '/charts/module2-fan-images/tj.jpeg',
+            '/charts/module2-fan-images/fq.jpg',
+            '/charts/module2-fan-images/mtq.jpg',
+            '/charts/module2-fan-images/wd.jpg'
+          ]
+          await Promise.race([
+            preloadImages(urls),
+            new Promise((resolve) => setTimeout(resolve, 1200))
+          ])
+          if (fanWrapEl) fanWrapEl.classList.add('images-ready')
+          requestAnimationFrame(() => {
+            if (pageEl) pageEl.classList.add('ready')
+          })
+          setTimeout(() => {
+            if (entryMask) entryMask.classList.add('hide')
+          }, 140)
+        }
+
+        runEntryAnimation()
+
+        let animRaf = 0
+        let isAnimating = false
+
+        function easeOutCubic(t) {
+          return 1 - Math.pow(1 - t, 3)
+        }
+
+        function animateTo(newKey) {
+          if (!newKey || newKey === currentKey) return
+          if (isAnimating && animRaf) cancelAnimationFrame(animRaf)
+
+          const fromAngles = currentAngles.slice()
+          const toAngles = computeAngles(newKey)
+
+          const duration = 360
+          const start = performance.now()
+
+          isAnimating = true
+          currentKey = newKey
+          // 文案/占位先切，图形再做动画过渡
+          render(newKey)
+
+          const tick = (now) => {
+            const t = Math.min(1, (now - start) / duration)
+            const e = easeOutCubic(t)
+
+            const angles = fromAngles.map((a, i) => a + (toAngles[i] - a) * e)
+            setFanByAngles(angles, newKey)
+
+            if (t < 1) {
+              animRaf = requestAnimationFrame(tick)
+            } else {
+              currentAngles = toAngles
+              setFanByAngles(currentAngles, currentKey)
+              isAnimating = false
+            }
+          }
+
+          animRaf = requestAnimationFrame(tick)
+        }
+
+        // 点击监听：让扇形“扩大道具”更丝滑
+        Object.keys(segEls).forEach((k) => {
+          const seg = segEls[k]
+          if (!seg) return
+          seg.addEventListener('click', () => animateTo(seg.dataset.key))
+          seg.addEventListener('mouseenter', () => {
+            hoveredKey = k
+            setFanByAngles(currentAngles, currentKey)
+          })
+          seg.addEventListener('mouseleave', () => {
+            hoveredKey = null
+            setFanByAngles(currentAngles, currentKey)
+          })
+        })
+
+        window.addEventListener('resize', () => {
+          setFanByAngles(currentAngles, currentKey)
         })
       })()
     </script>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>马头墙关系图 · 终极质感版</title>
+    <script src="https://fastly.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <style>
+      :root {
+        --paper-bg: #F7F5EE;
+        --title-color: #2b333e;
+        --subtitle-color: #8c939d;
+        --line-color: #6C7A89;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background-color: var(--paper-bg);
+        /* 核心升级 1：纯 CSS 实现的宣纸微噪点肌理 */
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      }
+
+      .wrap {
+        width: 100%;
+        height: 100%;
+        padding: 24px 32px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* 核心升级 2：学术感排版 */
+      .header {
+        margin-bottom: 20px;
+        position: relative;
+        padding-left: 14px;
+      }
+
+      .header::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 4px;
+        bottom: 2px;
+        width: 4px;
+        background: var(--line-color);
+        border-radius: 2px;
+      }
+
+      .title {
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        color: var(--title-color);
+        margin: 0 0 4px 0;
+      }
+
+      .subtitle {
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        color: var(--subtitle-color);
+        text-transform: uppercase;
+      }
+
+      #chart {
+        flex: 1;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <div class="title">马头墙 · 关键词关系图（图表三）</div>
+        <div class="subtitle">Knowledge Graph of Ma-Tau Wall Architecture</div>
+      </div>
+      <div id="chart"></div>
+    </div>
+
+    <script>
+      (function () {
+        const dom = document.getElementById("chart");
+        // 开启高分屏支持，提升抗锯齿效果
+        const chart = echarts.init(dom, null, { renderer: "canvas", devicePixelRatio: window.devicePixelRatio || 2 });
+
+        // 色盘微调：加深了一点点饱和度，使其在复杂大屏中压得住阵脚
+        const colors = {
+          col1: "#26363E", // 深黛色
+          col2: "#A34343", // 浓胭脂
+          col3: "#566C7A", // 苍青
+          col4: "#B58A52", // 古铜/秋香
+          col5: "#4E6E5D", // 墨绿
+          edge: "rgba(150, 145, 135, 0.28)", // 静态连线
+          edgeHi: "#C95B47", // 高亮连线：朱砂红
+        };
+
+        const col1 = [
+          { id: "g_func", name: "功能需求" },
+          { id: "g_type", name: "类型" },
+          { id: "g_struct", name: "结构做法" },
+          { id: "g_cult", name: "文化寓意" },
+        ];
+
+        const col2 = [
+          { id: "k_fire", name: "防火", freq: 16 },
+          { id: "k_wind", name: "防风", freq: 8 },
+          { id: "k_sun", name: "遮阳", freq: 4 },
+          { id: "k_step", name: "阶梯状", freq: 15 },
+          { id: "k_dou", name: "印斗式", freq: 14 },
+          { id: "k_que", name: "鹊尾式", freq: 14 },
+          { id: "k_zuowen", name: "坐吻式", freq: 13 },
+          { id: "k_zhaohu", name: "朝笏式", freq: 12 },
+        ];
+
+        const col3 = [
+          { id: "t_form", name: "形制谱系" },
+          { id: "t_material", name: "材料肌理" },
+          { id: "t_craft", name: "构造工艺" },
+          { id: "t_symbol", name: "文化符号" },
+          { id: "t_space", name: "空间语义" },
+          { id: "t_value", name: "价值认知" },
+        ];
+
+        const col4 = [
+          { id: "s_brick", name: "小青砖 / 白灰粉刷" },
+          { id: "s_roof", name: "青瓦 / 粉墙黛瓦" },
+          { id: "s_head", name: "座头 / 博风板 / 拔檐" },
+          { id: "s_hard", name: "硬山顶 / 叠涩" },
+          { id: "s_step", name: "五岳朝天 / 三叠 / 两叠" },
+        ];
+
+        const col5 = [
+          { id: "c_huishang", name: "徽商", freq: 15 },
+          { id: "c_read", name: "读书做官", freq: 14 },
+          { id: "c_lixue", name: "程朱理学", freq: 9 },
+          { id: "c_tianren", name: "天人合一", freq: 8 },
+          { id: "c_jixiang", name: "吉祥寓意", freq: 8 },
+          { id: "c_zongzu", name: "宗族", freq: 7 },
+          { id: "c_fengshui", name: "风水", freq: 7 },
+          { id: "c_sishui", name: "四水归堂", freq: 6 },
+          { id: "c_aesthetic", name: "审美价值", freq: 6 },
+          { id: "c_madao", name: "马到成功", freq: 5 },
+          { id: "c_haoru", name: "贾而好儒", freq: 5 },
+          { id: "c_zhongyong", name: "中庸之道", freq: 4 },
+        ];
+
+        const links = [
+          ["g_func", "k_fire"], ["g_func", "k_wind"], ["g_func", "k_sun"],
+          ["g_type", "k_step"], ["g_type", "k_dou"], ["g_type", "k_que"], ["g_type", "k_zuowen"], ["g_type", "k_zhaohu"],
+          ["g_struct", "k_step"], ["g_cult", "k_dou"], ["g_cult", "k_zuowen"],
+          ["k_fire", "t_craft"], ["k_fire", "t_form"],
+          ["k_wind", "t_space"], ["k_sun", "t_space"],
+          ["k_step", "t_form"], ["k_dou", "t_symbol"], ["k_que", "t_symbol"],
+          ["k_zuowen", "t_symbol"], ["k_zhaohu", "t_symbol"],
+          ["k_step", "t_craft"], ["k_dou", "t_value"],
+          ["t_form", "s_step"], ["t_form", "s_head"],
+          ["t_material", "s_brick"], ["t_material", "s_roof"],
+          ["t_craft", "s_head"], ["t_craft", "s_hard"],
+          ["t_symbol", "s_head"], ["t_space", "s_roof"], ["t_space", "s_hard"],
+          ["t_value", "s_step"],
+          ["s_brick", "c_huishang"], ["s_brick", "c_aesthetic"],
+          ["s_roof", "c_lixue"], ["s_roof", "c_sishui"],
+          ["s_head", "c_jixiang"], ["s_head", "c_madao"],
+          ["s_hard", "c_tianren"], ["s_hard", "c_zhongyong"],
+          ["s_step", "c_read"], ["s_step", "c_haoru"], ["s_step", "c_fengshui"], ["s_step", "c_zongzu"],
+        ].map(([source, target]) => ({ source, target, value: 1 }));
+
+        function layoutColumn(items, x, containerH, symbol, color, labelPos, fixedSize) {
+          const out = [];
+          const n = items.length;
+          // 留出上下边距，计算步长
+          const step = Math.min(45, (containerH * 0.9) / Math.max(n - 1, 1)); 
+          const totalHeight = (n - 1) * step;
+          const startY = (containerH - totalHeight) / 2;
+
+          items.forEach((it, idx) => {
+            const nodeSize = it.freq ? fixedSize + (it.freq / 16) * 5 : fixedSize;
+
+            out.push({
+              id: it.id,
+              name: it.name,
+              x,
+              y: startY + idx * step,
+              value: it.freq,
+              symbol,
+              symbolSize: nodeSize,
+              itemStyle: { 
+                color, 
+                opacity: 0.95,
+                borderColor: '#F7F5EE', // 核心升级 4：强化白边，像棋子落在纸上
+                borderWidth: 2,
+                shadowBlur: 10,
+                shadowOffsetY: 4,
+                shadowColor: 'rgba(0, 0, 0, 0.12)' 
+              },
+              label: {
+                show: true,
+                position: labelPos,
+                color: "#2B333E",
+                fontSize: 12.5,
+                fontWeight: 600,
+                distance: 10, 
+                fontFamily: "Georgia, 'KaiTi', '楷体', serif"
+              },
+            });
+          });
+          return out;
+        }
+
+        function buildOption() {
+          const w = chart.getWidth();
+          const h = chart.getHeight();
+          const activeHeight = h; 
+
+          // 微调了列之间的 X 轴比例，让中心稍微宽裕一点
+          const x1 = w * 0.08;
+          const x2 = w * 0.28;
+          const x3 = w * 0.50;
+          const x4 = w * 0.72;
+          const x5 = w * 0.92;
+
+          const nodes = [
+            ...layoutColumn(col1, x1, activeHeight, "roundRect", colors.col1, "left", 18),
+            ...layoutColumn(col2, x2, activeHeight, "circle", colors.col2, "right", 12),
+            ...layoutColumn(col3, x3, activeHeight, "roundRect", colors.col3, "right", 15),
+            ...layoutColumn(col4, x4, activeHeight, "roundRect", colors.col4, "right", 14),
+            ...layoutColumn(col5, x5, activeHeight, "circle", colors.col5, "right", 12),
+          ];
+
+          return {
+            animationDurationUpdate: 1200, // 更平滑的动画过渡
+            animationEasingUpdate: 'quinticInOut',
+            backgroundColor: "transparent",
+            tooltip: {
+              trigger: "item",
+              backgroundColor: "rgba(250, 247, 240, 0.98)",
+              borderColor: "rgba(180, 170, 150, 0.6)",
+              borderWidth: 1,
+              padding: [10, 14],
+              textStyle: { color: "#2B333E", fontSize: 13 },
+              extraCssText: 'box-shadow: 0 4px 16px rgba(0,0,0,0.1); border-radius: 6px;',
+              formatter: function (p) {
+                const d = p.data || {};
+                if (typeof d.value === "number") return `<div style="font-weight:bold; margin-bottom:4px;">${d.name}</div><span style="color:#777;font-size:12px;">出现频率：<span style="color:#A34343;font-weight:bold">${d.value}</span></span>`;
+                return `<b style="font-size:14px;">${d.name}</b>`;
+              },
+            },
+            series: [
+              {
+                type: "graph",
+                layout: "none",
+                roam: false,
+                draggable: false,
+                edgeSymbol: ["none", "none"],
+                lineStyle: {
+                  width: 1.5,
+                  color: colors.edge,
+                  opacity: 0.9,
+                  curveness: 0.35, // 核心升级 3：更加柔和流畅的水波纹曲率
+                },
+                emphasis: {
+                  focus: "adjacency",
+                  lineStyle: { 
+                    width: 3.5, 
+                    color: colors.edgeHi, 
+                    opacity: 0.9,
+                    shadowBlur: 12,
+                    shadowColor: "rgba(201, 91, 71, 0.4)" // 连线发光特效
+                  },
+                  itemStyle: {
+                     shadowBlur: 20,
+                     shadowOffsetY: 6,
+                     shadowColor: 'rgba(0,0,0,0.25)'
+                  },
+                  label: { show: true, color: "#111", fontWeight: 900, textShadowColor: '#fff', textShadowBlur: 4 },
+                },
+                blur: {
+                  itemStyle: { opacity: 0.2 },
+                  lineStyle: { opacity: 0.05 }
+                },
+                label: { show: true },
+                data: nodes,
+                links,
+              },
+            ],
+          };
+        }
+
+        function render() {
+          chart.clear(); 
+          chart.setOption(buildOption(), true);
+        }
+
+        // 初始渲染
+        setTimeout(render, 100); 
+
+        // 监听窗口大小变化
+        let resizeTimer;
+        window.addEventListener("resize", () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(() => {
+            chart.resize();
+            render();
+          }, 200);
+        });
+      })();
+    </script>
+  </body>
+</html>

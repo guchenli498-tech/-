@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>粉墙相关防热贡献结构</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: #f7f3ea;
+      font-family: "KaiTi", "楷体", "华文楷体", STKaiti, Georgia, serif;
+    }
+
+    .wrap {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      padding: 12px 12px 10px;
+      box-sizing: border-box;
+    }
+
+    .hd {
+      margin-bottom: 8px;
+    }
+    .hd h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: bold;
+      color: #3e352c;
+      letter-spacing: 0.4px;
+    }
+    .hd p {
+      margin: 6px 0 0;
+      font-size: 12px;
+      color: #8c8275;
+      letter-spacing: 0.5px;
+    }
+
+    #chart {
+      flex: 1;
+      width: 100%;
+      border: 1px solid rgba(221, 226, 232, 0.95);
+      border-radius: 12px;
+      background: #f2eee6;
+      box-shadow: 0 10px 26px -22px rgba(33, 46, 58, 0.35);
+    }
+
+    .ft {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px dashed #ddd3c3;
+      padding-top: 9px;
+      margin-top: 6px;
+      gap: 8px;
+    }
+    .ft span {
+      font-size: 11px;
+      color: #6d6154;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hd">
+      <h2>粉墙在整体防热体系中的核心地位</h2>
+      <p>外墙、屋顶、天井及其防热策略贡献率（双层环图）</p>
+    </div>
+    
+    <div id="chart"></div>
+    
+    <div class="ft">
+      <span>外墙贡献最高：48.7%</span>
+      <span>屋顶贡献：39.7%</span>
+      <span>天井贡献：11.6%</span>
+    </div>
+  </div>
+
+  <script>
+    const chart = echarts.init(document.getElementById("chart"), null, {
+      renderer: "canvas",
+      devicePixelRatio: window.devicePixelRatio
+    });
+
+    // 提取的主题色
+    const colorTeal = "#4f778f";
+    const colorRed = "#8c5f57";
+    const colorGreen = "#6a8b75";
+    const bgColor = "#f7f3ea";
+
+    // 外圈数据（建筑部位）
+    const outerData = [
+      { name: "外墙", value: 48.7, itemStyle: { color: colorTeal } },
+      { name: "屋顶", value: 39.7, itemStyle: { color: colorRed } },
+      { name: "天井", value: 11.6, itemStyle: { color: colorGreen } }
+    ];
+
+    // 内圈数据（同色系渐变过渡，显得更有层次感）
+    const innerData = [
+      { parent: "外墙", name: "反射", value: 18.6, itemStyle: { color: "#4f778f" } },
+      { parent: "外墙", name: "外遮阳", value: 14.1, itemStyle: { color: "#698fa4" } },
+      { parent: "外墙", name: "墙体蓄热", value: 12.3, itemStyle: { color: "#84a8ba" } },
+      { parent: "外墙", name: "对流换热", value: 2.9, itemStyle: { color: "#a2bfcd" } },
+      { parent: "外墙", name: "长波辐射", value: 0.8, itemStyle: { color: "#c2d6e1" } },
+
+      { parent: "屋顶", name: "反射", value: 21.3, itemStyle: { color: "#8c5f57" } },
+      { parent: "屋顶", name: "墙体蓄热", value: 9.9, itemStyle: { color: "#a2766f" } },
+      { parent: "屋顶", name: "对流换热", value: 7.3, itemStyle: { color: "#b9918b" } },
+      { parent: "屋顶", name: "长波辐射", value: 1.2, itemStyle: { color: "#d1aea9" } },
+
+      { parent: "天井", name: "自然通风", value: 10.3, itemStyle: { color: "#6a8b75" } },
+      { parent: "天井", name: "水体蒸发", value: 1.3, itemStyle: { color: "#8eac98" } }
+    ];
+
+    const option = {
+      animationDuration: 1000,
+      animationEasing: "cubicOut",
+      
+      // 中心文字配置（比Graphic更好居中定位）
+      title: {
+        text: '防热贡献\n结构分解',
+        left: 'center',
+        top: 'center',
+        textStyle: {
+          color: '#5c5044',
+          fontSize: 12,
+          fontFamily: 'KaiTi',
+          fontWeight: 'normal',
+          lineHeight: 18
+        }
+      },
+      
+      // 提示框优化
+      tooltip: {
+        trigger: "item",
+        backgroundColor: "rgba(253, 250, 243, 0.95)",
+        borderColor: "#d1c7b6",
+        borderWidth: 1,
+        padding: [8, 12],
+        textStyle: { color: "#4b4035", fontSize: 12, fontFamily: 'KaiTi' },
+        formatter: (p) => {
+          if (p.seriesName === "建筑部位贡献") {
+            return `<b>${p.name}</b><br/>总防热贡献率：<b>${p.value.toFixed(1)}%</b>`;
+          }
+          const parent = innerData[p.dataIndex].parent;
+          return `<b>${parent} · ${p.name}</b><br/>策略贡献率：<b>${p.value.toFixed(1)}%</b>`;
+        }
+      },
+
+      // 图例：移到底部，采用方块，符合原图UI
+      legend: {
+        bottom: 0,
+        left: "center",
+        icon: "rect",
+        itemWidth: 12,
+        itemHeight: 12,
+        itemGap: 20,
+        textStyle: { color: "#6d6154", fontSize: 12, fontFamily: 'KaiTi' },
+        data: ["外墙", "屋顶", "天井"]
+      },
+
+      series: [
+        // 内圈：策略细分（隐藏标签，保持画面整洁）
+        {
+          name: "策略细分贡献",
+          type: "pie",
+          radius: ["32%", "52%"],
+          center: ["50%", "47%"],
+          startAngle: 90,
+          itemStyle: {
+            borderColor: bgColor,
+            borderWidth: 1.5
+          },
+          label: { show: false }, // 隐藏内圈文字，避免拥挤
+          labelLine: { show: false },
+          data: innerData,
+          z: 2
+        },
+        // 外圈：建筑部位贡献（展示主标签）
+        {
+          name: "建筑部位贡献",
+          type: "pie",
+          radius: ["58%", "76%"],
+          center: ["50%", "47%"],
+          startAngle: 90,
+          itemStyle: {
+            borderColor: bgColor,
+            borderWidth: 2.5
+          },
+          label: {
+            position: 'outside',
+            color: "#4f4438",
+            formatter: "{b}\n{d}%",
+            fontSize: 12,
+            fontFamily: 'KaiTi',
+            lineHeight: 16
+          },
+          labelLine: {
+            length: 15,
+            length2: 10,
+            smooth: true,
+            lineStyle: { color: "#b5a898", width: 1 }
+          },
+          data: outerData,
+          z: 3
+        }
+      ]
+    };
+
+    chart.setOption(option);
+    window.addEventListener("resize", () => chart.resize());
+  </script>
+</body>
+</html>

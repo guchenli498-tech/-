@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>模块二占位布局</title>
+    <style>
+      :root {
+        --bg: #f2eee6;
+        --panel: #f7f3ea;
+        --ink: #4a4a48;
+        --border: #e7dfd2;
+        --shadow: rgba(74, 74, 72, 0.14);
+        --nav: #4a4a48;
+        --fan-1: rgba(196, 219, 167, 0.82);
+        --fan-2: rgba(186, 214, 154, 0.86);
+        --fan-3: rgba(159, 205, 120, 0.92);
+        --fan-4: rgba(194, 216, 172, 0.84);
+        --fan-active: rgba(140, 196, 103, 1);
+        --gap: 8px;
+        --fan-size: clamp(340px, 27vw, 410px);
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: Georgia, 'KaiTi', '楷体', '华文楷体', STKaiti, serif;
+      }
+
+      ::-webkit-scrollbar { display: none; }
+
+      .page {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-rows: 64px 1fr;
+      }
+
+      .topbar {
+        background: var(--nav);
+        color: #fcfcfc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 56px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      }
+
+      .home {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: #fcfcfc;
+        background: rgba(255,255,255,0.06);
+      }
+
+      .topbarWrap {
+        position: relative;
+      }
+
+      .navItem {
+        font-size: 16px;
+        letter-spacing: 2px;
+        color: #f3efe7;
+        text-decoration: none;
+        padding: 9px 14px;
+        border-radius: 12px;
+      }
+
+      .navItem.active {
+        background: rgba(255,255,255,0.12);
+      }
+
+      .content {
+        min-height: 0;
+        padding: 0;
+        display: grid;
+        grid-template-rows: 52% 48%;
+        gap: var(--gap);
+      }
+
+      .topRow {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1.95fr) minmax(320px, 0.62fr);
+        gap: 0;
+      }
+
+      .bottomRow {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: var(--fan-size) minmax(260px, 1fr) minmax(260px, 1fr);
+        gap: 0;
+        align-items: stretch;
+      }
+
+      .panel {
+        min-width: 0;
+        min-height: 0;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        box-shadow: 0 24px 44px -24px var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .panelA {
+        border-top-left-radius: 0;
+      }
+
+      .panelB {
+        border-top-right-radius: 0;
+      }
+
+      .panelC {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+
+      .panelD {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
+      .placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 20px;
+        color: rgba(90, 90, 86, 0.95);
+        font-size: 18px;
+        letter-spacing: 1px;
+        line-height: 1.8;
+      }
+
+      .fanWrap {
+        position: relative;
+        overflow: hidden;
+        background: transparent;
+      }
+
+      .fanSwitch {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .fan-path {
+        stroke: rgba(255,255,255,0.92);
+        stroke-width: 2.4;
+        cursor: pointer;
+        transition: fill 160ms ease;
+      }
+
+      .fan-path[data-key="tj"] { fill: var(--fan-1); }
+      .fan-path[data-key="fq"] { fill: var(--fan-2); }
+      .fan-path[data-key="mtq"] { fill: var(--fan-3); }
+      .fan-path[data-key="wd"] { fill: var(--fan-4); }
+      .fan-path.active { fill: var(--fan-active); }
+
+      .fan-label {
+        font-size: 14px;
+        fill: rgba(46, 52, 40, 0.92);
+        font-weight: 600;
+        pointer-events: none;
+      }
+
+      .panel::before {
+        content: attr(data-title);
+        position: absolute;
+        top: 14px;
+        left: 16px;
+        font-size: 12px;
+        color: rgba(112,112,108,0.95);
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="topbarWrap">
+        <div class="topbar">
+          <div class="home">⌂</div>
+          <a class="navItem" href="javascript:void(0)">徽韵千年</a>
+          <a class="navItem active" href="javascript:void(0)">构筑万象</a>
+          <a class="navItem" href="javascript:void(0)">匠艺流芳</a>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="topRow">
+          <div class="panel panelA" id="panelA" data-title="图A（较大主图）">
+            <div class="placeholder" id="phA">图A占位：马头墙</div>
+          </div>
+          <div class="panel panelB" id="panelB" data-title="图B（右上图）">
+            <div class="placeholder" id="phB">图B占位：马头墙</div>
+          </div>
+        </div>
+
+        <div class="bottomRow">
+          <div class="fanWrap">
+            <svg
+              class="fanSwitch"
+              id="fanSwitch"
+              viewBox="-4 -4 408 408"
+              preserveAspectRatio="xMinYMax meet"
+              aria-label="模块二构件切换器"
+            >
+              <path class="fan-path" data-key="tj" d=""></path>
+              <text class="fan-label" data-key="tj" text-anchor="middle">天井</text>
+
+              <path class="fan-path" data-key="fq" d=""></path>
+              <text class="fan-label" data-key="fq" text-anchor="middle">粉墙</text>
+
+              <path class="fan-path" data-key="mtq" d=""></path>
+              <text class="fan-label" data-key="mtq" text-anchor="middle">马头墙</text>
+
+              <path class="fan-path" data-key="wd" d=""></path>
+              <text class="fan-label" data-key="wd" text-anchor="middle">屋顶</text>
+            </svg>
+          </div>
+
+          <div class="panel panelC" id="panelC" data-title="词云C（固定）">
+            <div class="placeholder" id="phC">词云C占位：马头墙</div>
+          </div>
+
+          <div class="panel panelD" id="panelD" data-title="图D（词云右侧）">
+            <div class="placeholder" id="phD">图D占位：马头墙</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const fanSwitch = document.getElementById('fanSwitch')
+        const segs = Array.from(fanSwitch.querySelectorAll('.fan-path'))
+        const labels = Array.from(fanSwitch.querySelectorAll('.fan-label'))
+
+        const phA = document.getElementById('phA')
+        const phB = document.getElementById('phB')
+        const phC = document.getElementById('phC')
+        const phD = document.getElementById('phD')
+
+        const names = {
+          tj: '天井',
+          fq: '粉墙',
+          mtq: '马头墙',
+          wd: '屋顶'
+        }
+
+        const KEYS = ['tj', 'fq', 'mtq', 'wd']
+        const ACTIVE_DEG = 34
+        const NORMAL_DEG = (90 - ACTIVE_DEG) / 3
+        const R = 400
+        const CX = 0
+        const CY = 400
+        const LABEL_R = 270
+
+        function degToRad(d) {
+          return d * Math.PI / 180
+        }
+
+        function fanPath(startDeg, endDeg) {
+          const s = degToRad(startDeg)
+          const e = degToRad(endDeg)
+          const x1 = CX + R * Math.cos(s)
+          const y1 = CY - R * Math.sin(s)
+          const x2 = CX + R * Math.cos(e)
+          const y2 = CY - R * Math.sin(e)
+          return `M${CX},${CY} L${x1.toFixed(1)},${y1.toFixed(1)} A${R},${R} 0 0,0 ${x2.toFixed(1)},${y2.toFixed(1)} Z`
+        }
+
+        function labelPos(midDeg) {
+          const r = degToRad(midDeg)
+          return {
+            x: CX + LABEL_R * Math.cos(r),
+            y: CY - LABEL_R * Math.sin(r)
+          }
+        }
+
+        function updateFan(activeKey) {
+          const angles = KEYS.map(k => (k === activeKey ? ACTIVE_DEG : NORMAL_DEG))
+          let cursor = 0
+
+          KEYS.forEach((k, i) => {
+            const seg = fanSwitch.querySelector(`.fan-path[data-key="${k}"]`)
+            const lbl = fanSwitch.querySelector(`.fan-label[data-key="${k}"]`)
+            const start = cursor
+            const end = cursor + angles[i]
+            cursor = end
+
+            seg.setAttribute('d', fanPath(start, end))
+            seg.classList.toggle('active', k === activeKey)
+
+            const mid = (start + end) / 2
+            const pos = labelPos(mid)
+            lbl.setAttribute('x', pos.x.toFixed(1))
+            lbl.setAttribute('y', pos.y.toFixed(1))
+          })
+        }
+
+        function render(key) {
+          const name = names[key] || '构件'
+          phA.textContent = `图A占位：${name}`
+          phB.textContent = `图B占位：${name}`
+          phC.textContent = `词云C占位：${name}`
+          phD.textContent = `图D占位：${name}`
+        }
+
+        let currentKey = 'mtq'
+        updateFan(currentKey)
+        render(currentKey)
+
+        segs.forEach(seg => {
+          seg.addEventListener('click', () => {
+            currentKey = seg.dataset.key
+            updateFan(currentKey)
+            render(currentKey)
+          })
+        })
+
+        window.addEventListener('resize', () => updateFan(currentKey))
+      })()
+    </script>
+  </body>
+</html>

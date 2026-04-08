@@ -100,10 +100,26 @@
       border-radius: var(--radius-md);
       padding: 10px 10px 8px;
       display: grid;
-      grid-template-rows: auto auto 1fr;
+      grid-template-rows: auto auto auto 1fr;
       gap: 6px;
       overflow: hidden;
       min-height: 0;
+    }
+
+    .card-thumb {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: #ebe1d5;
+      border: 1px solid rgba(214, 201, 184, 0.45);
+    }
+
+    .card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .card h3 {
@@ -976,6 +992,9 @@
           <span>传承关系网络</span>
           <div class="graph-head-right">
             <small id="graphHint">当前：木雕</small>
+            <button id="btnLevelsAll" class="graph-action active" type="button">全谱</button>
+            <button id="btnLevelsNP" class="graph-action" type="button">国+省</button>
+            <button id="btnLevelsNPC" class="graph-action" type="button">国+省+市</button>
             <button id="btnAutoLayout" class="graph-action" type="button">自动布局</button>
             <button id="btnToggleFix" class="graph-action" type="button">固定节点</button>
             <button id="btnResetLayout" class="graph-action" type="button">重置布局</button>
@@ -1023,17 +1042,17 @@
 
   <script>
     const scientists = [
-      { name: '李诫 (1035–1110)', meta: '《营造法式》编撰者', desc: '北宋官式营造体系奠基者，提出材份制，对徽派祠堂木构影响深远。' },
-      { name: '喻皓 (约960–1004)', meta: '《木经》作者', desc: '总结木构比例法则，梁柱尺度关系成为徽派民居木作的重要参照。' },
-      { name: '雷发达 (1619–1693)', meta: '样式雷奠基人', desc: '推动官式营造与地域工艺融合，促进徽派形制与装饰技法传播。' },
-      { name: '计成 (1582–约1642)', meta: '《园冶》作者', desc: '系统阐释园林营造思想，借景与理水观念深刻影响徽州聚落空间。' }
+      { name: '李诫 (1035–1110)', meta: '《营造法式》编撰者', desc: '北宋官式营造体系奠基者，提出材份制，对徽派祠堂木构影响深远。', img: '/charts/module3-cards/lijie.jpg' },
+      { name: '喻皓 (约960–1004)', meta: '《木经》作者', desc: '总结木构比例法则，梁柱尺度关系成为徽派民居木作的重要参照。', img: '/charts/module3-cards/yuhao.jpg' },
+      { name: '雷发达 (1619–1693)', meta: '样式雷奠基人', desc: '推动官式营造与地域工艺融合，促进徽派形制与装饰技法传播。', img: '/charts/module3-cards/leifada.jpg' },
+      { name: '计成 (1582–约1642)', meta: '《园冶》作者', desc: '系统阐释园林营造思想，借景与理水观念深刻影响徽州聚落空间。', img: '/charts/module3-cards/jicheng.jpg' }
     ];
 
     const works = [
-      { name: '《营造法式》', meta: '1103年刊行', desc: '中国现存最早建筑技术官书，确立制度化营造标准。' },
-      { name: '《木经》', meta: '约980年成书', desc: '聚焦木构尺度与构造比例，是后世匠作实践的重要源头。' },
-      { name: '《园冶》', meta: '1634年刊行', desc: '明代造园经典，提出相地、借景、掇山等系统方法。' },
-      { name: '《长物志》', meta: '1635年成书', desc: '记录室庐与陈设美学，对民居空间营造与审美有持续影响。' }
+      { name: '《营造法式》', meta: '1103年刊行', desc: '中国现存最早建筑技术官书，确立制度化营造标准。', img: '/charts/module3-cards/yingzao-fashi.jpg' },
+      { name: '《木经》', meta: '约980年成书', desc: '聚焦木构尺度与构造比例，是后世匠作实践的重要源头。', img: '/charts/module3-cards/mujing.jpg' },
+      { name: '《园冶》', meta: '1634年刊行', desc: '明代造园经典，提出相地、借景、掇山等系统方法。', img: '/charts/module3-cards/yuanye.jpg' },
+      { name: '《长物志》', meta: '1635年成书', desc: '记录室庐与陈设美学，对民居空间营造与审美有持续影响。', img: '/charts/module3-cards/changwuzhi.png' }
     ];
 
     const cardGrid = document.getElementById('cardGrid');
@@ -1043,6 +1062,7 @@
     function renderCards(list) {
       cardGrid.innerHTML = list.map(item => `
         <article class="card">
+          <div class="card-thumb"><img src="${item.img}" alt="${item.name}" loading="lazy" referrerpolicy="no-referrer" /></div>
           <h3>${item.name}</h3>
           <div class="meta">${item.meta}</div>
           <p class="desc">${item.desc}</p>
@@ -1205,7 +1225,8 @@
       activeDetailTab: 'intro',
       activeNodeId: null,
       hoverNodeId: null,
-      expandedKey: null
+      expandedKey: null,
+      levelFilterKey: 'all'
     };
 
     const carvingImage = document.getElementById('carvingImage');
@@ -1223,12 +1244,22 @@
     const btnAutoLayout = document.getElementById('btnAutoLayout');
     const btnToggleFix = document.getElementById('btnToggleFix');
     const btnResetLayout = document.getElementById('btnResetLayout');
+    const btnLevelsAll = document.getElementById('btnLevelsAll');
+    const btnLevelsNP = document.getElementById('btnLevelsNP');
+    const btnLevelsNPC = document.getElementById('btnLevelsNPC');
+
+    const levelFilterMap = {
+      all: { levels: ['national', 'provincial', 'city', 'county', 'general'], label: '全谱' },
+      np: { levels: ['national', 'provincial'], label: '国家+省级' },
+      npc: { levels: ['national', 'provincial', 'city'], label: '国家+省+市' }
+    };
 
     const relationMeta = {
       'master-apprentice': { label: '师承', dash: '', width: 2.1 },
       guidance: { label: '指导', dash: '6 4', width: 1.9 },
       family: { label: '家族', dash: '2 3', width: 1.9 },
-      affiliation: { label: '归属', dash: '', width: 1.4 }
+      affiliation: { label: '归属', dash: '', width: 1.4 },
+      'work-of': { label: '代表作关联', dash: '10 4', width: 1.6 }
     };
     let dragNodeId = null;
     let dragMoved = false;
@@ -1243,6 +1274,59 @@
       };
     }
 
+    function generateLinksFromNodes(nodes) {
+      const links = [];
+
+      const craftRoots = nodes.filter(n => n.type === 'craft' && n.level === 'root');
+
+      // 1) 先把每个雕种中心节点与该雕种的所有节点建立“归属”关系，保证整体联通
+      craftRoots.forEach(root => {
+        nodes
+          .filter(n => n.id !== root.id && n.craft === root.craft && n.type !== 'craft')
+          .forEach(n => {
+            links.push({ source: root.id, target: n.id, relationType: 'affiliation' });
+          });
+      });
+
+      // 2) 再根据节点的 mentorNames 生成师承边
+      nodes
+        .filter(n => n.type === 'inheritor' && Array.isArray(n.mentors) && n.mentors.length)
+        .forEach(student => {
+          student.mentors.forEach(mentorName => {
+            const mentor = nodes.find(
+              n => n.type === 'inheritor' && n.craft === student.craft && n.name === mentorName
+            );
+            if (mentor) {
+              links.push({
+                source: mentor.id,
+                target: student.id,
+                relationType: 'master-apprentice'
+              });
+            }
+          });
+        });
+
+      // 3) 生成作品节点与传承人的“代表作关联”
+      nodes
+        .filter(n => (n.type === 'work' || n.type === 'masterpiece' || n.level === 'work') && Array.isArray(n.workOf))
+        .forEach(work => {
+          work.workOf.forEach(personName => {
+            const person = nodes.find(
+              n => n.type === 'inheritor' && n.craft === work.craft && n.name === personName
+            );
+            if (person) {
+              links.push({
+                source: work.id,
+                target: person.id,
+                relationType: 'work-of'
+              });
+            }
+          });
+        });
+
+      return links;
+    }
+
     function updateLayoutButtons() {
       btnToggleFix.classList.toggle('active', layoutLocked);
       btnToggleFix.textContent = layoutLocked ? '已固定' : '固定节点';
@@ -1250,12 +1334,43 @@
       btnAutoLayout.classList.toggle('active', layoutRunning);
     }
 
+    function getActiveCraftCenter() {
+      return { x: 280, y: 180 };
+    }
+
+    function updateLevelFilterButtons() {
+      btnLevelsAll.classList.toggle('active', state.levelFilterKey === 'all');
+      btnLevelsNP.classList.toggle('active', state.levelFilterKey === 'np');
+      btnLevelsNPC.classList.toggle('active', state.levelFilterKey === 'npc');
+    }
+
+    function computeVisibleNodeIds(nodes, allowedLevels) {
+      const allowed = new Set(allowedLevels);
+      return new Set(
+        nodes
+          .filter(n => n.level === 'root' || n.level === 'work' || allowed.has(n.level))
+          .map(n => n.id)
+      );
+    }
+
+    function setLevelFilter(key) {
+      state.levelFilterKey = key;
+      updateLevelFilterButtons();
+      // 切换层级时，直接清空当前选中和 hover，避免引用到已隐藏节点
+      state.activeNodeId = null;
+      state.hoverNodeId = null;
+      renderAll();
+    }
+
     function getNodeRadius(node) {
-      if (node.level === 'root') return 16;
-      if (node.level === 'national') return 13;
-      if (node.level === 'provincial') return 11.5;
-      if (node.level === 'work') return 10;
-      return 9.5;
+      if (node.level === 'root') return 20;
+      if (node.level === 'national') return 18;
+      if (node.level === 'provincial') return 15;
+      if (node.level === 'city') return 12;
+      if (node.level === 'county') return 10.5;
+      if (node.level === 'work') return 12;
+      if (node.level === 'general') return 11;
+      return 11;
     }
 
     function getNodeTooltip(node) {
@@ -1266,13 +1381,29 @@
         root: '核心',
         national: '国家级',
         provincial: '省级',
+        city: '市级',
+        county: '县级',
         general: '一般',
         work: '代表作'
       }[node.level] || '一般';
+      const craftName = craftData[node.craft]?.name || '';
       const media = node.image
         ? `<div class="tooltip-media"><img src="${node.image}" alt="${node.name}" loading="lazy" /></div>`
         : '';
-      return `${media}<strong>${node.name}</strong><br/>${craftData[node.craft].name} · ${typeLabel} · ${levelLabel}<br/>${node.desc || ''}`;
+
+      const title = `<strong>${node.name}</strong><br/>${craftName} · ${typeLabel} · ${levelLabel}`;
+      const roleLine = node.role ? `${node.role}` : (node.desc ? `${node.desc}` : '');
+      const originLine = node.origin ? `籍贯/地区：${node.origin}` : '';
+      const studioLine = node.studio ? `工作室/机构：${node.studio}` : '';
+      const mentorsLine = Array.isArray(node.mentors) && node.mentors.length
+        ? `师从：${node.mentors.join('、')}`
+        : '';
+      const worksLine = Array.isArray(node.works) && node.works.length
+        ? `代表作品：${node.works.join('、')}`
+        : (typeof node.works === 'string' && node.works.trim() ? `代表作品：${node.works.trim()}` : '');
+
+      const extraLines = [roleLine, originLine, studioLine, mentorsLine, worksLine].filter(Boolean).join('<br/>');
+      return `${media}${title}${extraLines ? `<br/>${extraLines}` : ''}`;
     }
 
     function showGraphTooltip(html, x, y) {
@@ -1418,15 +1549,26 @@
         graphSvg.innerHTML = `<text x="280" y="180" text-anchor="middle" font-size="14" fill="#8a8277">关系数据加载中...</text>`;
         return;
       }
-      const nodeMap = new Map(graphData.nodes.map(n => [n.id, n]));
       const activeCraft = state.activeCraft;
       const activeNodeId = state.activeNodeId;
-      const focusNodeId = activeNodeId || state.hoverNodeId;
+      // 只渲染当前雕种（木/石/砖）相关的节点，避免三种雕种全部堆在一团
+      const craftNodes = graphData.nodes.filter(
+        n => n.craft === activeCraft || (n.type === 'craft' && n.craft === activeCraft)
+      );
+      const nodeMap = new Map(craftNodes.map(n => [n.id, n]));
+      const levelConf = levelFilterMap[state.levelFilterKey] || levelFilterMap.all;
+      const visibleNodeIds = computeVisibleNodeIds(craftNodes, levelConf.levels);
+      let focusNodeId = activeNodeId || state.hoverNodeId;
+      if (focusNodeId && !visibleNodeIds.has(focusNodeId)) focusNodeId = null;
+
       const linkSet = new Set();
       const neighborSet = new Set();
       if (focusNodeId) {
         neighborSet.add(focusNodeId);
-        graphData.links.forEach(l => {
+        const linksFiltered = graphData.links.filter(
+          l => visibleNodeIds.has(l.source) && visibleNodeIds.has(l.target)
+        );
+        linksFiltered.forEach(l => {
           if (l.source === focusNodeId || l.target === focusNodeId) {
             linkSet.add(`${l.source}|${l.target}`);
             linkSet.add(`${l.target}|${l.source}`);
@@ -1436,7 +1578,9 @@
         });
       }
 
-      const linksSvg = graphData.links.map(link => {
+      const linksSvg = graphData.links
+        .filter(link => visibleNodeIds.has(link.source) && visibleNodeIds.has(link.target))
+        .map(link => {
         const s = nodeMap.get(link.source);
         const t = nodeMap.get(link.target);
         const rel = relationMeta[link.relationType] || relationMeta.affiliation;
@@ -1451,9 +1595,13 @@
         return `<line x1="${s.x}" y1="${s.y}" x2="${t.x}" y2="${t.y}" stroke="${color}" stroke-width="${width}" stroke-opacity="${opacity}" ${dash} data-link="${link.source}|${link.target}" data-link-label="${rel.label}" />`;
       }).join('');
 
-      const nodesSvg = graphData.nodes.map(node => {
+      const nodesSvg = craftNodes
+        .filter(node => visibleNodeIds.has(node.id))
+        .map(node => {
         const r = getNodeRadius(node);
         const color = craftData[node.craft].palette.main;
+        const isWorkLike = node.type === 'work' || node.type === 'masterpiece' || node.level === 'work';
+        const isKeyLabel = node.level === 'root' || node.level === 'national' || node.level === 'provincial' || isWorkLike;
         const isFocusCraft = node.craft === activeCraft;
         const isActiveNode = node.id === activeNodeId;
         const isNeighbor = focusNodeId ? neighborSet.has(node.id) : false;
@@ -1461,21 +1609,33 @@
           ? (isNeighbor ? 1 : (isFocusCraft ? 0.26 : 0.08))
           : (isActiveNode ? 1 : (isFocusCraft ? 1 : 0.15));
         const stroke = isActiveNode || (focusNodeId && node.id === focusNodeId) ? '#A9332A' : 'rgba(0,0,0,0.18)';
-        const strokeW = isActiveNode ? 3 : 1;
+        const strokeW = isActiveNode ? 3 : (isWorkLike ? 2 : 1);
         const labelOnRight = node.x < 280;
         const labelX = labelOnRight ? node.x + r + 7 : node.x - r - 7;
         const labelAnchor = labelOnRight ? 'start' : 'end';
         const labelY = node.y + 4;
         const labelColor = isFocusCraft ? '#2A2A2A' : '#888';
-        const labelOpacity = isFocusCraft ? 1 : 0.35;
+        const labelOpacity = focusNodeId
+          ? (isNeighbor ? 1 : (isKeyLabel ? 0.65 : 0.08))
+          : (isKeyLabel ? 1 : 0.14);
+        const labelSize = (node.level === 'root' || node.level === 'national') ? 14 : (isKeyLabel ? 13 : 11);
         return `
           <g data-node="${node.id}" style="cursor:pointer" data-tooltip='${getNodeTooltip(node).replace(/'/g, '&apos;')}'>
-            <circle cx="${node.x}" cy="${node.y}" r="${r}" fill="${color}" fill-opacity="${opacity}" stroke="${stroke}" stroke-width="${strokeW}" />
+            <circle
+              cx="${node.x}"
+              cy="${node.y}"
+              r="${r}"
+              fill="${isWorkLike ? 'transparent' : color}"
+              fill-opacity="${isWorkLike ? 0 : opacity}"
+              stroke="${stroke}"
+              stroke-width="${strokeW}"
+              ${isWorkLike ? 'stroke-dasharray="4 2"' : ''}
+            />
             <text
               x="${labelX}"
               y="${labelY}"
               text-anchor="${labelAnchor}"
-              font-size="12"
+              font-size="${labelSize}"
               fill="${labelColor}"
               fill-opacity="${labelOpacity}"
               stroke="#F4EFEA"
@@ -1489,7 +1649,7 @@
       }).join('');
 
       graphSvg.innerHTML = linksSvg + nodesSvg;
-      graphHint.textContent = `当前：${craftData[activeCraft].name}`;
+      graphHint.textContent = `当前：${craftData[activeCraft].name} · ${levelConf.label}`;
     }
 
     function getCraftCenter(craft) {
@@ -1504,8 +1664,12 @@
       layoutRunning = true;
       updateLayoutButtons();
 
-      const nodeMap = new Map(graphData.nodes.map(n => [n.id, n]));
-      graphData.nodes.forEach(n => {
+      const activeCraft = state.activeCraft;
+      const nodes = graphData.nodes.filter(
+        n => n.craft === activeCraft || (n.type === 'craft' && n.craft === activeCraft)
+      );
+      const nodeMap = new Map(nodes.map(n => [n.id, n]));
+      nodes.forEach(n => {
         n.vx = n.vx || 0;
         n.vy = n.vy || 0;
       });
@@ -1518,16 +1682,15 @@
           return;
         }
 
-        for (let i = 0; i < graphData.nodes.length; i++) {
-          const a = graphData.nodes[i];
-          for (let j = i + 1; j < graphData.nodes.length; j++) {
-            const b = graphData.nodes[j];
+        for (let i = 0; i < nodes.length; i++) {
+          const a = nodes[i];
+          for (let j = i + 1; j < nodes.length; j++) {
+            const b = nodes[j];
             let dx = b.x - a.x;
             let dy = b.y - a.y;
             const d2 = dx * dx + dy * dy + 0.01;
             const d = Math.sqrt(d2);
-            const sameCraftBoost = a.craft === b.craft ? 1.15 : 2.1;
-            const rep = (2600 * sameCraftBoost) / d2;
+            const rep = 6800 / d2;
             dx /= d;
             dy /= d;
             a.vx -= dx * rep;
@@ -1537,15 +1700,17 @@
           }
         }
 
-        graphData.links.forEach(link => {
+        graphData.links
+          .filter(l => nodeMap.has(l.source) && nodeMap.has(l.target))
+          .forEach(link => {
           const s = nodeMap.get(link.source);
           const t = nodeMap.get(link.target);
           if (!s || !t) return;
           let dx = t.x - s.x;
           let dy = t.y - s.y;
           const d = Math.sqrt(dx * dx + dy * dy) || 1;
-          const desired = link.relationType === 'affiliation' ? 72 : 58;
-          const spring = (d - desired) * 0.011;
+          const desired = link.relationType === 'affiliation' ? 120 : (link.relationType === 'work-of' ? 145 : 105);
+          const spring = (d - desired) * 0.018;
           dx /= d;
           dy /= d;
           s.vx += dx * spring;
@@ -1554,14 +1719,14 @@
           t.vy -= dy * spring;
         });
 
-        graphData.nodes.forEach(n => {
-          const c = getCraftCenter(n.craft);
-          n.vx += (c.x - n.x) * 0.0042;
-          n.vy += (c.y - n.y) * 0.0042;
-          n.vx *= 0.79;
-          n.vy *= 0.79;
-          n.x = Math.max(24, Math.min(536, n.x + n.vx));
-          n.y = Math.max(24, Math.min(336, n.y + n.vy));
+        const center = getActiveCraftCenter();
+        nodes.forEach(n => {
+          n.vx += (center.x - n.x) * 0.0032;
+          n.vy += (center.y - n.y) * 0.0032;
+          n.vx *= 0.84;
+          n.vy *= 0.84;
+          n.x = Math.max(26, Math.min(534, n.x + n.vx));
+          n.y = Math.max(26, Math.min(334, n.y + n.vy));
         });
 
         renderGraph();
@@ -1597,6 +1762,40 @@
       const json = await res.json();
       graphData = cloneGraphData(json);
       graphInitialData = cloneGraphData(json);
+
+      // 若数据里没有给 x/y（或给得不完整），用雕种中心附近做初始化，避免 NaN 影响力导向计算
+      graphData.nodes.forEach((n, idx) => {
+        if (typeof n.x !== 'number' || typeof n.y !== 'number') {
+          const c = getActiveCraftCenter();
+          const angle = (idx * 0.62) % (Math.PI * 2);
+          const radius = 55 + (idx % 9) * 16;
+          n.x = c.x + Math.cos(angle) * radius;
+          n.y = c.y + Math.sin(angle) * radius;
+        }
+        n.vx = n.vx || 0;
+        n.vy = n.vy || 0;
+      });
+      graphInitialData.nodes.forEach((n, idx) => {
+        if (typeof n.x !== 'number' || typeof n.y !== 'number') {
+          const c = getActiveCraftCenter();
+          const angle = (idx * 0.62) % (Math.PI * 2);
+          const radius = 55 + (idx % 9) * 16;
+          n.x = c.x + Math.cos(angle) * radius;
+          n.y = c.y + Math.sin(angle) * radius;
+        }
+        n.vx = n.vx || 0;
+        n.vy = n.vy || 0;
+      });
+
+      const shouldGenerate =
+        Array.isArray(json.nodes) &&
+        json.nodes.some(n => (Array.isArray(n.mentors) && n.mentors.length) || (Array.isArray(n.workOf) && n.workOf.length));
+
+      if (shouldGenerate) {
+        const links = generateLinksFromNodes(json.nodes);
+        graphData.links = links;
+        graphInitialData.links = links.map(l => ({ ...l }));
+      }
     }
 
     function getSvgPoint(evt) {
@@ -1736,8 +1935,13 @@
       resetLayout();
     });
 
+    btnLevelsAll.addEventListener('click', () => setLevelFilter('all'));
+    btnLevelsNP.addEventListener('click', () => setLevelFilter('np'));
+    btnLevelsNPC.addEventListener('click', () => setLevelFilter('npc'));
+
     initGraphInteractions();
     updateLayoutButtons();
+    updateLevelFilterButtons();
     (async () => {
       try {
         await loadGraphData();

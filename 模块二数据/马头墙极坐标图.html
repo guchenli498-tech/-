@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>马头墙防火效能 · 徽韵水墨 | 鲜明色谱</title>
+    <!-- ECharts 核心库 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #eae5db;
+            background-image: radial-gradient(circle at 20% 30%, rgba(150, 135, 110, 0.1) 1%, transparent 1%);
+            background-size: 28px 28px;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'STKaiti', 'KaiTi', serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .chart-wrapper {
+            max-width: 1300px;
+            width: 100%;
+            background: #fefcf8;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2), 0 0 0 1px #cfc5b0;
+            border-radius: 2rem;
+            overflow: hidden;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 660px;
+            background: #fefcf8;
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 1rem;
+            }
+
+            .chart-container {
+                height: 560px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chart-wrapper">
+        <div id="ink-chart-contrast" class="chart-container"></div>
+    </div>
+
+    <script>
+        (function () {
+            // ========= 数据源: 基于陈贵勇(2025) 表2 + 表3 =========
+            const categories = ['一阶马头墙', '三阶马头墙', '五阶马头墙'];
+
+            // 表2: 三种蔓延方式的平均阻隔提升率 (%)
+            const heatRadiation = [41.47, 75.25, 82.5];
+            const thermalPlume = [11.99, 24.63, 39.4];
+            const flyingBrand = [0.22, 1.9, 2.05];
+
+            // 综合火灾蔓延阻隔提升率（考虑贡献率后表3最终平均值）
+            const overallImprovement = [24.37, 48.83, 53.48];
+
+            // 表3 详细点位: 屋脊处、前檐处、后檐处
+            const ridgeData = [36.55, 55.42, 61.11];
+            const eaveData = [-10.47, 22.02, 50.27];
+            const backEaveData = [30.76, 45.59, 40.49];
+
+            // ========= 鲜明水墨色谱：在保持雅致的前提下增强区分度 =========
+            // 每个系列使用独立且辨识度高的色号
+            const colorPalette = {
+                // 玫瑰图三基色 (高辨识暖色系)
+                heatRad: '#C97E5A',      // 赤陶色 (热辐射)
+                plume: '#7E9A6B',        // 草玉绿 (热羽流)
+                fire: '#D4A373',          // 杏色 (飞火)
+                // 综合提升率 (深靛蓝绿，突出主线)
+                overall: '#2F6B5E',       // 墨翠绿
+                // 表3点位三色 (冷-暖-中性明显区分)
+                ridge: '#5A8F7C',         // 青碧色 (屋脊)
+                eave: '#C28A5C',          // 肉桂棕 (前檐)
+                backEave: '#8F7A6B'       // 暖灰褐 (后檐)
+            };
+
+            const option = {
+                title: { show: false },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow', shadowStyle: { color: '#E8E2D6' } },
+                    backgroundColor: '#FFFCF5',
+                    borderColor: '#B8AA92',
+                    borderWidth: 0.8,
+                    textStyle: { color: '#2C2A22', fontSize: 12, fontWeight: '500', fontFamily: 'Segoe UI, PingFang SC' },
+                    formatter: function (params) {
+                        if (!params || params.length === 0) return '';
+                        let angleName = params[0].axisValueLabel;
+                        let res = `<strong style="color:#5E5B48; font-size:13px;">${angleName}</strong><br/>`;
+                        for (let p of params) {
+                            let val = p.value;
+                            let symbol = p.marker;
+                            res += `${symbol} ${p.seriesName}: <b>${val}%</b><br/>`;
+                        }
+                        return res;
+                    }
+                },
+                legend: {
+                    data: [
+                        '热辐射阻隔率', '热羽流阻隔率', '飞火阻隔率',
+                        '综合阻隔提升率', '屋脊处阻隔率', '前檐处阻隔率', '后檐处阻隔率'
+                    ],
+                    orient: 'vertical',
+                    left: 'left',
+                    top: 'middle',
+                    textStyle: { color: '#4A4638', fontSize: 11.5, fontWeight: '500', fontFamily: 'Segoe UI, PingFang SC' },
+                    itemWidth: 24,
+                    itemHeight: 12,
+                    backgroundColor: 'rgba(250, 247, 240, 0.85)',
+                    borderRadius: 24,
+                    padding: [8, 14, 8, 14],
+                    borderWidth: 0.5,
+                    borderColor: '#D6CBB8'
+                },
+                polar: {
+                    radius: ['12%', '78%'],
+                    center: ['52%', '52%'],
+                    tooltip: { show: true }
+                },
+                angleAxis: {
+                    type: 'category',
+                    data: categories,
+                    axisLabel: {
+                        color: '#4A4538',
+                        fontSize: 14,
+                        fontWeight: 'bold',
+                        fontFamily: 'Segoe UI, PingFang SC',
+                        backgroundColor: '#EFE8DD',
+                        padding: [2, 8, 2, 8],
+                        borderRadius: 20
+                    },
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    axisPointer: { show: true, type: 'shadow', shadowStyle: { color: '#E2D9CE' } }
+                },
+                radiusAxis: {
+                    name: '阻隔提升率 (%)',
+                    nameTextStyle: { color: '#6B5E48', fontSize: 12, fontWeight: 'bold', fontFamily: 'Segoe UI, PingFang SC' },
+                    min: -15,
+                    max: 90,
+                    axisLabel: { color: '#5A5240', fontWeight: '500', fontSize: 11, formatter: '{value}%' },
+                    splitLine: { lineStyle: { color: '#D1C7B6', type: 'dashed', width: 0.8 } },
+                    axisLine: { show: false }
+                },
+                series: [
+                    // ========= 玫瑰图系列 (表2平均阻隔率) 鲜明区分 =========
+                    {
+                        name: '热辐射阻隔率',
+                        type: 'bar',
+                        data: heatRadiation,
+                        coordinateSystem: 'polar',
+                        roundCap: true,
+                        barCategoryGap: '18%',
+                        itemStyle: {
+                            color: colorPalette.heatRad,
+                            borderRadius: [8, 8, 0, 0],
+                            shadowBlur: 4,
+                            shadowColor: 'rgba(0,0,0,0.1)'
+                        },
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: '{c}%',
+                            color: '#3D3A2E',
+                            fontWeight: 'bold',
+                            fontSize: 11,
+                            fontFamily: 'monospace',
+                            textShadowBlur: 2,
+                            textShadowColor: '#FDF8F0'
+                        },
+                        emphasis: { scale: false, itemStyle: {}, label: { show: true } }
+                    },
+                    {
+                        name: '热羽流阻隔率',
+                        type: 'bar',
+                        data: thermalPlume,
+                        coordinateSystem: 'polar',
+                        roundCap: true,
+                        barCategoryGap: '18%',
+                        itemStyle: { color: colorPalette.plume, borderRadius: [8, 8, 0, 0], shadowBlur: 4 },
+                        label: { show: true, position: 'top', formatter: '{c}%', color: '#3D3A2E', fontWeight: 'bold', fontSize: 11, fontFamily: 'monospace', textShadowBlur: 2 },
+                        emphasis: { scale: false, itemStyle: {}, label: { show: true } }
+                    },
+                    {
+                        name: '飞火阻隔率',
+                        type: 'bar',
+                        data: flyingBrand,
+                        coordinateSystem: 'polar',
+                        roundCap: true,
+                        barCategoryGap: '18%',
+                        itemStyle: { color: colorPalette.fire, borderRadius: [8, 8, 0, 0], shadowBlur: 4 },
+                        label: { show: true, position: 'top', formatter: '{c}%', color: '#3D3A2E', fontWeight: 'bold', fontSize: 10, fontFamily: 'monospace', textShadowBlur: 2 },
+                        emphasis: { scale: false, itemStyle: {}, label: { show: true } }
+                    },
+                    // ========= 综合阻隔提升率折线 (极坐标) 深色突出 =========
+                    {
+                        name: '综合阻隔提升率',
+                        type: 'line',
+                        data: overallImprovement,
+                        coordinateSystem: 'polar',
+                        symbol: 'circle',
+                        symbolSize: 12,
+                        lineStyle: { width: 3.2, color: colorPalette.overall, type: 'solid', shadowBlur: 6, shadowColor: 'rgba(0,0,0,0.15)' },
+                        itemStyle: { color: colorPalette.overall, borderColor: '#FCF6EA', borderWidth: 1.2 },
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: '{c}%',
+                            backgroundColor: '#F5EFE2',
+                            padding: [3, 8, 3, 8],
+                            borderRadius: 20,
+                            fontWeight: 'bold',
+                            fontSize: 11,
+                            color: '#2F5A4A',
+                            borderColor: '#C2B59E',
+                            borderWidth: 0.5
+                        },
+                        smooth: true,
+                        emphasis: { scale: false, lineStyle: {}, label: { show: true } }
+                    },
+                    // ========= 表3详细点位：屋脊处 青碧色 =========
+                    {
+                        name: '屋脊处阻隔率',
+                        type: 'line',
+                        data: ridgeData,
+                        coordinateSystem: 'polar',
+                        symbol: 'diamond',
+                        symbolSize: 10,
+                        lineStyle: { width: 2.2, color: colorPalette.ridge, type: 'dashed', dashOffset: 2, opacity: 0.9 },
+                        itemStyle: { color: colorPalette.ridge, borderColor: '#FFF8EA', borderWidth: 1 },
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: '{c}%',
+                            fontSize: 10,
+                            fontWeight: 'bold',
+                            color: '#3A6B5A',
+                            backgroundColor: 'rgba(250, 245, 235, 0.9)',
+                            padding: [2, 6, 2, 6],
+                            borderRadius: 14,
+                            borderColor: '#C6BAA2',
+                            borderWidth: 0.4
+                        },
+                        smooth: false,
+                        emphasis: { scale: false, lineStyle: {}, label: { show: true } }
+                    },
+                    // ========= 表3详细点位：前檐处 肉桂棕 =========
+                    {
+                        name: '前檐处阻隔率',
+                        type: 'line',
+                        data: eaveData,
+                        coordinateSystem: 'polar',
+                        symbol: 'triangle',
+                        symbolSize: 10,
+                        lineStyle: { width: 2.2, color: colorPalette.eave, type: 'dashed', dashOffset: 4, opacity: 0.9 },
+                        itemStyle: { color: colorPalette.eave, borderColor: '#FFF8EA', borderWidth: 1 },
+                        label: {
+                            show: true,
+                            position: 'bottom',
+                            formatter: (params) => { let v = params.value; return v + '%'; },
+                            fontSize: 10,
+                            fontWeight: 'bold',
+                            color: '#8B5E3A',
+                            backgroundColor: 'rgba(250, 245, 235, 0.9)',
+                            padding: [2, 6, 2, 6],
+                            borderRadius: 14,
+                            borderColor: '#C6BAA2'
+                        },
+                        smooth: false,
+                        emphasis: { scale: false, lineStyle: {}, label: { show: true } }
+                    },
+                    // ========= 表3详细点位：后檐处 暖灰褐 =========
+                    {
+                        name: '后檐处阻隔率',
+                        type: 'line',
+                        data: backEaveData,
+                        coordinateSystem: 'polar',
+                        symbol: 'rect',
+                        symbolSize: 8,
+                        lineStyle: { width: 2.2, color: colorPalette.backEave, type: 'dashed', dashOffset: 0, opacity: 0.9 },
+                        itemStyle: { color: colorPalette.backEave, borderColor: '#FFF8EA', borderWidth: 1 },
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: '{c}%',
+                            fontSize: 10,
+                            fontWeight: 'bold',
+                            color: '#6A5A4A',
+                            backgroundColor: 'rgba(250, 245, 235, 0.9)',
+                            padding: [2, 6, 2, 6],
+                            borderRadius: 14
+                        },
+                        smooth: false,
+                        emphasis: { scale: false, lineStyle: {}, label: { show: true } }
+                    }
+                ],
+                stateAnimation: { duration: 0 },
+                backgroundColor: 'transparent',
+                graphic: [
+                    {
+                        type: 'text',
+                        left: '3%',
+                        top: 15,
+                        style: { text: '🏯 马头墙防火效能 · 阻隔率综合图谱', fill: '#5B5543', fontSize: 13, fontWeight: 'bold', fontFamily: 'Segoe UI, PingFang SC' },
+                        z: 100
+                    },
+                    {
+                        type: 'text',
+                        right: '5%',
+                        bottom: 18,
+                        style: { text: '徽派建筑 · 水墨量化分析 | 鲜明色谱', fill: '#9B8F76', fontSize: 10, fontFamily: 'KaiTi, STKaiti, serif' },
+                        z: 100
+                    }
+                ]
+            };
+
+            const inkChart = echarts.init(document.getElementById('ink-chart-contrast'));
+            inkChart.setOption(option);
+
+            window.addEventListener('resize', () => {
+                inkChart.resize();
+            });
+        })();
+    </script>
+</body>
+
+</html>

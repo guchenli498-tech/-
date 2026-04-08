@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>马头墙排烟效应 · 可视化摘要</title>
+  <style>
+    /* ================= 基础重置与变量 ================= */
+    :root {
+      --bg-color: #f2efe9;
+      --card-bg: #ffffff;
+      --text-main: #333333;
+      --text-muted: #7a7a75;
+      --accent-green: #205c4e;
+      --accent-red: #b3564b;
+      --smoke-low: #a3958b;
+      --border-color: #e3ddd3;
+      --font-serif: "Georgia", "KaiTi", "楷体", "华文楷体", serif;
+      --font-sans: "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-color);
+      font-family: var(--font-sans);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* ================= 容器布局 ================= */
+    .dashboard {
+      width: 100%;
+      max-width: 960px;
+      height: 100%;
+      max-height: 540px;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      grid-template-rows: auto 1fr auto;
+      gap: 16px;
+    }
+
+    /* 标题区 */
+    .header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .header h1 {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 22px;
+      color: var(--text-main);
+      letter-spacing: 2px;
+    }
+
+    .header .subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    /* 卡片通用样式 */
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ================= 左侧：指标区 ================= */
+    .metric-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .metric-hero {
+      margin-bottom: 30px;
+    }
+
+    .metric-hero .value {
+      font-family: var(--font-mono);
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--accent-green);
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .metric-hero .label {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--text-main);
+      margin-top: 8px;
+    }
+
+    /* 微型对比条形图 */
+    .mini-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bar-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      width: 70px;
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 6px;
+      background: #f0f0f0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1s ease-out;
+    }
+
+    .bar-fill.no-wall { background: var(--smoke-low); width: 75%; }
+    .bar-fill.with-wall { background: var(--accent-green); width: 100%; }
+
+    .bar-value {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      width: 50px;
+      text-align: right;
+    }
+
+    /* ================= 右侧：SVG 可视化区 ================= */
+    .diagram-panel {
+      padding: 0; /* 让 SVG 填满 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fdfcf9; /* 稍微区分背景色 */
+    }
+
+    .diagram-panel svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* SVG 动画定义 */
+    .flow-line {
+      stroke-dasharray: 12 8;
+      animation: flowAnimation 2s linear infinite;
+    }
+
+    @keyframes flowAnimation {
+      from { stroke-dashoffset: 40; }
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* 数据悬浮窗/标注 */
+    .data-node {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      fill: var(--text-main);
+      background: rgba(255,255,255,0.8);
+    }
+    .data-label {
+      font-family: var(--font-serif);
+      font-size: 11px;
+      fill: var(--text-muted);
+    }
+
+    /* ================= 底部：标签区 ================= */
+    .footer-panel {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 12px;
+    }
+
+    .tag {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent-green);
+      background: rgba(32, 92, 78, 0.08);
+      border: 1px solid rgba(32, 92, 78, 0.2);
+      padding: 6px 14px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag::before {
+      content: "";
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-green);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard">
+    <div class="header">
+      <h1>马头墙 · 排烟效应摘要</h1>
+      <span class="subtitle">Computational Fluid Dynamics (CFD) Summary</span>
+    </div>
+
+    <div class="card metric-panel">
+      <div class="metric-hero">
+        <div class="value">+33.3%</div>
+        <div class="label">最高排烟速度提升</div>
+      </div>
+      
+      <div class="mini-chart">
+        <div class="bar-row">
+          <span class="bar-label">无马头墙</span>
+          <div class="bar-track"><div class="bar-fill no-wall"></div></div>
+          <span class="bar-value">4.5 <span style="font-size:10px;color:#999">m/s</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">有马头墙</span>
+          <div class="bar-track"><div class="bar-fill with-wall"></div></div>
+          <span class="bar-value">6.0 <span style="font-size:10px;color:#999">m/s</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card diagram-panel">
+      <svg viewBox="0 0 500 300" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#ebe8e0" stroke-width="0.5"/>
+          </pattern>
+          
+          <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#b3564b"/>
+          </marker>
+
+          <linearGradient id="smokeUp" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="rgba(32, 92, 78, 0.1)"/>
+            <stop offset="50%" stop-color="rgba(32, 92, 78, 0.4)"/>
+            <stop offset="100%" stop-color="rgba(32, 92, 78, 0.6)"/>
+          </linearGradient>
+          
+          <linearGradient id="smokeLow" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="rgba(163, 149, 139, 0.2)"/>
+            <stop offset="100%" stop-color="rgba(163, 149, 139, 0.5)"/>
+          </linearGradient>
+
+          <filter id="smokeBlur" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3.6" />
+          </filter>
+        </defs>
+
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <line x1="20" y1="240" x2="480" y2="240" stroke="#a19d96" stroke-width="2" />
+        
+        <rect x="80" y="160" width="70" height="80" fill="#f5f4f0" stroke="#8c8880" stroke-width="1.5" />
+        <rect x="95" y="180" width="40" height="60" fill="#e8e5de" stroke="none" />
+        
+        <path d="M 270 240 L 270 170 L 290 150 L 290 130 L 310 110 L 310 90 L 330 70 L 330 240 Z" 
+              fill="#ece9e1" stroke="#5c5952" stroke-width="2" stroke-linejoin="round"/>
+
+        <path d="M 110 224 Q 200 220 280 214 Q 345 209 450 218" fill="none" stroke="url(#smokeLow)" stroke-width="22" stroke-linecap="round" filter="url(#smokeBlur)" />
+        <path d="M 120 220 Q 250 215 450 215" fill="none" stroke="#8a7e75" stroke-width="1.5" class="flow-line" />
+
+        <path d="M 114 214 C 176 198, 222 176, 264 146 C 300 120, 318 86, 352 64 C 378 48, 408 46, 434 52" 
+              fill="none" stroke="url(#smokeUp)" stroke-width="26" stroke-linecap="round" filter="url(#smokeBlur)" />
+        <path d="M 120 210 C 200 190, 240 160, 270 140 C 310 110, 315 50, 420 50" 
+              fill="none" stroke="#133d33" stroke-width="2" class="flow-line" />
+        <path d="M 118 202 C 178 182, 226 156, 258 132 C 294 102, 304 44, 398 40" 
+              fill="none" stroke="#205c4e" stroke-width="1" class="flow-line" style="animation-duration: 2.5s; stroke-dasharray: 8 6;" />
+
+        <line x1="370" y1="210" x2="370" y2="60" stroke="#b3564b" stroke-width="1.5" stroke-dasharray="4 4" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+        <rect x="380" y="125" width="85" height="20" fill="rgba(255,255,255,0.85)" rx="4"/>
+        <text x="385" y="139" class="data-label">抬升: <tspan class="data-node" fill="#b3564b">≈ 2.5 m</tspan></text>
+
+        <circle cx="430" cy="215" r="4" fill="#a3958b" />
+        <rect x="420" y="225" width="70" height="18" fill="none" />
+        <text x="380" y="235" class="data-label">低位: <tspan class="data-node">0.95 m/s</tspan></text>
+
+        <circle cx="420" cy="50" r="4" fill="#205c4e" />
+        <text x="330" y="35" class="data-label">中上部: <tspan class="data-node" fill="#205c4e">0.75 m/s</tspan></text>
+      </svg>
+    </div>
+
+    <div class="footer-panel">
+      <div class="tag">排烟增强</div>
+      <div class="tag">低位减烟</div>
+      <div class="tag">中上部导流</div>
+    </div>
+  </div>
+
+</body>
+</html>
