@@ -525,6 +525,80 @@
         function render(key) {
           const name = names[key] || key
 
+          function applyUnifiedChartStyle(frameEl) {
+            if (!frameEl) return
+            const doc = frameEl.contentDocument
+            if (!doc) return
+            if (doc.getElementById('m2-unified-title-style')) return
+            const style = doc.createElement('style')
+            style.id = 'm2-unified-title-style'
+            style.textContent = `
+              html, body {
+                background: #f4efe6 !important;
+              }
+              .wrap,
+              .dashboard,
+              .container,
+              .page {
+                background: transparent !important;
+              }
+              .subtitle,
+              .header .subtitle,
+              #chartSubtitle,
+              .subhead,
+              [class*="subtitle-en"] {
+                display: none !important;
+              }
+              .header,
+              .headerRow {
+                margin-bottom: 10px !important;
+                background: #efe8dc !important;
+                border: 1px solid #d8cfbf !important;
+                border-radius: 12px !important;
+                padding: 8px 12px 8px 14px !important;
+                box-shadow: none !important;
+              }
+              .title,
+              .header h1 {
+                margin-bottom: 0 !important;
+                font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif !important;
+                font-weight: 700 !important;
+                letter-spacing: 1px !important;
+                color: #3b342b !important;
+                font-size: 22px !important;
+                line-height: 1.25 !important;
+              }
+              .header::before {
+                left: 0 !important;
+                top: 3px !important;
+                bottom: 3px !important;
+                width: 4px !important;
+                background: #6c7a89 !important;
+              }
+              .wrap {
+                padding-top: 14px !important;
+                background: #f4efe6 !important;
+              }
+              .content,
+              .main,
+              .chartArea {
+                background: #f4efe6 !important;
+              }
+              .chart-wrapper,
+              .chart-wrap,
+              .chartInner,
+              .chart-container,
+              #chart-container,
+              #chart,
+              #fullHeatMatrix {
+                height: 100% !important;
+                min-height: 0 !important;
+                background: #f4efe6 !important;
+              }
+            `
+            doc.head.appendChild(style)
+          }
+
           function mountFrame(frameEl, url, visible) {
             if (!frameEl) return
             if (!visible) {
@@ -539,45 +613,65 @@
               frameEl.setAttribute('src', url)
             }
             frameEl.style.display = 'block'
+            applyUnifiedChartStyle(frameEl)
             // fallback，避免个别浏览器 load 事件慢触发导致白屏突兀
-            setTimeout(() => frameEl.classList.add('ready'), 260)
+            setTimeout(() => {
+              frameEl.classList.add('ready')
+              applyUnifiedChartStyle(frameEl)
+            }, 260)
           }
 
-          // panelA：马头墙 / 粉墙各自展示 A 图
-          const panelAVisible = key === 'mtq' || key === 'fq'
+          // panelA：各构件 A 图
+          const panelAVisible = key === 'mtq' || key === 'fq' || key === 'wd' || key === 'tj'
           const panelAUrl = key === 'mtq'
             ? '/charts/module2-mtq-a-heatmap.html'
-            : '/charts/module2-fq-a-radial.html'
+            : (key === 'fq'
+              ? '/charts/module2-fq-a-radial.html'
+              : (key === 'tj'
+                ? '/charts/module2-tj-a-heatmap.html'
+                : '/charts/module2-wd-a-rose.html'))
           mountFrame(frameA, panelAUrl, panelAVisible)
           if (phA) {
             phA.style.display = panelAVisible ? 'none' : 'flex'
           }
 
-          // panelB：马头墙 / 粉墙各自展示 B 图
-          const panelBVisible = key === 'mtq' || key === 'fq'
+          // panelB：各构件关系图
+          const panelBVisible = key === 'mtq' || key === 'fq' || key === 'wd' || key === 'tj'
           const panelBUrl = key === 'mtq'
             ? '/charts/module2-mtq-b-relationship.html'
-            : '/charts/module2-fq-b-relationship.html'
+            : (key === 'fq'
+              ? '/charts/module2-fq-b-relationship.html'
+              : (key === 'tj'
+                ? '/charts/module2-tj-b-relationship.html'
+                : '/charts/module2-wd-b-relationship.html'))
           mountFrame(frameB, panelBUrl, panelBVisible)
           if (phB) {
             phB.style.display = panelBVisible ? 'none' : 'flex'
           }
 
-          // panelC：马头墙 / 粉墙各自词云
-          const panelCVisible = key === 'mtq' || key === 'fq'
+          // panelC：各构件词云
+          const panelCVisible = key === 'mtq' || key === 'fq' || key === 'wd' || key === 'tj'
           const panelCUrl = key === 'mtq'
             ? '/charts/module2-mtq-c-wordcloud.html'
-            : '/charts/module2-fq-c-wordcloud.html'
+            : (key === 'fq'
+              ? '/charts/module2-fq-c-wordcloud.html'
+              : (key === 'tj'
+                ? '/charts/module2-tj-c-wordcloud.html'
+                : '/charts/module2-wd-c-wordcloud.html'))
           mountFrame(frameC, panelCUrl, panelCVisible)
           if (phC) {
             phC.style.display = panelCVisible ? 'none' : 'flex'
           }
 
-          // panelD：马头墙 / 粉墙 各自 D 图
-          const panelDVisible = key === 'mtq' || key === 'fq'
+          // panelD：各构件 D 图
+          const panelDVisible = key === 'mtq' || key === 'fq' || key === 'wd' || key === 'tj'
           const panelDUrl = key === 'mtq'
             ? '/charts/module2-mtq-d-summary.html'
-            : '/charts/module2-fq-d-structure.html'
+            : (key === 'fq'
+              ? '/charts/module2-fq-d-structure.html'
+              : (key === 'tj'
+                ? '/charts/module2-tj-d-thermal.html'
+                : '/charts/module2-wd-d-radar.html'))
           mountFrame(frameD, panelDUrl, panelDVisible)
           if (phD) {
             phD.style.display = panelDVisible ? 'none' : 'flex'
@@ -616,6 +710,75 @@
           if (!f) return
           f.addEventListener('load', () => {
             f.classList.add('ready')
+            const doc = f.contentDocument
+            if (!doc || doc.getElementById('m2-unified-title-style')) return
+            const style = doc.createElement('style')
+            style.id = 'm2-unified-title-style'
+            style.textContent = `
+              html, body {
+                background: #f4efe6 !important;
+              }
+              .wrap,
+              .dashboard,
+              .container,
+              .page {
+                background: transparent !important;
+              }
+              .subtitle,
+              .header .subtitle,
+              #chartSubtitle,
+              .subhead,
+              [class*="subtitle-en"] {
+                display: none !important;
+              }
+              .header,
+              .headerRow {
+                margin-bottom: 10px !important;
+                background: #efe8dc !important;
+                border: 1px solid #d8cfbf !important;
+                border-radius: 12px !important;
+                padding: 8px 12px 8px 14px !important;
+                box-shadow: none !important;
+              }
+              .title,
+              .header h1 {
+                margin-bottom: 0 !important;
+                font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif !important;
+                font-weight: 700 !important;
+                letter-spacing: 1px !important;
+                color: #3b342b !important;
+                font-size: 22px !important;
+                line-height: 1.25 !important;
+              }
+              .header::before {
+                left: 0 !important;
+                top: 3px !important;
+                bottom: 3px !important;
+                width: 4px !important;
+                background: #6c7a89 !important;
+              }
+              .wrap {
+                padding-top: 14px !important;
+                background: #f4efe6 !important;
+              }
+              .content,
+              .main,
+              .chartArea {
+                background: #f4efe6 !important;
+              }
+              .chart-wrapper,
+              .chart-wrap,
+              .chartInner,
+              .chart-container,
+              #chart-container,
+              #chart,
+              #fullHeatMatrix {
+                height: 100% !important;
+                min-height: 0 !important;
+                background: #f4efe6 !important;
+              }
+            `
+            doc.head.appendChild(style)
           })
         })
 

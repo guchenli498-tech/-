@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>天井热环境 · 组合图表</title>
+    <script src="../echarts.min.js"></script>
+    <style>
+      :root {
+        --paper-bg: #F8F6F0;
+        --title-color: #2b333e;
+        --subtitle-color: #8c939d;
+        --line-color: #6C7A89;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background-color: var(--paper-bg);
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      }
+
+      .wrap {
+        width: 100%;
+        height: 100%;
+        padding: 24px 32px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        margin-bottom: 20px;
+        position: relative;
+        padding-left: 14px;
+      }
+
+      .header::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 4px;
+        bottom: 2px;
+        width: 4px;
+        background: var(--line-color);
+        border-radius: 2px;
+      }
+
+      .title {
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        color: var(--title-color);
+        margin: 0 0 4px 0;
+      }
+
+      .subtitle {
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        color: var(--subtitle-color);
+        text-transform: uppercase;
+      }
+
+      #chart {
+        flex: 1;
+        width: 100%;
+        min-height: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <div class="title">天井 · 冬季热环境影响分析</div>
+        <div class="subtitle">Thermal Environment Analysis of Courtyard in Winter</div>
+      </div>
+      <div id="chart"></div>
+    </div>
+
+    <script>
+      (function () {
+        const dom = document.getElementById("chart");
+        const chart = echarts.init(dom, null, {
+          renderer: "canvas",
+          devicePixelRatio: Math.max(1, window.devicePixelRatio || 1),
+        });
+
+        // 数据来源：付晓惠等《天井对徽州传统民居冬季室内热环境影响初探》
+        // 空间位置：入口 → 庭院 → 天井 → 门厅 → 厅房
+        const locations = ["入口", "庭院", "天井", "门厅", "厅房"];
+
+        // 颜色方案（完全按照图片）
+        const colors = {
+          maxTemp: "#E74C3C",      // 最高温度 - 红色
+          minTemp: "#3498DB",      // 最低温度 - 蓝色
+          maxHumid: "#27AE60",     // 最高湿度 - 绿色
+          minHumid: "#85C1E2",     // 最低湿度 - 浅蓝色
+          tempDiff: "#F39C12",     // 温度日较差 - 橙色虚线
+          humidDiff: "#F1C40F",    // 湿度日较差 - 黄色虚线
+          windSpeed: "#16A085",    // 平均风速 - 深绿色
+          windArea: "rgba(22, 160, 133, 0.12)",  // 风速区域 - 浅绿
+        };
+
+        const option = {
+          backgroundColor: "transparent",
+          tooltip: {
+            trigger: "axis",
+            backgroundColor: "rgba(250, 247, 240, 0.98)",
+            borderColor: "rgba(180, 170, 150, 0.6)",
+            borderWidth: 1,
+            padding: [12, 16],
+            textStyle: { color: "#2B333E", fontSize: 12 },
+            axisPointer: { type: "cross" },
+          },
+          legend: {
+            data: ["最高温度", "最低温度", "最高湿度", "最低湿度", "温度日较差", "湿度日较差", "平均风速"],
+            top: "3%",
+            left: "center",
+            textStyle: { color: "#2B333E", fontSize: 11, fontWeight: 500 },
+            itemGap: 20,
+            itemWidth: 12,
+            itemHeight: 12,
+            itemMarginRight: 10,
+            padding: [0, 20],
+          },
+          xAxis: {
+            type: "category",
+            data: locations,
+            axisLine: { lineStyle: { color: "rgba(108, 122, 137, 0.4)" } },
+            axisLabel: { color: "#666", fontSize: 12, fontWeight: 500 },
+            splitLine: { show: false },
+            axisTick: { show: true },
+          },
+          yAxis: [
+            {
+              type: "value",
+              name: "温度（℃）/ 湿度（%）",
+              nameTextStyle: { color: "#2B333E", fontSize: 12, fontWeight: 600, align: "left" },
+              nameGap: 8,
+              min: 0,
+              max: 100,
+              interval: 20,
+              axisLine: { lineStyle: { color: "rgba(108, 122, 137, 0.4)" } },
+              splitLine: { lineStyle: { color: "rgba(200, 200, 200, 0.2)", type: "solid" } },
+              axisLabel: { color: "#666", fontSize: 11 },
+            },
+            {
+              type: "value",
+              name: "风速（m/s）",
+              nameTextStyle: { color: "#2B333E", fontSize: 12, fontWeight: 600, align: "right" },
+              nameGap: 8,
+              min: 0,
+              max: 1.5,
+              interval: 0.3,
+              position: "right",
+              axisLine: { lineStyle: { color: "rgba(108, 122, 137, 0.4)" } },
+              splitLine: { show: false },
+              axisLabel: { color: "#666", fontSize: 11 },
+            },
+          ],
+          grid: {
+            left: "8%",
+            right: "10%",
+            top: "14%",
+            bottom: "8%",
+            containLabel: false,
+          },
+          series: [
+            // 最高温度 - 红色柱
+            {
+              name: "最高温度",
+              type: "bar",
+              data: [13.9, 13.1, 12.9, 12.7, 12.2],
+              itemStyle: { color: colors.maxTemp, opacity: 0.9 },
+              barGap: "30%",
+              barCategoryGap: "40%",
+              label: {
+                show: true,
+                position: "top",
+                color: colors.maxTemp,
+                fontSize: 9,
+                fontWeight: 600,
+                formatter: "{c}℃",
+                distance: 3,
+              },
+            },
+            // 最低温度 - 蓝色柱
+            {
+              name: "最低温度",
+              type: "bar",
+              data: [1.8, 2.0, 3.2, 3.3, 3.7],
+              itemStyle: { color: colors.minTemp, opacity: 0.9 },
+              barGap: "30%",
+              label: {
+                show: true,
+                position: "top",
+                color: colors.minTemp,
+                fontSize: 9,
+                fontWeight: 600,
+                formatter: "{c}℃",
+                distance: 3,
+              },
+            },
+            // 最高湿度 - 绿色柱
+            {
+              name: "最高湿度",
+              type: "bar",
+              data: [80, 82.1, 76.1, 75.6, 72.3],
+              itemStyle: { color: colors.maxHumid, opacity: 0.85 },
+              barGap: "30%",
+              label: {
+                show: true,
+                position: "top",
+                color: colors.maxHumid,
+                fontSize: 9,
+                fontWeight: 600,
+                formatter: "{c}%",
+                distance: 3,
+              },
+            },
+            // 最低湿度 - 浅蓝色柱
+            {
+              name: "最低湿度",
+              type: "bar",
+              data: [37.6, 39.3, 22.5, 22.5, 22.5],
+              itemStyle: { color: colors.minHumid, opacity: 0.85 },
+              barGap: "30%",
+              label: {
+                show: true,
+                position: "top",
+                color: colors.minHumid,
+                fontSize: 9,
+                fontWeight: 600,
+                formatter: "{c}%",
+                distance: 3,
+              },
+            },
+            // 温度日较差 - 橙色虚线
+            {
+              name: "温度日较差",
+              type: "line",
+              data: [12.1, 11.1, 9.7, 9.4, 8.5],
+              yAxisIndex: 0,
+              itemStyle: { color: colors.tempDiff },
+              lineStyle: { type: "dashed", width: 2.5 },
+              symbolSize: 8,
+              smooth: false,
+              label: {
+                show: true,
+                position: "top",
+                color: colors.tempDiff,
+                fontSize: 8,
+                fontWeight: 600,
+                formatter: "{c}℃",
+                distance: 5,
+              },
+            },
+            // 湿度日较差 - 黄色虚线
+            {
+              name: "湿度日较差",
+              type: "line",
+              data: [42.4, 42.8, 53.6, 53.1, 49.8],
+              yAxisIndex: 0,
+              itemStyle: { color: colors.humidDiff },
+              lineStyle: { type: "dashed", width: 2.5 },
+              symbolSize: 8,
+              smooth: false,
+              label: {
+                show: true,
+                position: "top",
+                color: colors.humidDiff,
+                fontSize: 8,
+                fontWeight: 600,
+                formatter: "{c}%",
+                distance: 5,
+              },
+            },
+            // 平均风速 - 深绿色实线
+            {
+              name: "平均风速",
+              type: "line",
+              data: [1.10, 0.80, 0.52, 0.22, 0.12],
+              yAxisIndex: 1,
+              itemStyle: { color: colors.windSpeed, borderWidth: 2.5, borderColor: "#fff" },
+              lineStyle: { width: 3 },
+              areaStyle: { color: colors.windArea },
+              symbolSize: 11,
+              smooth: true,
+              label: {
+                show: true,
+                position: "top",
+                color: colors.windSpeed,
+                fontSize: 8,
+                fontWeight: 600,
+                formatter: "{c}m/s",
+                distance: 5,
+              },
+            },
+          ],
+        };
+
+        chart.setOption(option);
+
+        window.addEventListener("resize", () => {
+          chart.resize();
+        });
+      })();
+    </script>
+  </body>
+</html>

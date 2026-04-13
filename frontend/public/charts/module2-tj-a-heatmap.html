@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>天井 · 图A/图B切换</title>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: #F8F6F0;
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      }
+
+      .wrap {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+
+      .toolbar {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        display: flex;
+        gap: 10px;
+        z-index: 10;
+        user-select: none;
+      }
+
+      .btn {
+        border: 1px solid rgba(215, 195, 165, 0.75);
+        background: rgba(247, 241, 231, 0.65);
+        color: rgba(74, 74, 72, 0.95);
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+        white-space: nowrap;
+      }
+
+      .btn:active {
+        transform: scale(0.98);
+      }
+
+      .btn.active {
+        background: rgba(106, 127, 149, 0.28);
+        border-color: rgba(106, 127, 149, 0.95);
+      }
+
+      .frame {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="toolbar">
+        <div id="btnA" class="btn active" role="button" tabindex="0">气泡图</div>
+        <div id="btnB" class="btn" role="button" tabindex="0">平行坐标</div>
+      </div>
+
+      <iframe
+        id="frameA"
+        class="frame"
+        title="tj-bubble"
+        src="/charts/module2-tj-a-bubble.html"
+        style="display:block"
+      ></iframe>
+
+      <iframe
+        id="frameB"
+        class="frame"
+        title="tj-parallel"
+        src="/charts/module2-tj-a-parallel.html"
+        style="display:none"
+      ></iframe>
+    </div>
+
+    <script>
+      (function () {
+        const btnA = document.getElementById("btnA");
+        const btnB = document.getElementById("btnB");
+        const frameA = document.getElementById("frameA");
+        const frameB = document.getElementById("frameB");
+        
+        function applyInnerFrameStyle(frameEl) {
+          if (!frameEl) return;
+          const doc = frameEl.contentDocument;
+          if (!doc || doc.getElementById("m2-inner-unified-style")) return;
+          const style = doc.createElement("style");
+          style.id = "m2-inner-unified-style";
+          style.textContent = `
+            html, body { background: #f4efe6 !important; }
+            .subtitle,
+            .header .subtitle,
+            #chartSubtitle,
+            .subhead {
+              display: none !important;
+            }
+            .header, .headerRow {
+              margin-bottom: 10px !important;
+              background: #efe8dc !important;
+              border: 1px solid #d8cfbf !important;
+              border-radius: 12px !important;
+              padding: 8px 12px 8px 14px !important;
+              box-shadow: none !important;
+            }
+            .title, .header h1 {
+              margin-bottom: 0 !important;
+              font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif !important;
+              font-weight: 700 !important;
+              letter-spacing: 1px !important;
+              color: #3b342b !important;
+              font-size: 22px !important;
+              line-height: 1.25 !important;
+            }
+            .header::before {
+              left: 0 !important;
+              top: 3px !important;
+              bottom: 3px !important;
+              width: 4px !important;
+              background: #6c7a89 !important;
+            }
+            .wrap { background: #f4efe6 !important; }
+            .chart-wrapper, .chart-wrap, .chartInner, .chart-container, #chart-container, #chart, #fullHeatMatrix {
+              background: #f4efe6 !important;
+            }
+          `;
+          doc.head.appendChild(style);
+        }
+
+        function setMode(mode) {
+          const isA = mode === "A";
+          if (btnA) btnA.classList.toggle("active", isA);
+          if (btnB) btnB.classList.toggle("active", !isA);
+
+          if (frameA) frameA.style.display = isA ? "block" : "none";
+          if (frameB) frameB.style.display = isA ? "none" : "block";
+        }
+
+        btnA && btnA.addEventListener("click", () => setMode("A"));
+        btnB && btnB.addEventListener("click", () => setMode("B"));
+        frameA && frameA.addEventListener("load", () => applyInnerFrameStyle(frameA));
+        frameB && frameB.addEventListener("load", () => applyInnerFrameStyle(frameB));
+      })();
+    </script>
+  </body>
+</html>

@@ -59,19 +59,28 @@ export function Module1Page() {
     <div ref={wrapRef} className={styles.module1Page}>
       <div className={styles.mainGrid}>
         <div className={styles.leftCol}>
-          <ChartPanel className={styles.leftCard} bodyClassName={styles.noPadding}>
+          <ChartPanel
+            title="建筑类型分布"
+            className={styles.leftCard}
+            bodyClassName={styles.noPadding}
+          >
             <BuildingCategoryDonut data={buildingCategories} />
           </ChartPanel>
 
-          <ChartPanel bodyClassName={styles.noPadding}>
-            <div style={{ padding: 6 }}>
-              <DynastyLineChart selectedCityId={selectedCityId} height={280} mode="area" />
-            </div>
+          <ChartPanel
+            title="历朝徽派古建筑留存数量"
+            bodyClassName={styles.noPadding}
+          >
+            <DynastyLineChart selectedCityId={selectedCityId} mode="area" />
           </ChartPanel>
         </div>
 
         <div className={styles.centerCol}>
-          <ChartPanel className={styles.leftCard} bodyClassName={styles.noPadding}>
+          <ChartPanel
+            title="徽州古建筑空间分布"
+            className={styles.leftCard}
+            bodyClassName={styles.noPadding}
+          >
             <ProvinceHeatMap
               cities={cities}
               buildings={buildings}
@@ -95,7 +104,10 @@ export function Module1Page() {
         </div>
 
         <div className={styles.rightCol}>
-          <ChartPanel bodyClassName={styles.scrollBody}>
+          <ChartPanel
+            title="建筑信息与叙事"
+            bodyClassName={styles.scrollBody}
+          >
             <BuildingInfoPanel city={selectedCity} building={selectedBuilding} />
           </ChartPanel>
         </div>

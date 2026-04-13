@@ -1,6 +1,6 @@
 {
   "title": "徽韵遗产志·代表作编年",
-  "timeRange": [300, 1920],
+  "timeRange": [589, 1920],
   "dynastyBands": [
     { "id": "han-wei", "label": "汉魏六朝", "startYear": 220, "endYear": 589 },
     { "id": "sui-tang", "label": "隋唐五代", "startYear": 589, "endYear": 960 },

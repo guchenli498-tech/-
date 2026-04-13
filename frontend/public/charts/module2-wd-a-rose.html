@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>屋顶类型占比 · 玫瑰图（图A）</title>
+    <script src="../echarts.min.js"></script>
+    <style>
+      :root {
+        --paper-bg: #F8F6F0;
+        --title-color: #2b333e;
+        --subtitle-color: #8c939d;
+        --line-color: #6C7A89;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background-color: var(--paper-bg);
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      }
+
+      .wrap {
+        width: 100%;
+        height: 100%;
+        padding: 24px 32px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        margin-bottom: 10px;
+        position: relative;
+        padding-left: 14px;
+      }
+
+      .header::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 4px;
+        bottom: 2px;
+        width: 4px;
+        background: var(--line-color);
+        border-radius: 2px;
+      }
+
+      .title {
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        color: var(--title-color);
+        margin: 0 0 4px 0;
+      }
+
+      #chart {
+        flex: 1;
+        width: 100%;
+        min-height: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <div class="title">屋顶 · 类型占比玫瑰图（图表一）</div>
+      </div>
+      <div id="chart"></div>
+    </div>
+
+    <script>
+      (function () {
+        const COLORS = [
+          "#4a848a",
+          "#58927f",
+          "#659f75",
+          "#73ad6a",
+          "#7fb862",
+          "#85bf61",
+          "#adc472",
+          "#d2c982",
+          "#f9d094",
+        ];
+
+        // TODO: 用“屋顶类型数量分布”真实数据替换 counts（按类型计数）
+        const roofTypeCounts = [
+          { name: "硬山顶（含马头墙）", count: 68 },
+          { name: "悬山顶", count: 52 },
+          { name: "歇山顶", count: 41 },
+          { name: "组合式屋顶", count: 28 },
+          { name: "攒尖顶", count: 16 },
+          { name: "重檐顶", count: 12 },
+          { name: "人字顶", count: 9 },
+          { name: "单坡顶", count: 7 },
+          { name: "其他", count: 5 },
+        ];
+
+        const total = roofTypeCounts.reduce((s, d) => s + d.count, 0);
+        const sorted = roofTypeCounts
+          .slice()
+          .sort((a, b) => b.count - a.count)
+          .map((d, i) => ({
+            name: d.name,
+            value: d.count,
+            itemStyle: { color: COLORS[i % COLORS.length] },
+          }));
+
+        const dom = document.getElementById("chart");
+        const chart = echarts.init(dom, null, {
+          renderer: "canvas",
+          devicePixelRatio: Math.max(1, window.devicePixelRatio || 1),
+        });
+
+        function pct(v) {
+          if (!total) return 0;
+          return (v / total) * 100;
+        }
+
+        const option = {
+          backgroundColor: "transparent",
+          animationDuration: 900,
+          animationEasing: "cubicOut",
+          tooltip: {
+            trigger: "item",
+            backgroundColor: "rgba(250, 247, 240, 0.98)",
+            borderColor: "rgba(180, 170, 150, 0.6)",
+            borderWidth: 1,
+            padding: [10, 14],
+            textStyle: { color: "#2B333E", fontSize: 13 },
+            extraCssText: "box-shadow: 0 4px 16px rgba(0,0,0,0.1); border-radius: 6px;",
+            formatter: function (p) {
+              const v = Number(p.value || 0);
+              return [
+                `<div style="font-weight:bold; margin-bottom:4px;">${p.name}</div>`,
+                `数量：<b>${v}</b>`,
+                `占比：<b>${pct(v).toFixed(1)}%</b>`,
+              ].join("<br/>");
+            },
+          },
+          legend: {
+            type: "scroll",
+            orient: "vertical",
+            right: 8,
+            top: 10,
+            bottom: 10,
+            textStyle: {
+              color: "rgba(43, 51, 62, 0.85)",
+              fontSize: 12,
+              fontFamily: 'Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif',
+            },
+          },
+          series: [
+            {
+              name: "屋顶类型占比",
+              type: "pie",
+              roseType: "radius",
+              radius: ["22%", "84%"],
+              center: ["42%", "55%"],
+              itemStyle: {
+                borderColor: "rgba(255,255,255,0.85)",
+                borderWidth: 1,
+                borderRadius: 6,
+              },
+              label: {
+                color: "rgba(43, 51, 62, 0.92)",
+                fontSize: 12,
+                fontFamily: 'Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif',
+                formatter: function (p) {
+                  const v = Number(p.value || 0);
+                  return `${p.name}\n${pct(v).toFixed(1)}% · ${v}`;
+                },
+              },
+              labelLine: { length: 10, length2: 10, smooth: 0.2 },
+              data: sorted,
+            },
+          ],
+        };
+
+        chart.setOption(option, true);
+        window.addEventListener("resize", () => chart.resize());
+      })();
+    </script>
+  </body>
+</html>
+

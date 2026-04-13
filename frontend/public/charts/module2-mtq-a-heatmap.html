@@ -11,7 +11,7 @@
         height: 100%;
         margin: 0;
         overflow: hidden;
-        background: transparent;
+        background: #F8F6F0;
         font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
       }
 
@@ -92,6 +92,47 @@
         const frameA = document.getElementById("frameA");
         const frameB = document.getElementById("frameB");
 
+        function applyInnerFrameStyle(frameEl) {
+          if (!frameEl) return;
+          const doc = frameEl.contentDocument;
+          if (!doc || doc.getElementById("m2-inner-unified-style")) return;
+          const style = doc.createElement("style");
+          style.id = "m2-inner-unified-style";
+          style.textContent = `
+            html, body { background: #f4efe6 !important; }
+            .subtitle, .header .subtitle, #chartSubtitle, .subhead { display: none !important; }
+            .header, .headerRow {
+              margin-bottom: 10px !important;
+              background: #efe8dc !important;
+              border: 1px solid #d8cfbf !important;
+              border-radius: 12px !important;
+              padding: 8px 12px 8px 14px !important;
+              box-shadow: none !important;
+            }
+            .title, .header h1 {
+              margin-bottom: 0 !important;
+              font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif !important;
+              font-weight: 700 !important;
+              letter-spacing: 1px !important;
+              color: #3b342b !important;
+              font-size: 22px !important;
+              line-height: 1.25 !important;
+            }
+            .header::before {
+              left: 0 !important;
+              top: 3px !important;
+              bottom: 3px !important;
+              width: 4px !important;
+              background: #6c7a89 !important;
+            }
+            .wrap { background: #f4efe6 !important; }
+            .chart-wrapper, .chart-wrap, .chartInner, .chart-container, #chart-container, #chart, #fullHeatMatrix {
+              background: #f4efe6 !important;
+            }
+          `;
+          doc.head.appendChild(style);
+        }
+
         function setMode(mode) {
           const isA = mode === "A";
           if (btnA) btnA.classList.toggle("active", isA);
@@ -103,6 +144,8 @@
 
         btnA && btnA.addEventListener("click", () => setMode("A"));
         btnB && btnB.addEventListener("click", () => setMode("B"));
+        frameA && frameA.addEventListener("load", () => applyInnerFrameStyle(frameA));
+        frameB && frameB.addEventListener("load", () => applyInnerFrameStyle(frameB));
       })();
     </script>
   </body>
@@ -116,47 +159,74 @@
     <title>马头墙 A图 · 关系矩阵热力图</title>
     <script src="../echarts.min.js"></script>
     <style>
+      :root {
+        --paper-bg: #F8F6F0;
+        --title-color: #2b333e;
+        --subtitle-color: #8c939d;
+        --line-color: #6C7A89;
+      }
+
       html,
       body {
         height: 100%;
         width: 100%;
         margin: 0;
         overflow: hidden;
-        background: transparent;
+        background-color: var(--paper-bg);
         font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
       }
       .wrap {
         height: 100%;
         width: 100%;
-        padding: 12px 12px 8px;
+        padding: 24px 32px;
         box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
       }
-      .title {
-        font-size: 20px;
-        font-weight: 600;
-        letter-spacing: 3px;
-        color: rgba(74, 74, 72, 0.95);
-        margin: 0 0 8px 6px;
+
+      .headerRow {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+
+      .header {
         position: relative;
+        padding-left: 14px;
+        min-width: 0;
       }
-      .title::after {
+
+      .header::before {
         content: "";
         position: absolute;
         left: 0;
-        bottom: -6px;
-        width: 40px;
-        height: 2px;
-        background: rgba(169, 193, 192, 0.95);
+        top: 4px;
+        bottom: 2px;
+        width: 4px;
+        background: var(--line-color);
+        border-radius: 2px;
       }
+
+      .title {
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        color: var(--title-color);
+        margin: 0 0 4px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
       #chart {
-        height: calc(100% - 32px);
+        flex: 1;
+        min-height: 0;
         width: 100%;
       }
 
       .toolbar {
-        position: absolute;
-        top: 10px;
-        right: 12px;
         display: flex;
         gap: 10px;
         align-items: center;
@@ -187,10 +257,14 @@
   </head>
   <body>
     <div class="wrap">
-      <div class="title">马头墙 · 关系矩阵热力图（示例数据）</div>
-      <div class="toolbar">
-        <div id="btnA" class="btn active" role="button" tabindex="0">图表一</div>
-        <div id="btnB" class="btn" role="button" tabindex="0">图表二</div>
+      <div class="headerRow">
+        <div class="header">
+          <div id="chartTitle" class="title">马头墙 · 关系矩阵热力图（图表一）</div>
+        </div>
+        <div class="toolbar">
+          <div id="btnA" class="btn active" role="button" tabindex="0">图表一</div>
+          <div id="btnB" class="btn" role="button" tabindex="0">图表二</div>
+        </div>
       </div>
       <div id="chart"></div>
     </div>
@@ -220,6 +294,7 @@
         // 切换按钮
         const btnA = document.getElementById("btnA");
         const btnB = document.getElementById("btnB");
+        const titleEl = document.getElementById("chartTitle");
         let mode = "A";
 
         // 说明：文档给了“维度结构”，但“表二数据”数值未在可读文本中出现。
@@ -488,6 +563,12 @@
           mode = nextMode;
           if (btnA) btnA.classList.toggle("active", mode === "A");
           if (btnB) btnB.classList.toggle("active", mode === "B");
+          if (titleEl) {
+            titleEl.textContent =
+              mode === "A"
+                ? "马头墙 · 关系矩阵热力图（图表一）"
+                : "马头墙 · 极坐标综合对比图（图表二）";
+          }
           if (mode === "A") {
             chart.setOption(buildOptionA(), true);
           } else {

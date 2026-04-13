@@ -7,10 +7,10 @@
     <script src="../echarts.min.js"></script>
     <style>
       :root {
-        --paper-bg: #f2eee6;
-        --title-color: #24303a;
-        --subtitle-color: #7b8792;
-        --line-color: #5f7283;
+        --paper-bg: #F8F6F0;
+        --title-color: #2b333e;
+        --subtitle-color: #8c939d;
+        --line-color: #6C7A89;
       }
       html,
       body {
@@ -18,22 +18,21 @@
         height: 100%;
         margin: 0;
         overflow: hidden;
-        background: var(--paper-bg);
-        font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        background-color: var(--paper-bg);
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
       }
       .wrap {
         width: 100%;
         height: 100%;
-        padding: 20px 24px 18px;
+        padding: 24px 32px;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
-        background: transparent;
       }
       .header {
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         position: relative;
-        padding-left: 12px;
+        padding-left: 14px;
       }
       .header::before {
         content: "";
@@ -42,24 +41,19 @@
         top: 4px;
         bottom: 2px;
         width: 4px;
-        border-radius: 2px;
         background: var(--line-color);
+        border-radius: 2px;
       }
       .title {
-        font-size: 19px;
-        font-weight: 700;
-        letter-spacing: 0.5px;
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 2px;
         color: var(--title-color);
         margin: 0 0 4px 0;
       }
-      .subtitle { display: none; }
       #chart {
         flex: 1;
         width: 100%;
-        border: 1px solid rgba(221, 226, 232, 0.95);
-        border-radius: 12px;
-        background: #f7f3ea;
-        box-shadow: 0 10px 26px -22px rgba(33, 46, 58, 0.35);
       }
     </style>
   </head>
@@ -67,7 +61,6 @@
     <div class="wrap">
       <div class="header">
         <div class="title">粉墙关键词关系图</div>
-        <div class="subtitle">Knowledge Graph of Thermal-Material Logic</div>
       </div>
       <div id="chart"></div>
     </div>
@@ -188,6 +181,7 @@
                 fontSize: 12.5,
                 fontWeight: 600,
                 distance: 10,
+                fontFamily: 'Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif',
               },
             });
           });
@@ -220,7 +214,11 @@
               backgroundColor: "rgba(250,247,240,0.98)",
               borderColor: "rgba(180,170,150,0.6)",
               borderWidth: 1,
-              textStyle: { color: "#2B333E", fontSize: 13 },
+              textStyle: {
+                color: "#2B333E",
+                fontSize: 13,
+                fontFamily: 'Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif',
+              },
               formatter: function (p) {
                 const d = p.data || {};
                 if (typeof d.value === "number") {

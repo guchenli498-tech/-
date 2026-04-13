@@ -21,7 +21,7 @@ function yearT(year: number, minY: number, maxY: number) {
   return clamp01((year - minY) / (maxY - minY))
 }
 
-const YEAR_TICKS = [400, 700, 1000, 1300, 1600, 1900]
+const YEAR_TICKS = [600, 900, 1200, 1500, 1800, 1900]
 
 const TYPE_CATEGORIES: HeritageTypeCategory[] = [
   '民居',

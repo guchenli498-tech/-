@@ -101,75 +101,72 @@
           edgeHi: "#C95B47", // 高亮连线：朱砂红
         };
 
+        // 数据2：四层结构（影响因素 -> 核心细分 -> 特征类型 -> 构造做法）
         const col1 = [
-          { id: "g_func", name: "功能需求" },
-          { id: "g_type", name: "类型" },
-          { id: "g_struct", name: "结构做法" },
-          { id: "g_cult", name: "文化寓意" },
+          { id: "f_env", name: "自然环境" },
+          { id: "f_life", name: "生活需求" },
+          { id: "f_tech", name: "建筑技术" },
+          { id: "f_culture", name: "地域文化" },
         ];
 
         const col2 = [
-          { id: "k_fire", name: "防火", freq: 16 },
-          { id: "k_wind", name: "防风", freq: 8 },
-          { id: "k_sun", name: "遮阳", freq: 4 },
-          { id: "k_step", name: "阶梯状", freq: 15 },
-          { id: "k_dou", name: "印斗式", freq: 14 },
-          { id: "k_que", name: "鹊尾式", freq: 14 },
-          { id: "k_zuowen", name: "坐吻式", freq: 13 },
-          { id: "k_zhaohu", name: "朝笏式", freq: 12 },
+          { id: "c_mountain", name: "山地地形", freq: 12 },
+          { id: "c_rain", name: "多雨潮湿", freq: 11 },
+          { id: "c_timber", name: "木材资源", freq: 10 },
+          { id: "c_fire", name: "防火需求", freq: 13 },
+          { id: "c_windsun", name: "防风遮阳", freq: 10 },
+          { id: "c_hardroof", name: "硬山顶普及", freq: 11 },
+          { id: "c_brickprod", name: "砖材产能提升", freq: 12 },
+          { id: "c_clan", name: "宗族观念", freq: 10 },
+          { id: "c_huishang", name: "徽商经济与崇文重教", freq: 12 },
+          { id: "c_aesthetic", name: "美学特征", freq: 9 },
         ];
 
         const col3 = [
-          { id: "t_form", name: "形制谱系" },
-          { id: "t_material", name: "材料肌理" },
-          { id: "t_craft", name: "构造工艺" },
-          { id: "t_symbol", name: "文化符号" },
-          { id: "t_space", name: "空间语义" },
-          { id: "t_value", name: "价值认知" },
+          { id: "t_step", name: "阶梯状跌落（风火墙面）", freq: 14 },
+          { id: "t_blackwhite", name: "粉墙黛瓦", freq: 12 },
+          { id: "t_wuyue", name: "五岳朝天", freq: 11 },
+          { id: "t_zuotou", name: "座头装饰（印斗/朝笏/坐吻/鹊尾）", freq: 11 },
+          { id: "t_ridge", name: "墙脊形态（水平带翘角/圆弧）", freq: 10 },
+          { id: "t_combo", name: "组合式韵律轮廓", freq: 12 },
         ];
 
         const col4 = [
-          { id: "s_brick", name: "小青砖 / 白灰粉刷" },
-          { id: "s_roof", name: "青瓦 / 粉墙黛瓦" },
-          { id: "s_head", name: "座头 / 博风板 / 拔檐" },
-          { id: "s_hard", name: "硬山顶 / 叠涩" },
-          { id: "s_step", name: "五岳朝天 / 三叠 / 两叠" },
-        ];
-
-        const col5 = [
-          { id: "c_huishang", name: "徽商", freq: 15 },
-          { id: "c_read", name: "读书做官", freq: 14 },
-          { id: "c_lixue", name: "程朱理学", freq: 9 },
-          { id: "c_tianren", name: "天人合一", freq: 8 },
-          { id: "c_jixiang", name: "吉祥寓意", freq: 8 },
-          { id: "c_zongzu", name: "宗族", freq: 7 },
-          { id: "c_fengshui", name: "风水", freq: 7 },
-          { id: "c_sishui", name: "四水归堂", freq: 6 },
-          { id: "c_aesthetic", name: "审美价值", freq: 6 },
-          { id: "c_madao", name: "马到成功", freq: 5 },
-          { id: "c_haoru", name: "贾而好儒", freq: 5 },
-          { id: "c_zhongyong", name: "中庸之道", freq: 4 },
+          { id: "m_brick", name: "青砖实心砌筑", freq: 12 },
+          { id: "m_white", name: "白灰粉刷墙面", freq: 11 },
+          { id: "m_eave", name: "三线排檐砖与小青瓦覆顶", freq: 11 },
+          { id: "m_stepdrop", name: "阶梯状逐层跌落", freq: 13 },
+          { id: "m_zuotou", name: "博风板与座头安装", freq: 10 },
+          { id: "m_ridge", name: "墙脊水平带翘角/圆弧面收边", freq: 10 },
+          { id: "m_scale", name: "墙身尺度按进深与叠数比例控制", freq: 12 },
         ];
 
         const links = [
-          ["g_func", "k_fire"], ["g_func", "k_wind"], ["g_func", "k_sun"],
-          ["g_type", "k_step"], ["g_type", "k_dou"], ["g_type", "k_que"], ["g_type", "k_zuowen"], ["g_type", "k_zhaohu"],
-          ["g_struct", "k_step"], ["g_cult", "k_dou"], ["g_cult", "k_zuowen"],
-          ["k_fire", "t_craft"], ["k_fire", "t_form"],
-          ["k_wind", "t_space"], ["k_sun", "t_space"],
-          ["k_step", "t_form"], ["k_dou", "t_symbol"], ["k_que", "t_symbol"],
-          ["k_zuowen", "t_symbol"], ["k_zhaohu", "t_symbol"],
-          ["k_step", "t_craft"], ["k_dou", "t_value"],
-          ["t_form", "s_step"], ["t_form", "s_head"],
-          ["t_material", "s_brick"], ["t_material", "s_roof"],
-          ["t_craft", "s_head"], ["t_craft", "s_hard"],
-          ["t_symbol", "s_head"], ["t_space", "s_roof"], ["t_space", "s_hard"],
-          ["t_value", "s_step"],
-          ["s_brick", "c_huishang"], ["s_brick", "c_aesthetic"],
-          ["s_roof", "c_lixue"], ["s_roof", "c_sishui"],
-          ["s_head", "c_jixiang"], ["s_head", "c_madao"],
-          ["s_hard", "c_tianren"], ["s_hard", "c_zhongyong"],
-          ["s_step", "c_read"], ["s_step", "c_haoru"], ["s_step", "c_fengshui"], ["s_step", "c_zongzu"],
+          // 第一层 -> 第二层
+          ["f_env", "c_mountain"], ["f_env", "c_rain"], ["f_env", "c_timber"],
+          ["f_life", "c_fire"], ["f_life", "c_windsun"],
+          ["f_tech", "c_hardroof"], ["f_tech", "c_brickprod"],
+          ["f_culture", "c_clan"], ["f_culture", "c_huishang"], ["f_culture", "c_aesthetic"],
+
+          // 第二层 -> 第三层
+          ["c_mountain", "t_step"], ["c_mountain", "t_combo"],
+          ["c_rain", "t_blackwhite"],
+          ["c_timber", "t_step"],
+          ["c_fire", "t_step"],
+          ["c_windsun", "t_step"],
+          ["c_hardroof", "t_step"], ["c_hardroof", "t_wuyue"], ["c_hardroof", "t_combo"],
+          ["c_brickprod", "t_step"], ["c_brickprod", "t_wuyue"], ["c_brickprod", "t_ridge"], ["c_brickprod", "t_combo"],
+          ["c_clan", "t_wuyue"], ["c_clan", "t_zuotou"],
+          ["c_huishang", "t_wuyue"], ["c_huishang", "t_zuotou"], ["c_huishang", "t_blackwhite"], ["c_huishang", "t_ridge"],
+          ["c_aesthetic", "t_combo"], ["c_aesthetic", "t_blackwhite"],
+
+          // 第三层 -> 第四层
+          ["t_step", "m_brick"], ["t_step", "m_stepdrop"], ["t_step", "m_scale"],
+          ["t_blackwhite", "m_white"], ["t_blackwhite", "m_eave"],
+          ["t_wuyue", "m_stepdrop"], ["t_wuyue", "m_scale"],
+          ["t_zuotou", "m_zuotou"],
+          ["t_ridge", "m_eave"], ["t_ridge", "m_ridge"],
+          ["t_combo", "m_stepdrop"], ["t_combo", "m_scale"],
         ].map(([source, target]) => ({ source, target, value: 1 }));
 
         function layoutColumn(items, x, containerH, symbol, color, labelPos, fixedSize) {
@@ -219,19 +216,16 @@
           const h = chart.getHeight();
           const activeHeight = h; 
 
-          // 微调了列之间的 X 轴比例，让中心稍微宽裕一点
           const x1 = w * 0.08;
-          const x2 = w * 0.28;
-          const x3 = w * 0.50;
-          const x4 = w * 0.72;
-          const x5 = w * 0.92;
+          const x2 = w * 0.34;
+          const x3 = w * 0.60;
+          const x4 = w * 0.88;
 
           const nodes = [
             ...layoutColumn(col1, x1, activeHeight, "roundRect", colors.col1, "left", 18),
             ...layoutColumn(col2, x2, activeHeight, "circle", colors.col2, "right", 12),
             ...layoutColumn(col3, x3, activeHeight, "roundRect", colors.col3, "right", 15),
-            ...layoutColumn(col4, x4, activeHeight, "roundRect", colors.col4, "right", 14),
-            ...layoutColumn(col5, x5, activeHeight, "circle", colors.col5, "right", 12),
+            ...layoutColumn(col4, x4, activeHeight, "roundRect", colors.col4, "right", 13),
           ];
 
           return {
@@ -239,18 +233,7 @@
             animationEasingUpdate: 'quinticInOut',
             backgroundColor: "transparent",
             tooltip: {
-              trigger: "item",
-              backgroundColor: "rgba(250, 247, 240, 0.98)",
-              borderColor: "rgba(180, 170, 150, 0.6)",
-              borderWidth: 1,
-              padding: [10, 14],
-              textStyle: { color: "#2B333E", fontSize: 13 },
-              extraCssText: 'box-shadow: 0 4px 16px rgba(0,0,0,0.1); border-radius: 6px;',
-              formatter: function (p) {
-                const d = p.data || {};
-                if (typeof d.value === "number") return `<div style="font-weight:bold; margin-bottom:4px;">${d.name}</div><span style="color:#777;font-size:12px;">出现频率：<span style="color:#A34343;font-weight:bold">${d.value}</span></span>`;
-                return `<b style="font-size:14px;">${d.name}</b>`;
-              },
+              show: false,
             },
             series: [
               {

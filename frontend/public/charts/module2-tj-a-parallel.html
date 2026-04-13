@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>天井性能 · 平行坐标图</title>
+    <script src="../echarts.min.js"></script>
+    <style>
+      :root {
+        --paper-bg: #F8F6F0;
+        --title-color: #2b333e;
+        --subtitle-color: #8c939d;
+        --line-color: #6C7A89;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background-color: var(--paper-bg);
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      }
+
+      .wrap {
+        width: 100%;
+        height: 100%;
+        padding: 24px 32px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        margin-bottom: 20px;
+        position: relative;
+        padding-left: 14px;
+      }
+
+      .header::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 4px;
+        bottom: 2px;
+        width: 4px;
+        background: var(--line-color);
+        border-radius: 2px;
+      }
+
+      .title {
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        color: var(--title-color);
+        margin: 0 0 4px 0;
+      }
+
+      .subtitle {
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        color: var(--subtitle-color);
+        text-transform: uppercase;
+      }
+
+      #chart {
+        flex: 1;
+        width: 100%;
+        min-height: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <div class="title">天井 · 多维度性能分析平行坐标</div>
+        <div class="subtitle">Parallel Coordinates of Courtyard Performance</div>
+      </div>
+      <div id="chart"></div>
+    </div>
+
+    <script>
+      (function () {
+        const dom = document.getElementById("chart");
+        const chart = echarts.init(dom, null, {
+          renderer: "canvas",
+          devicePixelRatio: Math.max(1, window.devicePixelRatio || 1),
+        });
+
+        // 16种天井平面形态数据
+        const data = [
+          // M1组（面阔3.85m）
+          [3.85, 3.0, 14.8, 42, 35, 68, "M1J1"],
+          [3.85, 3.5, 18.5, 48, 42, 72, "M1J2"],
+          [3.85, 4.0, 22.1, 52, 48, 75, "M1J3"],
+          [3.85, 4.5, 25.8, 55, 55, 78, "M1J4"],
+          // M2组（面阔5.25m）
+          [5.25, 3.0, 20.1, 50, 38, 75, "M2J1"],
+          [5.25, 3.5, 25.3, 58, 45, 82, "M2J2"],
+          [5.25, 4.0, 30.6, 64, 52, 86, "M2J3"],
+          [5.25, 4.5, 35.8, 68, 58, 88, "M2J4"],
+          // M3组（面阔6.30m）
+          [6.30, 3.0, 24.1, 54, 40, 78, "M3J1"],
+          [6.30, 3.5, 30.4, 62, 48, 84, "M3J2"],
+          [6.30, 4.0, 36.8, 70, 55, 89, "M3J3"],
+          [6.30, 4.5, 43.2, 75, 62, 91, "M3J4"],
+          // M4组（面阔7.35m）
+          [7.35, 3.0, 28.4, 58, 42, 80, "M4J1"],
+          [7.35, 3.5, 35.8, 66, 50, 86, "M4J2"],
+          [7.35, 4.0, 43.2, 74, 58, 91, "M4J3"],
+          [7.35, 4.5, 50.6, 80, 65, 93, "M4J4"],
+        ];
+
+        const groupColors = {
+          M1: "#7A8B9E",
+          M2: "#6B9B8C",
+          M3: "#8B9B6C",
+          M4: "#9B8B6C",
+        };
+
+        function getGroupColor(name) {
+          const group = name.substring(0, 2);
+          return groupColors[group] || "#999";
+        }
+
+        const option = {
+          backgroundColor: "transparent",
+          tooltip: {
+            trigger: "item",
+            backgroundColor: "rgba(250, 247, 240, 0.98)",
+            borderColor: "rgba(180, 170, 150, 0.6)",
+            borderWidth: 1,
+            padding: [12, 16],
+            textStyle: { color: "#2B333E", fontSize: 12 },
+            formatter: function (p) {
+              if (p.componentSubType === "parallel") {
+                const d = p.value;
+                return `<b>${d[6]}</b><br/>
+                  面阔：${d[0]} m<br/>
+                  进深：${d[1]} m<br/>
+                  面积：${d[2].toFixed(1)} ㎡<br/>
+                  和风区占比：${d[3]}%<br/>
+                  单位风速：${d[4]}%<br/>
+                  综合得分：${d[5]}`;
+              }
+              return p.name;
+            },
+          },
+          parallelAxis: [
+            { dim: 0, name: "面阔（m）", type: "value", min: 3.5, max: 7.5 },
+            { dim: 1, name: "进深（m）", type: "value", min: 2.8, max: 4.8 },
+            { dim: 2, name: "面积（㎡）", type: "value", min: 10, max: 55 },
+            { dim: 3, name: "和风区占比（%）", type: "value", min: 40, max: 85 },
+            { dim: 4, name: "单位风速（%）", type: "value", min: 30, max: 70 },
+            { dim: 5, name: "综合得分", type: "value", min: 65, max: 95 },
+          ],
+          parallel: {
+            left: "8%",
+            right: "8%",
+            top: "12%",
+            bottom: "8%",
+            layout: "horizontal",
+          },
+          series: [
+            {
+              type: "parallel",
+              data: data,
+              lineStyle: {
+                width: 1.5,
+                opacity: 0.6,
+              },
+              itemStyle: {
+                borderWidth: 0,
+              },
+              emphasis: {
+                lineStyle: {
+                  width: 3,
+                  opacity: 0.95,
+                },
+              },
+              smooth: false,
+            },
+          ],
+        };
+
+        // 为每条线着色
+        const seriesData = data.map((d) => ({
+          value: d,
+          lineStyle: {
+            color: getGroupColor(d[6]),
+            width: 1.5,
+            opacity: 0.65,
+          },
+          emphasis: {
+            lineStyle: {
+              width: 3,
+              opacity: 0.95,
+            },
+          },
+        }));
+
+        option.series[0].data = seriesData;
+
+        chart.setOption(option);
+
+        window.addEventListener("resize", () => {
+          chart.resize();
+        });
+      })();
+    </script>
+  </body>
+</html>

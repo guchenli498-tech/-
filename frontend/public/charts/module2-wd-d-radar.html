@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>屋顶举架参数 · 雷达图（图D）</title>
+    <script src="../echarts.min.js"></script>
+    <style>
+      :root {
+        --paper-bg: #F8F6F0;
+        --title-color: #2b333e;
+        --subtitle-color: #8c939d;
+        --line-color: #6C7A89;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background-color: var(--paper-bg);
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      }
+
+      .wrap {
+        width: 100%;
+        height: 100%;
+        padding: 24px 32px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .headerRow {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .header {
+        position: relative;
+        padding-left: 14px;
+      }
+
+      .header::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 4px;
+        bottom: 2px;
+        width: 4px;
+        background: var(--line-color);
+        border-radius: 2px;
+      }
+
+      .title {
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        color: var(--title-color);
+        margin: 0 0 4px 0;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        user-select: none;
+        margin-top: 2px;
+      }
+
+      .btn {
+        border: 1px solid rgba(215, 195, 165, 0.75);
+        background: rgba(247, 241, 231, 0.65);
+        color: rgba(74, 74, 72, 0.95);
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+        white-space: nowrap;
+      }
+
+      .btn:active {
+        transform: scale(0.98);
+      }
+
+      .btn.active {
+        background: rgba(169, 193, 192, 0.28);
+        border-color: rgba(169, 193, 192, 0.95);
+      }
+
+      .content {
+        flex: 1;
+        min-height: 0;
+        width: 100%;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 440px;
+        gap: 8px;
+      }
+
+      #chart {
+        width: 100%;
+        height: 100%;
+      }
+
+      .sketchPanel {
+        border: 1px solid rgba(214, 203, 184, 0.6);
+        border-radius: 12px;
+        background: rgba(253, 251, 246, 0.85);
+        box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.05);
+        padding: 12px 12px 10px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+
+      .sketchTitle {
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: rgba(43, 51, 62, 0.92);
+        margin: 0 0 6px 0;
+      }
+
+      .sketchNote {
+        font-size: 11px;
+        color: rgba(140, 147, 157, 0.95);
+        letter-spacing: 0.8px;
+        margin: 0 0 10px 0;
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      }
+
+      #roofSketch {
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+        display: block;
+      }
+
+      .sketchLegend {
+        display: none;
+      }
+
+      .sketchLegendRow {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .swatch {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        margin-right: 8px;
+        flex: 0 0 auto;
+      }
+
+      .legendLeft {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+      }
+
+      .legendName {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .dash {
+        width: 14px;
+        height: 0;
+        border-top: 2px dashed currentColor;
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="headerRow">
+        <div class="header">
+          <div class="title">屋顶 · 举架关键参数雷达图（图表四）</div>
+        </div>
+        <div class="toolbar" aria-label="架屋切换">
+          <div id="btn5" class="btn active" role="button" tabindex="0">五架屋</div>
+          <div id="btn7" class="btn" role="button" tabindex="0">七架屋</div>
+          <div id="btn9" class="btn" role="button" tabindex="0">九架屋</div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div id="chart"></div>
+        <aside class="sketchPanel" aria-label="举折做法示意">
+          <div class="sketchTitle">举折做法示意</div>
+          <div class="sketchNote">示意：檐口至屋脊折线关系</div>
+          <svg id="roofSketch" viewBox="0 0 420 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+          <div class="sketchLegend" aria-label="示意图图例"></div>
+        </aside>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const C_5 = "#85bf61";
+        const C_7 = "#f08358";
+        const C_9 = "#67b8bf";
+        const C_REF = "#f9b775";
+
+        const indicators = [
+          { name: "檐步", max: 12 },
+          { name: "金步", max: 12 },
+          { name: "脊步举架值", max: 6 },
+          { name: "总举高比 H/L", max: 0.8 },
+          { name: "平均折距占比 h/H", max: 0.9 },
+          { name: "屋面坡度(°)", max: 40 },
+        ];
+
+        // TODO: 用“五/七/九架屋举架法量化”真实数据替换
+        // 当前只根据文本里给出的均值：五架屋 H/L≈0.44、坡度≈24°；七/九架屋 H/L≈0.47、坡度≈25°
+        const dataByMode = {
+          "5": { name: "五架屋", color: C_5, value: [8.6, 7.9, 3.1, 0.44, 0.58, 24] },
+          "7": { name: "七架屋", color: C_7, value: [9.2, 8.6, 3.6, 0.47, 0.60, 25] },
+          "9": { name: "九架屋", color: C_9, value: [10.1, 9.4, 4.1, 0.47, 0.62, 25] },
+        };
+
+        // 《工程做法则例》平均值参照线（示意占位）
+        const ref = { name: "《工程做法则例》均值", color: C_REF, value: [10.5, 9.8, 4.8, 0.60, 0.70, 30] };
+
+        const dom = document.getElementById("chart");
+        const chart = echarts.init(dom, null, {
+          renderer: "canvas",
+          devicePixelRatio: Math.max(1, window.devicePixelRatio || 1),
+        });
+
+        const selected = new Set(["5"]);
+
+        function renderSketch(selectedSet) {
+          const svg = document.getElementById("roofSketch");
+          if (!svg) return;
+          svg.innerHTML = "";
+
+          const W = 420;
+          const H = 300;
+          const padL = 20;
+          const padR = 20;
+          const padT = 22;
+          const padB = 28;
+          const baseY = H - padB;
+          const ridgeY = padT + 18;
+          const leftX = padL;
+          const rightX = W - padR;
+          const ridgeX = (leftX + rightX) / 2;
+
+          const NS = "http://www.w3.org/2000/svg";
+
+          // defs: arrow marker
+          const defs = document.createElementNS(NS, "defs");
+          const mk = document.createElementNS(NS, "marker");
+          mk.setAttribute("id", "arrow");
+          mk.setAttribute("viewBox", "0 0 10 10");
+          mk.setAttribute("refX", "5");
+          mk.setAttribute("refY", "5");
+          mk.setAttribute("markerWidth", "6");
+          mk.setAttribute("markerHeight", "6");
+          mk.setAttribute("orient", "auto-start-reverse");
+          const mkPath = document.createElementNS(NS, "path");
+          mkPath.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
+          mkPath.setAttribute("fill", "rgba(60,60,56,0.62)");
+          mk.appendChild(mkPath);
+          defs.appendChild(mk);
+          svg.appendChild(defs);
+
+          const RED = "rgba(200, 55, 55, 0.88)";
+          const RED_DASH = "rgba(200, 55, 55, 0.55)";
+          const INK = "rgba(60, 60, 56, 0.78)";
+          const RULE = "rgba(120, 120, 110, 0.42)";
+
+          function el(tag, attrs = {}, parent = svg) {
+            const n = document.createElementNS(NS, tag);
+            Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, String(v)));
+            parent.appendChild(n);
+            return n;
+          }
+
+          function text(x, y, str, opts = {}) {
+            const t = el("text", { x, y, ...opts });
+            t.textContent = str;
+            return t;
+          }
+
+          function poly(points) {
+            return points.map((p, i) => `${i ? "L" : "M"} ${p[0]} ${p[1]}`).join(" ");
+          }
+
+          // 数据（来自你给的原图标注）
+          const MODE_META = {
+            "5": { folds: 2, L1: 2639, L2: 3376, H1: 1115, H2: 1452 },
+            "7": { folds: 3, L1: 5721, L2: 4892, H1: 2350, H2: 1963 },
+            "9": { folds: 3, L1: 4059, L2: 4063, H1: 1949, H2: 1949 },
+          };
+
+          // 结构框架（简化画出柱/梁，贴近原图观感）
+          const frameG = el("g", { opacity: 0.9 });
+          const frameStroke = "rgba(90, 85, 78, 0.38)";
+          const beamStroke = "rgba(90, 85, 78, 0.42)";
+
+          // 柱子
+          const cols = [leftX + 8, leftX + 80, ridgeX, rightX - 80, rightX - 8];
+          cols.forEach((x) => {
+            el("line", { x1: x, y1: baseY, x2: x, y2: baseY - 138, stroke: frameStroke, "stroke-width": 2 }, frameG);
+          });
+          // 梁枋
+          [baseY - 70, baseY - 98, baseY - 120].forEach((y) => {
+            el("line", { x1: leftX + 6, y1: y, x2: rightX - 6, y2: y, stroke: beamStroke, "stroke-width": 2 }, frameG);
+          });
+
+          // 屋面灰填充（和原图类似的灰色体块）
+          const roofFill = el("path", {
+            d: `M ${leftX} ${baseY - 10} L ${ridgeX} ${ridgeY} L ${rightX} ${baseY - 10} L ${rightX} ${baseY - 2} L ${leftX} ${baseY - 2} Z`,
+            fill: "rgba(60, 60, 56, 0.12)",
+            stroke: "rgba(60, 60, 56, 0.18)",
+            "stroke-width": 1,
+          });
+
+          // 原图式红色虚线水平基准
+          const ridgeGuideY = ridgeY - 12;
+          el("line", {
+            x1: leftX,
+            y1: ridgeGuideY,
+            x2: rightX,
+            y2: ridgeGuideY,
+            stroke: RED_DASH,
+            "stroke-width": 1.2,
+            "stroke-dasharray": "4 4",
+          });
+
+          // 顶部水平距离 L（两段）
+          function drawTopL(meta) {
+            const y = padT - 6;
+            const x0 = leftX;
+            const x1 = ridgeX;
+            const x2 = rightX;
+
+            // 竖向引线
+            [x0, x1, x2].forEach((x) => {
+              el("line", { x1: x, y1: y + 2, x2: x, y2: y + 14, stroke: RULE, "stroke-width": 1 });
+            });
+            // 尺寸线
+            el("line", { x1: x0, y1: y + 8, x2: x1, y2: y + 8, stroke: RULE, "stroke-width": 1, "marker-start": "url(#arrow)", "marker-end": "url(#arrow)" });
+            el("line", { x1: x1, y1: y + 8, x2: x2, y2: y + 8, stroke: RULE, "stroke-width": 1, "marker-start": "url(#arrow)", "marker-end": "url(#arrow)" });
+            text((x0 + x1) / 2, y + 4, `${meta.L1}`, { "text-anchor": "middle", "font-size": 11, fill: INK });
+            text((x1 + x2) / 2, y + 4, `${meta.L2}`, { "text-anchor": "middle", "font-size": 11, fill: INK });
+            text((x0 + x1) / 2, y + 18, "檐桁至脊桁的水平距离L", { "text-anchor": "middle", "font-size": 10, fill: "rgba(90,85,78,0.7)" });
+            text((x1 + x2) / 2, y + 18, "檐桁至脊桁的水平距离L", { "text-anchor": "middle", "font-size": 10, fill: "rgba(90,85,78,0.7)" });
+          }
+
+          function drawSideH(meta) {
+            // 左侧 H
+            const x = leftX - 10;
+            const y0 = baseY - 10;
+            const y1 = ridgeY;
+            el("line", { x1: x, y1: y1, x2: x, y2: y0, stroke: RULE, "stroke-width": 1, "marker-start": "url(#arrow)", "marker-end": "url(#arrow)" });
+            text(x - 6, (y0 + y1) / 2, `${meta.H1}`, { "text-anchor": "end", "dominant-baseline": "middle", "font-size": 11, fill: INK });
+            text(x - 6, y1 + 10, "檐桁至脊桁的\n垂直距离H", { "text-anchor": "end", "font-size": 10, fill: "rgba(90,85,78,0.7)" });
+
+            // 右侧 H
+            const xr = rightX + 10;
+            el("line", { x1: xr, y1: y1, x2: xr, y2: y0, stroke: RULE, "stroke-width": 1, "marker-start": "url(#arrow)", "marker-end": "url(#arrow)" });
+            text(xr + 6, (y0 + y1) / 2, `${meta.H2}`, { "text-anchor": "start", "dominant-baseline": "middle", "font-size": 11, fill: INK });
+            text(xr + 6, y1 + 10, "檐桁至脊桁的\n垂直距离H", { "text-anchor": "start", "font-size": 10, fill: "rgba(90,85,78,0.7)" });
+          }
+
+          function foldGuides(leftPts, folds) {
+            // 每折对应一条水平虚线 + 文案
+            for (let i = 1; i <= folds; i++) {
+              const y = leftPts[i][1];
+              el("line", {
+                x1: leftX,
+                y1: y,
+                x2: rightX,
+                y2: y,
+                stroke: RED_DASH,
+                "stroke-width": 1,
+                "stroke-dasharray": "4 4",
+              });
+              text(leftPts[i][0] - 6, y - 4, `第${i}折h${i}`, { "text-anchor": "end", "font-size": 10, fill: INK });
+              // 右侧也来一份（对称）
+              const xr = rightX - (leftPts[i][0] - leftX);
+              text(xr + 6, y - 4, `第${i}折h${i}`, { "text-anchor": "start", "font-size": 10, fill: INK });
+            }
+          }
+
+          function drawRoofProfile(folds, strokeColor, alpha) {
+            const t = [];
+            for (let i = 0; i <= folds; i++) t.push(i / (folds + 1));
+            const ease = (x) => Math.pow(x, 0.72);
+            const leftPts = t.map((x) => {
+              const xx = leftX + (ridgeX - leftX) * x;
+              const yy = (baseY - 10) + (ridgeY - (baseY - 10)) * ease(x);
+              return [xx, yy];
+            });
+            const rightPts = t
+              .slice()
+              .reverse()
+              .map((x) => {
+                const xx = rightX - (rightX - ridgeX) * x;
+                const yy = (baseY - 10) + (ridgeY - (baseY - 10)) * ease(x);
+                return [xx, yy];
+              });
+            const pts = [...leftPts, ...rightPts.slice(1)];
+            el("path", {
+              d: poly(pts),
+              fill: "none",
+              stroke: strokeColor,
+              "stroke-width": 2.4,
+              "stroke-linejoin": "round",
+              "stroke-linecap": "round",
+              opacity: alpha,
+            });
+            // 折点小圆点（更像原图）
+            for (let i = 1; i <= folds; i++) {
+              el("circle", { cx: leftPts[i][0], cy: leftPts[i][1], r: 2.1, fill: strokeColor, opacity: alpha });
+              const xr = rightX - (leftPts[i][0] - leftX);
+              el("circle", { cx: xr, cy: leftPts[i][1], r: 2.1, fill: strokeColor, opacity: alpha });
+            }
+            foldGuides(leftPts, folds);
+          }
+
+          // 选择一个“当前结构参考”的 meta 来画 L/H（按：选中最多的优先级 9>7>5）
+          const metaKey = selectedSet.has("9") ? "9" : selectedSet.has("7") ? "7" : "5";
+          const meta = MODE_META[metaKey] || MODE_META["5"];
+          drawTopL(meta);
+          drawSideH(meta);
+
+          // 先画参考虚线屋面（更陡），对应《工程做法则例》
+          const refEase = (x) => Math.pow(x, 0.9);
+          const refPtsL = [0, 0.25, 0.5, 0.75].map((x) => {
+            const xx = leftX + (ridgeX - leftX) * x;
+            const yy = (baseY - 10) + (ridgeY - (baseY - 10)) * refEase(x);
+            return [xx, yy];
+          });
+          const refPtsR = [0.75, 0.5, 0.25, 0].map((x) => {
+            const xx = rightX - (rightX - ridgeX) * x;
+            const yy = (baseY - 10) + (ridgeY - (baseY - 10)) * refEase(x);
+            return [xx, yy];
+          });
+          el("path", {
+            d: poly([...refPtsL, ...refPtsR.slice(1)]),
+            fill: "none",
+            stroke: "rgba(249, 183, 117, 0.95)",
+            "stroke-width": 2,
+            "stroke-dasharray": "6 5",
+          });
+
+          // 叠加绘制当前选中屋面（改成更接近原图：统一用红线；透明度区分）
+          const order = ["9", "7", "5"];
+          order.forEach((k, idx) => {
+            if (!selectedSet.has(k)) return;
+            const m = MODE_META[k];
+            const a = 0.92 - idx * 0.12;
+            drawRoofProfile(m.folds, RED, a);
+          });
+
+          // 右侧示意图不再展示图例（图例由左侧雷达图承担）
+        }
+
+        function buildOption(selectedSet) {
+          const selectedModes = Array.from(selectedSet);
+          const seriesData = [];
+
+          // 选中的五/七/九架屋可叠加对比
+          selectedModes.forEach((m) => {
+            const cur = dataByMode[m];
+            if (!cur) return;
+            seriesData.push({
+              name: cur.name,
+              value: cur.value,
+              lineStyle: { color: cur.color, width: 3 },
+              itemStyle: { color: cur.color },
+              areaStyle: { color: cur.color, opacity: 0.14 },
+            });
+          });
+
+          // 参照线始终显示
+          seriesData.push({
+            name: ref.name,
+            value: ref.value,
+            lineStyle: { color: ref.color, width: 2, type: "dashed" },
+            itemStyle: { color: ref.color },
+            areaStyle: { color: ref.color, opacity: 0.06 },
+          });
+
+          return {
+            backgroundColor: "transparent",
+            animationDuration: 600,
+            tooltip: {
+              trigger: "item",
+              backgroundColor: "rgba(250, 247, 240, 0.98)",
+              borderColor: "rgba(180, 170, 150, 0.6)",
+              borderWidth: 1,
+              padding: [10, 14],
+              textStyle: { color: "#2B333E", fontSize: 13 },
+              extraCssText: "box-shadow: 0 4px 16px rgba(0,0,0,0.1); border-radius: 6px;",
+              formatter: function (p) {
+                const vals = (p.value || []).map((v, i) => `${indicators[i].name}：${v}`);
+                return `<div style="font-weight:bold; margin-bottom:4px;">${p.name}</div>${vals.join("<br/>")}`;
+              },
+            },
+            radar: {
+              indicator: indicators,
+              center: ["50%", "48%"],
+              radius: "58%",
+              axisName: {
+                color: "rgba(43, 51, 62, 0.82)",
+                fontSize: 12,
+                fontFamily: 'Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif',
+              },
+              splitNumber: 5,
+              axisLine: { lineStyle: { color: "rgba(74, 74, 72, 0.18)" } },
+              splitLine: { lineStyle: { color: "rgba(74, 74, 72, 0.10)" } },
+              splitArea: { areaStyle: { color: ["rgba(255,255,255,0.0)", "rgba(255,255,255,0.06)"] } },
+            },
+            legend: {
+              show: true,
+              orient: "horizontal",
+              left: "center",
+              bottom: 6,
+              itemWidth: 10,
+              itemHeight: 10,
+              itemGap: 10,
+              textStyle: {
+                color: "rgba(43, 51, 62, 0.78)",
+                fontSize: 12,
+                fontFamily: 'Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif',
+              },
+            },
+            series: [
+              {
+                type: "radar",
+                symbol: "circle",
+                symbolSize: 6,
+                data: seriesData,
+              },
+            ],
+          };
+        }
+
+        function syncButtons() {
+          const btn5 = document.getElementById("btn5");
+          const btn7 = document.getElementById("btn7");
+          const btn9 = document.getElementById("btn9");
+          btn5 && btn5.classList.toggle("active", selected.has("5"));
+          btn7 && btn7.classList.toggle("active", selected.has("7"));
+          btn9 && btn9.classList.toggle("active", selected.has("9"));
+        }
+
+        function applySelection() {
+          syncButtons();
+          // 不允许全部关闭，避免空图
+          if (selected.size === 0) selected.add("5");
+          chart.setOption(buildOption(selected), true);
+          renderSketch(selected);
+        }
+
+        function toggleMode(mode) {
+          if (selected.has(mode)) selected.delete(mode);
+          else selected.add(mode);
+          applySelection();
+        }
+
+        applySelection();
+        const btn5 = document.getElementById("btn5");
+        const btn7 = document.getElementById("btn7");
+        const btn9 = document.getElementById("btn9");
+        btn5 && btn5.addEventListener("click", () => toggleMode("5"));
+        btn7 && btn7.addEventListener("click", () => toggleMode("7"));
+        btn9 && btn9.addEventListener("click", () => toggleMode("9"));
+        window.addEventListener("resize", () => {
+          chart.resize();
+          renderSketch(selected);
+        });
+      })();
+    </script>
+  </body>
+</html>
+

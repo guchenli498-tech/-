@@ -3,13 +3,13 @@
  * 遗存条、沿革圆点、图例色块见 module1VisualPalette
  */
 .wrap {
-  --hr-paper: #F7F3EA;
-  --hr-panel: #FBF8F2;
-  --hr-deep: #F0E7D8;
+  --hr-paper: #f4efe6;
+  --hr-panel: #efe8dc;
+  --hr-deep: #e6dccb;
   --hr-ink: #322F2B;
   --hr-mute: #746D62;
   --hr-rule: #D9D1C3;
-  --hr-edge: #E8E1D6;
+  --hr-edge: #ddd4c4;
 
   width: 100%;
   margin-top: 0;
@@ -28,16 +28,44 @@
   color: var(--hr-ink);
 }
 
+.wrap::after {
+  /* 轻宣纸噪点纹理，增强古籍质感 */
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(rgba(95, 82, 63, 0.035) 0.5px, transparent 0.7px),
+    radial-gradient(rgba(95, 82, 63, 0.022) 0.5px, transparent 0.7px);
+  background-size: 6px 6px, 8px 8px;
+  background-position: 0 0, 3px 2px;
+  opacity: 0.28;
+  z-index: 0;
+}
+
 /* —— 顶栏：左标识 + 搜索 + 分组图例（行为/功能式排版）—— */
 .head {
   flex-shrink: 0;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: 10px 16px;
-  padding: 10px 14px 9px;
-  background: rgba(251, 248, 242, 0.95);
+  gap: 6px 12px;
+  padding: 7px 12px 6px 26px;
+  background: var(--hr-panel);
   border-bottom: 1px solid var(--hr-edge);
+  position: relative;
+  z-index: 1;
+}
+
+.head::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 7px;
+  bottom: 7px;
+  width: 4px;
+  border-radius: 2px;
+  background: rgba(108, 122, 137, 0.9);
 }
 
 .brand {
@@ -50,35 +78,33 @@
 }
 
 .brandMain {
-  font-size: 15px;
-  font-weight: 750;
-  letter-spacing: 0.08em;
-  color: var(--hr-ink);
-  font-family:
-    'Noto Serif SC',
-    'Source Han Serif SC',
-    'STSong',
-    'SimSun',
-    serif;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #2f2a23;
+  font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
 }
 
 .brandSub {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.28em;
-  color: var(--hr-mute);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  color: rgba(140, 147, 157, 0.95);
   text-transform: uppercase;
+  font-family: "Helvetica Neue", Arial, sans-serif;
 }
 
 .search {
   width: clamp(160px, 20vw, 240px);
   flex-shrink: 0;
-  padding: 6px 2px 5px;
-  border-radius: 0;
-  border: none;
-  border-bottom: 1px solid var(--hr-edge);
-  background: transparent;
-  font-size: 12px;
+  padding: 6px 10px 6px 28px;
+  border-radius: 10px;
+  border: 1px solid rgba(214, 201, 184, 0.45);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23928a7d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='20' y1='20' x2='16.65' y2='16.65'/%3E%3C/svg%3E")
+      no-repeat 9px center,
+    rgba(255, 255, 255, 0.42);
+  font-size: 11px;
   color: var(--hr-ink);
   box-shadow: none;
 }
@@ -89,14 +115,20 @@
 
 .search:focus {
   outline: none;
-  border-bottom-color: rgba(94, 127, 121, 0.65);
-  box-shadow: none;
+  border-color: rgba(94, 127, 121, 0.6);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23766d5f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='20' y1='20' x2='16.65' y2='16.65'/%3E%3C/svg%3E")
+      no-repeat 9px center,
+    rgba(255, 255, 255, 0.68);
+  box-shadow:
+    0 10px 26px -18px rgba(50, 47, 43, 0.32),
+    0 0 0 3px rgba(142, 184, 183, 0.18);
 }
 
 .legendBlock {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 18px;
+  gap: 4px 12px;
   flex: 1 1 220px;
   min-width: 0;
   align-items: flex-start;
@@ -104,14 +136,15 @@
 
 .legendGroup {
   display: flex;
-  flex-direction: column;
-  gap: 3px;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
   min-width: 0;
-  flex: 1 1 160px;
+  flex: 1 1 220px;
 }
 
 .legendGroupTitle {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.14em;
   color: var(--hr-mute);
@@ -127,7 +160,7 @@
 .legendScroll {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 16px;
+  gap: 4px 10px;
   overflow: visible;
   padding-bottom: 0;
   mask-image: none;
@@ -138,7 +171,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 10px;
+  font-size: 9px;
   color: var(--hr-ink);
   white-space: nowrap;
   flex-shrink: 0;
@@ -203,7 +236,7 @@
 .gridRow {
   display: grid;
   grid-template-columns: 120px 1fr;
-  gap: 8px;
+  gap: 6px;
   align-items: stretch;
   border-bottom: 1px solid var(--hr-rule);
   padding-bottom: 2px;
@@ -254,7 +287,7 @@
 
 .rowName {
   font-size: 11px;
-  font-weight: 650;
+  font-weight: 700;
   flex: 1 1 0;
   min-width: 0;
   overflow: hidden;
@@ -271,8 +304,8 @@
 
 .rowMeta {
   flex-shrink: 0;
-  font-size: 10px;
-  color: var(--hr-mute);
+  font-size: 9px;
+  color: rgba(116, 109, 98, 0.82);
   white-space: nowrap;
 }
 
@@ -330,6 +363,7 @@
   z-index: 1;
   background: rgba(237, 231, 216, 0.65); /* 阶段块：浅米色 */
   box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.55);
 }
 
 .trackPaneActive .segment {
@@ -343,8 +377,8 @@
   position: absolute;
   top: calc(50% + var(--ev-offsetY, 0px));
   transform: translate(-50%, -50%);
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -354,15 +388,18 @@
   z-index: 3;
   cursor: pointer;
   line-height: 0;
+  filter: drop-shadow(0 1px 2px rgba(46, 40, 33, 0.18));
 }
 
 .ev:hover {
-  transform: translate(-50%, -50%) scale(1.06);
+  transform: translate(-50%, -50%) scale(1.12);
 }
 
 .ev svg {
   display: block;
-  filter: none;
+  filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 0.8px;
 }
 
 .footnote {

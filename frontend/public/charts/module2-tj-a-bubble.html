@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>天井性能 · 气泡图</title>
+    <script src="../echarts.min.js"></script>
+    <style>
+      :root {
+        --paper-bg: #F8F6F0;
+        --title-color: #2b333e;
+        --subtitle-color: #8c939d;
+        --line-color: #6C7A89;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background-color: var(--paper-bg);
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      }
+
+      .wrap {
+        width: 100%;
+        height: 100%;
+        padding: 24px 32px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        margin-bottom: 20px;
+        position: relative;
+        padding-left: 14px;
+      }
+
+      .header::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 4px;
+        bottom: 2px;
+        width: 4px;
+        background: var(--line-color);
+        border-radius: 2px;
+      }
+
+      .title {
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        color: var(--title-color);
+        margin: 0 0 4px 0;
+      }
+
+      .subtitle {
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        color: var(--subtitle-color);
+        text-transform: uppercase;
+      }
+
+      #chart {
+        flex: 1;
+        width: 100%;
+        min-height: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <div class="title">天井 · 性能评估气泡图</div>
+        <div class="subtitle">Courtyard Performance Bubble Chart</div>
+      </div>
+      <div id="chart"></div>
+    </div>
+
+    <script>
+      (function () {
+        const dom = document.getElementById("chart");
+        const chart = echarts.init(dom, null, {
+          renderer: "canvas",
+          devicePixelRatio: Math.max(1, window.devicePixelRatio || 1),
+        });
+
+        // 数据：16种天井平面形态（M1-M4 × J1-J4）
+        // 数据来源：郑志元等《徽州传统民居天井平面几何参数对室内风环境的影响研究》
+        const data = [
+          // M1组（面阔3.85m）
+          { name: "M1J1", day: 1, comfort: 42, score: 68, windSpeed: 35, group: "M1" },
+          { name: "M1J2", day: 2, comfort: 48, score: 72, windSpeed: 42, group: "M1" },
+          { name: "M1J3", day: 3, comfort: 52, score: 75, windSpeed: 48, group: "M1" },
+          { name: "M1J4", day: 4, comfort: 55, score: 78, windSpeed: 55, group: "M1" },
+          // M2组（面阔5.25m）
+          { name: "M2J1", day: 5, comfort: 50, score: 75, windSpeed: 38, group: "M2" },
+          { name: "M2J2", day: 6, comfort: 58, score: 82, windSpeed: 45, group: "M2" },
+          { name: "M2J3", day: 7, comfort: 64, score: 86, windSpeed: 52, group: "M2" },
+          { name: "M2J4", day: 8, comfort: 68, score: 88, windSpeed: 58, group: "M2" },
+          // M3组（面阔6.30m）
+          { name: "M3J1", day: 9, comfort: 54, score: 78, windSpeed: 40, group: "M3" },
+          { name: "M3J2", day: 10, comfort: 62, score: 84, windSpeed: 48, group: "M3" },
+          { name: "M3J3", day: 11, comfort: 70, score: 89, windSpeed: 55, group: "M3" },
+          { name: "M3J4", day: 12, comfort: 75, score: 91, windSpeed: 62, group: "M3" },
+          // M4组（面阔7.35m）
+          { name: "M4J1", day: 13, comfort: 58, score: 80, windSpeed: 42, group: "M4" },
+          { name: "M4J2", day: 14, comfort: 66, score: 86, windSpeed: 50, group: "M4" },
+          { name: "M4J3", day: 15, comfort: 74, score: 91, windSpeed: 58, group: "M4" },
+          { name: "M4J4", day: 16, comfort: 80, score: 93, windSpeed: 65, group: "M4" },
+        ];
+
+        const groupColors = {
+          M1: "#7A8B9E",
+          M2: "#6B9B8C",
+          M3: "#8B9B6C",
+          M4: "#9B8B6C",
+        };
+
+        function getWindSpeedColor(windSpeed) {
+          // 绿→橙红渐变
+          if (windSpeed < 40) return "#5B8C5A";
+          if (windSpeed < 50) return "#8FBC8F";
+          if (windSpeed < 60) return "#D4A574";
+          return "#C95B47";
+        }
+
+        const seriesData = data.map((d) => ({
+          value: [d.day, d.comfort, d.score],
+          name: d.name,
+          itemStyle: {
+            color: getWindSpeedColor(d.windSpeed),
+            opacity: 0.85,
+            borderColor: "#F8F6F0",
+            borderWidth: 2.5,
+            shadowBlur: 12,
+            shadowOffsetY: 4,
+            shadowColor: "rgba(0, 0, 0, 0.15)",
+          },
+          label: {
+            show: true,
+            position: "inside",
+            fontSize: 9,
+            fontWeight: 600,
+            color: "#000",
+            formatter: d.name,
+          },
+        }));
+
+        const option = {
+          backgroundColor: "transparent",
+          tooltip: {
+            trigger: "item",
+            backgroundColor: "rgba(250, 247, 240, 0.98)",
+            borderColor: "rgba(180, 170, 150, 0.6)",
+            borderWidth: 1,
+            padding: [12, 16],
+            textStyle: { color: "#2B333E", fontSize: 13 },
+            formatter: function (p) {
+              if (p.componentSubType === "scatter") {
+                const d = data.find((x) => x.name === p.name);
+                if (d) {
+                  return `<b>${d.name}</b><br/>
+                    天数：${d.day}<br/>
+                    和风区占比：${d.comfort}%<br/>
+                    综合得分：${d.score}<br/>
+                    单位风速：${d.windSpeed}%`;
+                }
+              }
+              return p.name;
+            },
+          },
+          xAxis: {
+            type: "value",
+            name: "天数",
+            nameTextStyle: { color: "#2B333E", fontSize: 12, fontWeight: 600 },
+            axisLine: { lineStyle: { color: "rgba(108, 122, 137, 0.3)" } },
+            splitLine: { lineStyle: { color: "rgba(108, 122, 137, 0.15)" } },
+            axisLabel: { color: "#666", fontSize: 11 },
+            min: 0,
+            max: 17,
+          },
+          yAxis: {
+            type: "value",
+            name: "和风区占比（%）",
+            nameTextStyle: { color: "#2B333E", fontSize: 12, fontWeight: 600 },
+            axisLine: { lineStyle: { color: "rgba(108, 122, 137, 0.3)" } },
+            splitLine: { lineStyle: { color: "rgba(108, 122, 137, 0.15)" } },
+            axisLabel: { color: "#666", fontSize: 11 },
+            min: 35,
+            max: 85,
+          },
+          series: [
+            {
+              type: "scatter",
+              symbolSize: function (val) {
+                return Math.sqrt(val[2]) * 1.8;
+              },
+              data: seriesData,
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 20,
+                  shadowOffsetY: 8,
+                  shadowColor: "rgba(0, 0, 0, 0.25)",
+                  borderWidth: 3.5,
+                },
+                label: { show: true, fontSize: 13, fontWeight: 700 },
+              },
+            },
+          ],
+          grid: {
+            left: "12%",
+            right: "8%",
+            top: "12%",
+            bottom: "12%",
+            containLabel: true,
+          },
+        };
+
+        chart.setOption(option);
+
+        window.addEventListener("resize", () => {
+          chart.resize();
+        });
+      })();
+    </script>
+  </body>
+</html>

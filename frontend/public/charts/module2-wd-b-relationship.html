@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>屋顶关系图 · 图B</title>
+    <script src="../echarts.min.js"></script>
+    <style>
+      :root {
+        --paper-bg: #F8F6F0;
+        --title-color: #2b333e;
+        --subtitle-color: #8c939d;
+        --line-color: #6C7A89;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background-color: var(--paper-bg);
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      }
+
+      .wrap {
+        width: 100%;
+        height: 100%;
+        padding: 24px 32px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        margin-bottom: 20px;
+        position: relative;
+        padding-left: 14px;
+      }
+
+      .header::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 4px;
+        bottom: 2px;
+        width: 4px;
+        background: var(--line-color);
+        border-radius: 2px;
+      }
+
+      .title {
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        color: var(--title-color);
+        margin: 0 0 4px 0;
+      }
+
+      .subtitle {
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        color: var(--subtitle-color);
+        text-transform: uppercase;
+      }
+
+      #chart {
+        flex: 1;
+        width: 100%;
+        min-height: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <div class="title">屋顶 · 形成逻辑关系图（图表三）</div>
+        <div class="subtitle">Knowledge Graph of Roof Forming Logic</div>
+      </div>
+      <div id="chart"></div>
+    </div>
+
+    <script>
+      (function () {
+        const dom = document.getElementById("chart");
+        const chart = echarts.init(dom, null, {
+          renderer: "canvas",
+          devicePixelRatio: Math.max(1, window.devicePixelRatio || 1),
+        });
+
+        const colors = {
+          col1: "#26363E",
+          col2: "#A34343",
+          col3: "#566C7A",
+          col4: "#B58A52",
+          edge: "rgba(150, 145, 135, 0.28)",
+          edgeHi: "#C95B47",
+        };
+
+        // 第一层：屋顶形成原因（4）
+        const col1 = [
+          { id: "g_env", name: "自然环境" },
+          { id: "g_life", name: "生活需求" },
+          { id: "g_tech", name: "建筑技术" },
+          { id: "g_cult", name: "地域文化" },
+        ];
+
+        // 第二层：形成原因细分（11）
+        const col2 = [
+          { id: "r_rain", name: "多雨潮湿", freq: 12 },
+          { id: "r_hot", name: "夏季炎热", freq: 10 },
+          { id: "r_mountain", name: "山地地形", freq: 10 },
+          { id: "r_vent", name: "通风隔热", freq: 9 },
+          { id: "r_light", name: "采光需求", freq: 8 },
+          { id: "r_drain", name: "排水需求", freq: 12 },
+          { id: "r_fire", name: "防火安全", freq: 9 },
+          { id: "r_material", name: "材料易得", freq: 8 },
+          { id: "r_struct", name: "结构技术", freq: 10 },
+          { id: "r_rank", name: "等级制度", freq: 7 },
+          { id: "r_fengshui", name: "风水观念", freq: 8 },
+          { id: "r_aesthetic", name: "审美情趣", freq: 7 },
+        ];
+
+        // 第三层：屋顶主要类型（6）
+        const col3 = [
+          { id: "t_yingshan", name: "硬山顶（含马头墙）" },
+          { id: "t_xuanshan", name: "悬山顶" },
+          { id: "t_xieshan", name: "歇山顶" },
+          { id: "t_zanjian", name: "攒尖顶" },
+          { id: "t_chongyan", name: "重檐顶" },
+          { id: "t_combo", name: "组合式屋顶" },
+        ];
+
+        // 第四层：对应的结构做法（10）
+        const col4 = [
+          { id: "s_tailliang", name: "抬梁式构架" },
+          { id: "s_chuandou", name: "穿斗式构架" },
+          { id: "s_chaliang", name: "插梁式构架" },
+          { id: "s_purlin", name: "檩椽体系" },
+          { id: "s_wang", name: "望砖/望板铺设" },
+          { id: "s_tile", name: "屋面瓦作（小青瓦）" },
+          { id: "s_hewa", name: "合瓦屋面" },
+          { id: "s_lengtan", name: "冷摊瓦屋面" },
+          { id: "s_eave", name: "檐口做法（飞椽、滴水、花边）" },
+          { id: "s_ridge", name: "屋脊构造" },
+        ];
+
+        function layoutColumn(items, x, containerH, symbol, color, labelPos, fixedSize) {
+          const out = [];
+          const n = items.length;
+          const step = Math.min(45, (containerH * 0.9) / Math.max(n - 1, 1));
+          const totalHeight = (n - 1) * step;
+          const startY = (containerH - totalHeight) / 2;
+
+          items.forEach((it, idx) => {
+            const nodeSize = it.freq ? fixedSize + (it.freq / 12) * 5 : fixedSize;
+            out.push({
+              id: it.id,
+              name: it.name,
+              x,
+              y: startY + idx * step,
+              value: it.freq,
+              symbol,
+              symbolSize: nodeSize,
+              itemStyle: {
+                color,
+                opacity: 0.95,
+                borderColor: "#F8F6F0",
+                borderWidth: 2,
+                shadowBlur: 10,
+                shadowOffsetY: 4,
+                shadowColor: "rgba(0, 0, 0, 0.12)",
+              },
+              label: {
+                show: true,
+                position: labelPos,
+                color: "#2B333E",
+                fontSize: 12.5,
+                fontWeight: 600,
+                distance: 10,
+                fontFamily: "Georgia, 'KaiTi', '楷体', serif",
+              },
+            });
+          });
+          return out;
+        }
+
+        const links = [
+          // 第一层 -> 第二层（对应关系见屋顶数据汇总 2.2.2）
+          ["g_env", "r_rain"],
+          ["g_env", "r_mountain"],
+          ["g_life", "r_vent"],
+          ["g_life", "r_light"],
+          ["g_life", "r_drain"],
+          ["g_life", "r_fire"],
+          ["g_tech", "r_material"],
+          ["g_tech", "r_struct"],
+          ["g_cult", "r_rank"],
+          ["g_cult", "r_fengshui"],
+          ["g_cult", "r_aesthetic"],
+
+          // 第二层 -> 第三层
+          ["r_rain", "t_yingshan"],
+          ["r_rain", "t_xuanshan"],
+          ["r_rain", "t_xieshan"],
+          ["r_mountain", "t_yingshan"],
+          ["r_mountain", "t_combo"],
+          ["r_vent", "t_yingshan"],
+          ["r_vent", "t_combo"],
+          ["r_light", "t_combo"],
+          ["r_drain", "t_yingshan"],
+          ["r_drain", "t_xuanshan"],
+          ["r_drain", "t_xieshan"],
+          ["r_fire", "t_yingshan"],
+          ["r_material", "t_yingshan"],
+          ["r_material", "t_xuanshan"],
+          ["r_struct", "t_xieshan"],
+          ["r_struct", "t_zanjian"],
+          ["r_struct", "t_chongyan"],
+          ["r_struct", "t_combo"],
+          ["r_rank", "t_xieshan"],
+          ["r_rank", "t_chongyan"],
+          ["r_fengshui", "t_yingshan"],
+          ["r_fengshui", "t_combo"],
+          ["r_aesthetic", "t_yingshan"],
+          ["r_aesthetic", "t_xieshan"],
+          ["r_aesthetic", "t_zanjian"],
+          ["r_aesthetic", "t_combo"],
+
+          // 第三层 -> 第四层（按各类型常用构造汇总）
+          // 硬山顶（含马头墙）
+          ["t_yingshan", "s_tailliang"],
+          ["t_yingshan", "s_chuandou"],
+          ["t_yingshan", "s_chaliang"],
+          ["t_yingshan", "s_purlin"],
+          ["t_yingshan", "s_wang"],
+          ["t_yingshan", "s_tile"],
+          ["t_yingshan", "s_hewa"],
+          ["t_yingshan", "s_lengtan"],
+          ["t_yingshan", "s_eave"],
+          ["t_yingshan", "s_ridge"],
+          // 悬山顶
+          ["t_xuanshan", "s_tailliang"],
+          ["t_xuanshan", "s_chuandou"],
+          ["t_xuanshan", "s_purlin"],
+          ["t_xuanshan", "s_wang"],
+          ["t_xuanshan", "s_tile"],
+          ["t_xuanshan", "s_hewa"],
+          ["t_xuanshan", "s_eave"],
+          ["t_xuanshan", "s_ridge"],
+          // 歇山顶
+          ["t_xieshan", "s_tailliang"],
+          ["t_xieshan", "s_chaliang"],
+          ["t_xieshan", "s_purlin"],
+          ["t_xieshan", "s_wang"],
+          ["t_xieshan", "s_tile"],
+          ["t_xieshan", "s_eave"],
+          ["t_xieshan", "s_ridge"],
+          // 攒尖顶
+          ["t_zanjian", "s_tailliang"],
+          ["t_zanjian", "s_purlin"],
+          ["t_zanjian", "s_tile"],
+          ["t_zanjian", "s_eave"],
+          ["t_zanjian", "s_ridge"],
+          // 重檐顶
+          ["t_chongyan", "s_tailliang"],
+          ["t_chongyan", "s_purlin"],
+          ["t_chongyan", "s_wang"],
+          ["t_chongyan", "s_tile"],
+          ["t_chongyan", "s_eave"],
+          ["t_chongyan", "s_ridge"],
+          // 组合式屋顶
+          ["t_combo", "s_tailliang"],
+          ["t_combo", "s_chaliang"],
+          ["t_combo", "s_purlin"],
+          ["t_combo", "s_wang"],
+          ["t_combo", "s_tile"],
+          ["t_combo", "s_eave"],
+          ["t_combo", "s_ridge"],
+        ].map(([source, target]) => ({ source, target, value: 1 }));
+
+        function buildOption() {
+          const w = chart.getWidth();
+          const h = chart.getHeight();
+          const x1 = w * 0.10;
+          const x2 = w * 0.34;
+          const x3 = w * 0.62;
+          const x4 = w * 0.90;
+
+          const nodes = [
+            ...layoutColumn(col1, x1, h, "roundRect", colors.col1, "left", 18),
+            ...layoutColumn(col2, x2, h, "circle", colors.col2, "right", 12),
+            ...layoutColumn(col3, x3, h, "roundRect", colors.col3, "right", 14),
+            ...layoutColumn(col4, x4, h, "roundRect", colors.col4, "right", 13),
+          ];
+
+          return {
+            backgroundColor: "transparent",
+            animationDurationUpdate: 900,
+            animationEasingUpdate: "quinticInOut",
+            tooltip: {
+              trigger: "item",
+              backgroundColor: "rgba(250, 247, 240, 0.98)",
+              borderColor: "rgba(180, 170, 150, 0.6)",
+              borderWidth: 1,
+              padding: [10, 14],
+              textStyle: { color: "#2B333E", fontSize: 13 },
+              extraCssText: "box-shadow: 0 4px 16px rgba(0,0,0,0.1); border-radius: 6px;",
+              formatter: function (p) {
+                const d = p.data || {};
+                if (typeof d.value === "number") {
+                  return `<div style="font-weight:bold; margin-bottom:4px;">${d.name}</div><span style="color:#777;font-size:12px;">出现频率：<span style="color:#A34343;font-weight:bold">${d.value}</span></span>`;
+                }
+                return `<b style="font-size:14px;">${d.name}</b>`;
+              },
+            },
+            series: [
+              {
+                type: "graph",
+                layout: "none",
+                roam: false,
+                draggable: false,
+                lineStyle: {
+                  width: 1.5,
+                  color: colors.edge,
+                  opacity: 0.9,
+                  curveness: 0.35,
+                },
+                emphasis: {
+                  focus: "adjacency",
+                  lineStyle: {
+                    width: 3.5,
+                    color: colors.edgeHi,
+                    opacity: 0.9,
+                    shadowBlur: 12,
+                    shadowColor: "rgba(201, 91, 71, 0.4)",
+                  },
+                  itemStyle: {
+                    shadowBlur: 20,
+                    shadowOffsetY: 6,
+                    shadowColor: "rgba(0,0,0,0.25)",
+                  },
+                  label: { show: true, color: "#111", fontWeight: 900, textShadowColor: "#fff", textShadowBlur: 4 },
+                },
+                blur: {
+                  itemStyle: { opacity: 0.2 },
+                  lineStyle: { opacity: 0.05 },
+                },
+                label: { show: true },
+                data: nodes,
+                links,
+              },
+            ],
+          };
+        }
+
+        function render() {
+          chart.clear();
+          chart.setOption(buildOption(), true);
+        }
+
+        setTimeout(render, 80);
+
+        let resizeTimer;
+        window.addEventListener("resize", () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(() => {
+            chart.resize();
+            render();
+          }, 160);
+        });
+      })();
+    </script>
+  </body>
+</html>
+

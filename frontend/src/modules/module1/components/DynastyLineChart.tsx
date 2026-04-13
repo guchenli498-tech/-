@@ -106,20 +106,8 @@ export function DynastyLineChart(props: {
 
   const option = {
     backgroundColor: 'transparent',
-    title: {
-      text: title,
-      textStyle: {
-        fontSize: 16,
-        fontWeight: 600,
-        color: '#4B463F',
-        fontFamily:
-          "'Noto Serif SC','Source Han Serif SC','STSong','SimSun',serif",
-        letterSpacing: 0.02,
-      },
-      left: 12,
-      top: 6,
-    },
-    grid: { left: 52, right: 14, top: 44, bottom: 26, containLabel: false },
+    // 标题由外层 ChartPanel 统一渲染
+    grid: { left: 52, right: 14, top: 18, bottom: 26, containLabel: false },
     tooltip: {
       trigger: 'axis',
       backgroundColor: 'rgba(251, 248, 242, 0.98)',
@@ -182,7 +170,7 @@ export function DynastyLineChart(props: {
   }
 
   return (
-    <div style={{ height }}>
+    <div style={{ height: '100%', width: '100%', padding: 6, boxSizing: 'border-box' }}>
       <ReactECharts option={option} style={{ height: '100%', width: '100%' }} notMerge />
     </div>
   )

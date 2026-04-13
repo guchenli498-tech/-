@@ -1,13 +1,20 @@
 import ReactECharts from 'echarts-for-react'
 import type { BuildingCategoryDatum } from '../types'
+import { HEAT_MAP_GRADIENT, MAP_GEO_THEME } from '../theme/module1VisualPalette'
 
 const CATEGORY_COLORS: Record<string, string> = {
-  民居: '#517fab',
-  桥梁: '#c9a227',
-  '综合用途/建筑群': '#7ebce7',
-  其他: '#e8c36a',
+  民居: MAP_GEO_THEME.focus,
+  桥梁: HEAT_MAP_GRADIENT[2],
+  '综合用途/建筑群': MAP_GEO_THEME.pinDefault,
+  其他: HEAT_MAP_GRADIENT[1],
 }
-const FALLBACK_COLORS = ['#517fab', '#c9a227', '#7ebce7', '#e8c36a', '#254e7a']
+const FALLBACK_COLORS = [
+  MAP_GEO_THEME.focus,
+  MAP_GEO_THEME.pinDefault,
+  HEAT_MAP_GRADIENT[2],
+  HEAT_MAP_GRADIENT[1],
+  MAP_GEO_THEME.ink,
+]
 
 export function BuildingCategoryDonut(props: {
   data: BuildingCategoryDatum[]
@@ -34,18 +41,7 @@ export function BuildingCategoryDonut(props: {
         `<span style="opacity:.75">数量：</span><b style="color:#c9a227">${p.value}</b>` +
         `<span style="opacity:.6;margin-left:8px">(${p.percent?.toFixed(1)}%)</span>`,
     },
-    title: {
-      text: '建筑类型分布',
-      left: 10,
-      top: 8,
-      textStyle: {
-        fontSize: 13,
-        fontWeight: 700,
-        color: '#254e7a',
-        letterSpacing: 4,
-        fontFamily: "'Noto Serif SC','Source Han Serif SC','STSong','SimSun',serif",
-      },
-    },
+    // 标题由外层 ChartPanel 统一渲染
     legend: { show: false },
     series: [
       {
@@ -113,7 +109,7 @@ export function BuildingCategoryDonut(props: {
   }
 
   return (
-    <div style={{ height: 260 }}>
+    <div style={{ height: '100%' }}>
       <ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
     </div>
   )

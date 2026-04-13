@@ -14,6 +14,9 @@
       --muted: #8eb8b7;
       --border: #e7dfd2;
       --accent: #f25c33;
+      --title-color: #2b333e;
+      --subtitle-color: #8c939d;
+      --line-color: #6C7A89;
       --shadow: rgba(74, 74, 72, 0.18);
       --radius-lg: 14px;
       --radius-md: 10px;
@@ -88,10 +91,31 @@
     }
 
     .card-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      display: flex;
       gap: 8px;
       min-height: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-behavior: smooth;
+      padding: 0 8px;
+    }
+
+    .card-grid::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .card-grid::-webkit-scrollbar-track {
+      background: rgba(214, 201, 184, 0.2);
+      border-radius: 3px;
+    }
+
+    .card-grid::-webkit-scrollbar-thumb {
+      background: rgba(143, 114, 80, 0.4);
+      border-radius: 3px;
+    }
+
+    .card-grid::-webkit-scrollbar-thumb:hover {
+      background: rgba(143, 114, 80, 0.6);
     }
 
     .card {
@@ -104,6 +128,8 @@
       gap: 6px;
       overflow: hidden;
       min-height: 0;
+      flex: 0 0 calc(25% - 6px);
+      min-width: 200px;
     }
 
     .card-thumb {
@@ -173,18 +199,33 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      padding: 0 12px;
+      padding: 10px 12px 10px 26px;
       border-bottom: 1px solid rgba(214, 201, 184, 0.55);
-      font-size: 13px;
-      color: #5b554e;
-      letter-spacing: 1px;
+      font-size: 18px;
+      color: var(--title-color);
+      letter-spacing: 2px;
+      font-weight: 800;
       background: rgba(249, 243, 234, 0.6);
+      position: relative;
+    }
+
+    .panel-head::before {
+      content: "";
+      position: absolute;
+      left: 12px;
+      top: 10px;
+      bottom: 10px;
+      width: 4px;
+      border-radius: 2px;
+      background: var(--line-color);
     }
 
     .panel-head small {
-      color: #8f877d;
-      letter-spacing: 0;
-      font-size: 12px;
+      color: var(--subtitle-color);
+      letter-spacing: 1.5px;
+      font-size: 11px;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      text-transform: uppercase;
     }
 
     .graph-head-right {
@@ -927,6 +968,7 @@
       margin: 3px 6px 0 0;
       color: #7b2f28;
       font-weight: 700;
+      letter-spacing: 2px;
     }
 
     .intro-stamp {
@@ -973,6 +1015,48 @@
       border-left: 1px solid rgba(143, 114, 80, 0.5);
       margin-left: 10px;
       padding-left: 14px;
+    }
+
+    .top {
+      position: relative;
+    }
+
+    .card-scroll-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(143, 114, 80, 0.4);
+      background: rgba(245, 240, 232, 0.85);
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8f7250;
+      font-size: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .card-scroll-btn:hover {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: rgba(143, 114, 80, 0.6);
+      color: #5b4b3d;
+    }
+
+    .card-scroll-btn.left {
+      left: 8px;
+    }
+
+    .card-scroll-btn.right {
+      right: 8px;
+    }
+
+    .card-scroll-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
     }
   </style>
 </head>
@@ -1045,14 +1129,22 @@
       { name: '李诫 (1035–1110)', meta: '《营造法式》编撰者', desc: '北宋官式营造体系奠基者，提出材份制，对徽派祠堂木构影响深远。', img: '/charts/module3-cards/lijie.jpg' },
       { name: '喻皓 (约960–1004)', meta: '《木经》作者', desc: '总结木构比例法则，梁柱尺度关系成为徽派民居木作的重要参照。', img: '/charts/module3-cards/yuhao.jpg' },
       { name: '雷发达 (1619–1693)', meta: '样式雷奠基人', desc: '推动官式营造与地域工艺融合，促进徽派形制与装饰技法传播。', img: '/charts/module3-cards/leifada.jpg' },
-      { name: '计成 (1582–约1642)', meta: '《园冶》作者', desc: '系统阐释园林营造思想，借景与理水观念深刻影响徽州聚落空间。', img: '/charts/module3-cards/jicheng.jpg' }
+      { name: '计成 (1582–约1642)', meta: '《园冶》作者', desc: '系统阐释园林营造思想，借景与理水观念深刻影响徽州聚落空间。', img: '/charts/module3-cards/jicheng.jpg' },
+      { name: '江永 (1681–1762)', meta: '江湾村格局整治', desc: '清代徽学学者，推动婺源江湾一带聚落格局整治与文化脉络梳理，影响徽州乡土空间秩序。', img: '/charts/module3-cards/jiangyong.png' },
+      { name: '许国 (1527–1596)', meta: '建造八脚牌楼', desc: '明嘉靖朝重臣，故里立许国石坊（八脚牌楼），为徽州最具代表性的纪念性牌楼遗存之一。', img: '/charts/module3-cards/xuguo.png' },
+      { name: '汪定贵 (清末徽商)', meta: '参与宏村建设', desc: '清末盐商，捐资兴建宏村承志堂等大型宅第，推动村落建设与徽派宅第装饰艺术。', img: '/charts/module3-cards/wangdinggui.png' },
+      { name: '胡宗宪 (1512–1565)', meta: '龙川徽派宗祠建设', desc: '明代名臣，与绩溪龙川胡氏宗族渊源深厚，宗祠营造体现徽派礼制空间与木石工艺传统。', img: '/charts/module3-cards/huzongxian.png' }
     ];
 
     const works = [
       { name: '《营造法式》', meta: '1103年刊行', desc: '中国现存最早建筑技术官书，确立制度化营造标准。', img: '/charts/module3-cards/yingzao-fashi.jpg' },
       { name: '《木经》', meta: '约980年成书', desc: '聚焦木构尺度与构造比例，是后世匠作实践的重要源头。', img: '/charts/module3-cards/mujing.jpg' },
       { name: '《园冶》', meta: '1634年刊行', desc: '明代造园经典，提出相地、借景、掇山等系统方法。', img: '/charts/module3-cards/yuanye.jpg' },
-      { name: '《长物志》', meta: '1635年成书', desc: '记录室庐与陈设美学，对民居空间营造与审美有持续影响。', img: '/charts/module3-cards/changwuzhi.png' }
+      { name: '《长物志》', meta: '1635年成书', desc: '记录室庐与陈设美学，对民居空间营造与审美有持续影响。', img: '/charts/module3-cards/changwuzhi.png' },
+      { name: '《新安志》', meta: '成书于1175年', desc: '南宋罗愿纂修，早期徽州方志名篇，记述山川城郭与营建沿革，为徽州历史地理重要文献。', img: '/charts/module3-cards/xinan-zhi.png' },
+      { name: '《鲁班经》', meta: '成书于元末明初', desc: '民间匠作秘本，辑录房舍尺度、工序与行规，反映传统木作营造经验。', img: '/charts/module3-cards/lubanjing.png' },
+      { name: '《徽州府志》', meta: '成书于1502年', desc: '明代弘治间修纂，系统记录徽州一府六县建置、祠庙城池与风土，为徽派建筑史研究基本文献。', img: '/charts/module3-cards/huizhou-fuzhi.png' },
+      { name: '《歙县志》', meta: '体现歙县历史', desc: '历代续修，详载县域城池、桥梁、祠庙与人物，浓缩歙县作为徽州核心区域的营建与人文底蕴。', img: '/charts/module3-cards/shexian-zhi.png' }
     ];
 
     const cardGrid = document.getElementById('cardGrid');
@@ -1475,12 +1567,14 @@
       detailContentEl.classList.remove('show');
       let html = '';
       if (isIntro) {
-        const first = value.slice(0, 1);
-        const rest = value.slice(1);
+        const lead = value.startsWith('徽州木雕') || value.startsWith('徽州石雕') || value.startsWith('徽州砖雕')
+          ? value.slice(0, 4)
+          : value.slice(0, 1);
+        const rest = value.slice(lead.length);
         const tags = (current.introTags || []).map(tag => `<span class="intro-tag">${tag}</span>`).join('');
         html = `
           <article class="intro-block">
-            <div class="intro-main"><span class="intro-dropcap">${first}</span>${rest}</div>
+            <div class="intro-main"><span class="intro-dropcap">${lead}</span>${rest}</div>
             <div class="intro-tags">${tags}</div>
             <div class="intro-watermark">${current.name}</div>
           </article>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>天井关系图 · 图B</title>
+    <script src="../echarts.min.js"></script>
+    <style>
+      :root {
+        --paper-bg: #F8F6F0;
+        --title-color: #2b333e;
+        --subtitle-color: #8c939d;
+        --line-color: #6C7A89;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background-color: var(--paper-bg);
+        font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+      }
+
+      .wrap {
+        width: 100%;
+        height: 100%;
+        padding: 24px 32px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        margin-bottom: 20px;
+        position: relative;
+        padding-left: 14px;
+      }
+
+      .header::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 4px;
+        bottom: 2px;
+        width: 4px;
+        background: var(--line-color);
+        border-radius: 2px;
+      }
+
+      .title {
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        color: var(--title-color);
+        margin: 0 0 4px 0;
+      }
+
+      .subtitle {
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        color: var(--subtitle-color);
+        text-transform: uppercase;
+      }
+
+      #chart {
+        flex: 1;
+        width: 100%;
+        min-height: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <div class="title">天井 · 形成逻辑关系图（图表三）</div>
+        <div class="subtitle">Knowledge Graph of Courtyard Forming Logic</div>
+      </div>
+      <div id="chart"></div>
+    </div>
+
+    <script>
+      (function () {
+        const dom = document.getElementById("chart");
+        const chart = echarts.init(dom, null, {
+          renderer: "canvas",
+          devicePixelRatio: Math.max(1, window.devicePixelRatio || 1),
+        });
+
+        const colors = {
+          col1: "#26363E",
+          col2: "#7A5C3A",
+          col3: "#4A6B7A",
+          col4: "#5A7A5A",
+          edge: "rgba(150, 145, 135, 0.28)",
+          edgeHi: "#7A9EB0",
+        };
+
+        // 第一层：天井四大影响因素（4）
+        const col1 = [
+          { id: "g_env",  name: "自然环境" },
+          { id: "g_life", name: "生活需求" },
+          { id: "g_tech", name: "建筑技术" },
+          { id: "g_cult", name: "地域文化" },
+        ];
+
+        // 第二层：影响因素细分（9）
+        const col2 = [
+          { id: "r_climate",  name: "气候条件",  freq: 14 },
+          { id: "r_terrain",  name: "地形地貌",  freq: 10 },
+          { id: "r_light",    name: "采光需求",  freq: 16 },
+          { id: "r_vent",     name: "通风需求",  freq: 17 },
+          { id: "r_social",   name: "社交需求",  freq: 8  },
+          { id: "r_material", name: "材料特性",  freq: 9  },
+          { id: "r_struct",   name: "结构体系",  freq: 10 },
+          { id: "r_fengshui", name: "风水观念",  freq: 14 },
+          { id: "r_philo",    name: "哲学思想",  freq: 15 },
+        ];
+
+        // 第三层：天井主要类型（5）
+        const col3 = [
+          { id: "t_ao",   name: "凹字型" },
+          { id: "t_hui",  name: "回字型" },
+          { id: "t_h",    name: "H字型"  },
+          { id: "t_ri",   name: "日字型" },
+          { id: "t_yi",   name: "一字型" },
+        ];
+
+        // 第四层：构造做法（10）
+        const col4 = [
+          { id: "s_qingshi",  name: "青石铺地"   },
+          { id: "s_mugou",    name: "木构隔扇"   },
+          { id: "s_shuiti",   name: "水体蒸发池" },
+          { id: "s_paishui",  name: "排水明沟"   },
+          { id: "s_xushui",   name: "蓄水缸"     },
+          { id: "s_louhua",   name: "镂空花窗"   },
+          { id: "s_tiaoeyan", name: "挑檐遮阳"   },
+          { id: "s_huodong",  name: "活动格栅"   },
+          { id: "s_qingzhi",  name: "轻质围护"   },
+          { id: "s_poding",   name: "坡顶内向"   },
+        ];
+
+        const links = [
+          // 第一层 -> 第二层
+          ["g_env",  "r_climate"],
+          ["g_env",  "r_terrain"],
+          ["g_life", "r_light"],
+          ["g_life", "r_vent"],
+          ["g_life", "r_social"],
+          ["g_tech", "r_material"],
+          ["g_tech", "r_struct"],
+          ["g_cult", "r_fengshui"],
+          ["g_cult", "r_philo"],
+
+          // 第二层 -> 第三层
+          ["r_climate",  "t_ao"],
+          ["r_climate",  "t_hui"],
+          ["r_climate",  "t_h"],
+          ["r_climate",  "t_ri"],
+          ["r_climate",  "t_yi"],
+          ["r_terrain",  "t_ao"],
+          ["r_terrain",  "t_hui"],
+          ["r_terrain",  "t_h"],
+          ["r_terrain",  "t_ri"],
+          ["r_terrain",  "t_yi"],
+          ["r_light",    "t_ao"],
+          ["r_light",    "t_hui"],
+          ["r_light",    "t_h"],
+          ["r_light",    "t_ri"],
+          ["r_light",    "t_yi"],
+          ["r_vent",     "t_ao"],
+          ["r_vent",     "t_hui"],
+          ["r_vent",     "t_h"],
+          ["r_vent",     "t_ri"],
+          ["r_vent",     "t_yi"],
+          ["r_social",   "t_ao"],
+          ["r_social",   "t_hui"],
+          ["r_social",   "t_h"],
+          ["r_social",   "t_ri"],
+          ["r_material", "t_ao"],
+          ["r_material", "t_hui"],
+          ["r_material", "t_h"],
+          ["r_material", "t_ri"],
+          ["r_material", "t_yi"],
+          ["r_struct",   "t_ao"],
+          ["r_struct",   "t_hui"],
+          ["r_struct",   "t_h"],
+          ["r_struct",   "t_ri"],
+          ["r_struct",   "t_yi"],
+          ["r_fengshui", "t_hui"],
+          ["r_fengshui", "t_h"],
+          ["r_fengshui", "t_ri"],
+          ["r_philo",    "t_ao"],
+          ["r_philo",    "t_hui"],
+          ["r_philo",    "t_h"],
+          ["r_philo",    "t_ri"],
+          ["r_philo",    "t_yi"],
+
+          // 第三层 -> 第四层
+          // 凹字型
+          ["t_ao",  "s_qingshi"],
+          ["t_ao",  "s_mugou"],
+          ["t_ao",  "s_paishui"],
+          ["t_ao",  "s_xushui"],
+          ["t_ao",  "s_louhua"],
+          ["t_ao",  "s_tiaoeyan"],
+          ["t_ao",  "s_poding"],
+          // 回字型
+          ["t_hui", "s_qingshi"],
+          ["t_hui", "s_shuiti"],
+          ["t_hui", "s_paishui"],
+          ["t_hui", "s_xushui"],
+          ["t_hui", "s_louhua"],
+          ["t_hui", "s_tiaoeyan"],
+          ["t_hui", "s_huodong"],
+          ["t_hui", "s_poding"],
+          // H字型
+          ["t_h",   "s_qingshi"],
+          ["t_h",   "s_paishui"],
+          ["t_h",   "s_xushui"],
+          ["t_h",   "s_louhua"],
+          ["t_h",   "s_tiaoeyan"],
+          ["t_h",   "s_poding"],
+          // 日字型
+          ["t_ri",  "s_qingshi"],
+          ["t_ri",  "s_paishui"],
+          ["t_ri",  "s_xushui"],
+          ["t_ri",  "s_louhua"],
+          ["t_ri",  "s_tiaoeyan"],
+          ["t_ri",  "s_poding"],
+          // 一字型
+          ["t_yi",  "s_qingshi"],
+          ["t_yi",  "s_qingzhi"],
+          ["t_yi",  "s_paishui"],
+          ["t_yi",  "s_louhua"],
+          ["t_yi",  "s_tiaoeyan"],
+        ].map(([source, target]) => ({ source, target, value: 1 }));
+
+        function layoutColumn(items, x, containerH, symbol, color, labelPos, fixedSize) {
+          const out = [];
+          const n = items.length;
+          const step = Math.min(45, (containerH * 0.9) / Math.max(n - 1, 1));
+          const totalHeight = (n - 1) * step;
+          const startY = (containerH - totalHeight) / 2;
+
+          items.forEach((it, idx) => {
+            const nodeSize = it.freq ? fixedSize + (it.freq / 17) * 5 : fixedSize;
+            out.push({
+              id: it.id,
+              name: it.name,
+              x,
+              y: startY + idx * step,
+              value: it.freq,
+              symbol,
+              symbolSize: nodeSize,
+              itemStyle: {
+                color,
+                opacity: 0.95,
+                borderColor: "#F8F6F0",
+                borderWidth: 2,
+                shadowBlur: 10,
+                shadowOffsetY: 4,
+                shadowColor: "rgba(0, 0, 0, 0.12)",
+              },
+              label: {
+                show: true,
+                position: labelPos,
+                color: "#2B333E",
+                fontSize: 12.5,
+                fontWeight: 600,
+                distance: 10,
+                fontFamily: "Georgia, 'KaiTi', '楷体', serif",
+              },
+            });
+          });
+          return out;
+        }
+
+        function buildOption() {
+          const w = chart.getWidth();
+          const h = chart.getHeight();
+          const x1 = w * 0.10;
+          const x2 = w * 0.34;
+          const x3 = w * 0.62;
+          const x4 = w * 0.90;
+
+          const nodes = [
+            ...layoutColumn(col1, x1, h, "roundRect", colors.col1, "left",  18),
+            ...layoutColumn(col2, x2, h, "circle",    colors.col2, "right", 12),
+            ...layoutColumn(col3, x3, h, "roundRect", colors.col3, "right", 14),
+            ...layoutColumn(col4, x4, h, "roundRect", colors.col4, "right", 13),
+          ];
+
+          return {
+            backgroundColor: "transparent",
+            animationDurationUpdate: 900,
+            animationEasingUpdate: "quinticInOut",
+            tooltip: {
+              trigger: "item",
+              backgroundColor: "rgba(250, 247, 240, 0.98)",
+              borderColor: "rgba(180, 170, 150, 0.6)",
+              borderWidth: 1,
+              padding: [10, 14],
+              textStyle: { color: "#2B333E", fontSize: 13 },
+              extraCssText: "box-shadow: 0 4px 16px rgba(0,0,0,0.1); border-radius: 6px;",
+              formatter: function (p) {
+                const d = p.data || {};
+                if (typeof d.value === "number") {
+                  return `<div style="font-weight:bold; margin-bottom:4px;">${d.name}</div><span style="color:#777;font-size:12px;">出现频率：<span style="color:#4A6B7A;font-weight:bold">${d.value}</span></span>`;
+                }
+                return `<b style="font-size:14px;">${d.name}</b>`;
+              },
+            },
+            series: [
+              {
+                type: "graph",
+                layout: "none",
+                roam: false,
+                draggable: false,
+                lineStyle: {
+                  width: 1.5,
+                  color: colors.edge,
+                  opacity: 0.9,
+                  curveness: 0.35,
+                },
+                emphasis: {
+                  focus: "adjacency",
+                  lineStyle: {
+                    width: 3.5,
+                    color: colors.edgeHi,
+                    opacity: 0.9,
+                    shadowBlur: 12,
+                    shadowColor: "rgba(74, 107, 122, 0.4)",
+                  },
+                  itemStyle: {
+                    shadowBlur: 20,
+                    shadowOffsetY: 6,
+                    shadowColor: "rgba(0,0,0,0.25)",
+                  },
+                  label: { show: true, color: "#111", fontWeight: 900, textShadowColor: "#fff", textShadowBlur: 4 },
+                },
+                blur: {
+                  itemStyle: { opacity: 0.2 },
+                  lineStyle: { opacity: 0.05 },
+                },
+                label: { show: true },
+                data: nodes,
+                links,
+              },
+            ],
+          };
+        }
+
+        function render() {
+          chart.clear();
+          chart.setOption(buildOption(), true);
+        }
+
+        setTimeout(render, 80);
+
+        let resizeTimer;
+        window.addEventListener("resize", () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(() => {
+            chart.resize();
+            render();
+          }, 160);
+        });
+      })();
+    </script>
+  </body>
+</html>
