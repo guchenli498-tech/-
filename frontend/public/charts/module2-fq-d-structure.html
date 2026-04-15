@@ -19,6 +19,7 @@
       height: 100%;
       background-color: var(--paper-bg);
       font-family: "KaiTi", "楷体", "华文楷体", STKaiti, Georgia, serif;
+      overflow: hidden;
     }
 
     .wrap {
@@ -26,14 +27,21 @@
       height: 100%;
       display: flex;
       flex-direction: column;
-      padding: 24px 32px;
+      padding: 20px 20px 14px;
       box-sizing: border-box;
+      gap: 10px;
     }
 
     .header {
-      margin-bottom: 20px;
+      margin-bottom: 0;
       position: relative;
       padding-left: 14px;
+      border: 1px solid rgba(216, 207, 191, 0.9);
+      border-radius: 12px;
+      background: #efe8dc;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      padding-right: 12px;
     }
     .header::before {
       content: "";
@@ -52,61 +60,203 @@
       letter-spacing: 2px;
       color: var(--title-color);
     }
-    .subtitle {
-      font-family: "Helvetica Neue", Arial, sans-serif;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 1.5px;
-      color: var(--subtitle-color);
-      text-transform: uppercase;
+    .chartBoard {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .panel {
+      width: 50%;
+      min-width: 0;
+      border: 1px solid rgba(216, 207, 191, 0.9);
+      border-radius: 12px;
+      background: #f4efe6;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .frameWrap {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      padding: 4px;
+      box-sizing: border-box;
+    }
+
+    #chartA {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border-radius: 8px;
     }
 
     #chart {
       flex: 1;
       min-height: 0;
       width: 100%;
-      border: 1px solid rgba(221, 226, 232, 0.95);
-      border-radius: 12px;
-      background: #f2eee6;
-      box-shadow: 0 10px 26px -22px rgba(33, 46, 58, 0.35);
+      background: #f4efe6;
+      overflow: hidden;
     }
 
-    .ft {
-      display: flex;
-      justify-content: space-between;
-      border-top: 1px dashed #ddd3c3;
-      padding-top: 9px;
-      margin-top: 6px;
-      gap: 8px;
-    }
-    .ft span {
-      font-size: 11px;
-      color: #6d6154;
-      letter-spacing: 0.5px;
-    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="header">
       <div class="title">粉墙 · 防热贡献结构（图表四）</div>
-      <div class="subtitle">Contribution Breakdown · Wall / Roof / Courtyard</div>
     </div>
-    
-    <div id="chart"></div>
-    
-    <div class="ft">
-      <span>外墙贡献最高：48.7%</span>
-      <span>屋顶贡献：39.7%</span>
-      <span>天井贡献：11.6%</span>
+
+    <div class="chartBoard">
+      <section class="panel">
+        <div class="frameWrap">
+          <div id="chartA"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div id="chart"></div>
+      </section>
     </div>
   </div>
 
   <script>
+    const chartA = echarts.init(document.getElementById("chartA"), null, {
+      renderer: "canvas",
+      devicePixelRatio: window.devicePixelRatio
+    });
     const chart = echarts.init(document.getElementById("chart"), null, {
       renderer: "canvas",
       devicePixelRatio: window.devicePixelRatio
     });
+
+    const walls = [
+      "传统青砖\n空斗黄泥",
+      "水墨宏村\n外保温",
+      "际村自建房\n实砌做法",
+      "新型水泥砖\n空斗砌法"
+    ];
+    const heatResistance = [0.379, 0.345, 0.129, 0.205];
+    const heatTransferCoeff = [1.892, 2.024, 3.588, 2.821];
+    const colorR = "#4f8891";
+    const colorK = "#a1ba5b";
+    const rMax = 0.45;
+    const kMax = 4.0;
+    const heatTransferScaled = heatTransferCoeff.map((v) => (v / kMax) * rMax);
+
+    const optionA = {
+      backgroundColor: "transparent",
+      animationDuration: 1100,
+      animationEasing: "cubicOut",
+      color: [colorR, colorK],
+      legend: {
+        bottom: 0,
+        left: "center",
+        itemWidth: 12,
+        itemHeight: 12,
+        itemGap: 16,
+        icon: "rect",
+        textStyle: {
+          color: "#5f6f7e",
+          fontSize: 12,
+          fontFamily: 'Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif'
+        },
+        data: ["热阻 R", "传热系数 K (已归一化显示)"]
+      },
+      tooltip: {
+        trigger: "item",
+        backgroundColor: "rgba(255, 255, 255, 0.96)",
+        borderColor: "#dce3ea",
+        borderWidth: 1,
+        padding: [10, 14],
+        textStyle: { color: "#3a4651", fontSize: 13 },
+        formatter: function (p) {
+          if (p.seriesName === "热阻 R") {
+            return `<div style="font-weight:bold;margin-bottom:6px;">${p.name}</div>
+                    热阻 R：<b style="color:${colorR}">${p.data.realValue.toFixed(3)}</b> m²·K/W`;
+          }
+          return `<div style="font-weight:bold;margin-bottom:6px;">${p.name}</div>
+                  传热系数 K：<b style="color:${colorK}">${p.data.realValue.toFixed(3)}</b> W/(m²·K)`;
+        }
+      },
+      polar: {
+        center: ["50%", "48%"],
+        radius: ["22%", "56%"]
+      },
+      angleAxis: {
+        type: "category",
+        data: walls,
+        startAngle: 90,
+        axisLine: { show: false },
+        axisTick: { show: false },
+        axisLabel: {
+          interval: 0,
+          color: "#4a4036",
+          fontSize: 13,
+          lineHeight: 18,
+          margin: 10,
+          align: "center",
+          fontFamily: 'Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif'
+        }
+      },
+      radiusAxis: {
+        min: 0,
+        max: rMax,
+        axisLine: { show: false },
+        axisTick: { show: false },
+        axisLabel: { show: false },
+        splitNumber: 4,
+        splitLine: {
+          show: true,
+          lineStyle: {
+            color: "rgba(168, 158, 142, 0.25)",
+            type: "dashed",
+            width: 1
+          }
+        }
+      },
+      graphic: [{
+        type: "text",
+        left: "center",
+        top: "49%",
+        z: 5,
+        style: {
+          text: "R↑ 越大越优\n\nK↓ 越小越优",
+          fill: "#556674",
+          font: 'bold 12px "KaiTi", "楷体", STKaiti, serif',
+          textAlign: "center",
+          lineHeight: 12
+        }
+      }],
+      series: [
+        {
+          name: "热阻 R",
+          type: "bar",
+          coordinateSystem: "polar",
+          barWidth: "35%",
+          barGap: "15%",
+          data: heatResistance.map((val) => ({ value: val, realValue: val })),
+          z: 2,
+          itemStyle: { borderColor: "#f5f1e8", borderWidth: 1 }
+        },
+        {
+          name: "传热系数 K (已归一化显示)",
+          type: "bar",
+          coordinateSystem: "polar",
+          barWidth: "35%",
+          barGap: "15%",
+          data: heatTransferScaled.map((val, idx) => ({ value: val, realValue: heatTransferCoeff[idx] })),
+          z: 2,
+          itemStyle: { borderColor: "#f5f1e8", borderWidth: 1 }
+        }
+      ]
+    };
+    chartA.setOption(optionA);
 
     // 提取的主题色
     const colorTeal = "#4f778f";
@@ -190,8 +340,8 @@
         {
           name: "策略细分贡献",
           type: "pie",
-          radius: ["32%", "52%"],
-          center: ["50%", "47%"],
+          radius: ["33%", "51%"],
+          center: ["50%", "46%"],
           startAngle: 90,
           itemStyle: {
             borderColor: bgColor,
@@ -206,8 +356,8 @@
         {
           name: "建筑部位贡献",
           type: "pie",
-          radius: ["58%", "76%"],
-          center: ["50%", "47%"],
+          radius: ["56%", "74%"],
+          center: ["50%", "46%"],
           startAngle: 90,
           itemStyle: {
             borderColor: bgColor,
@@ -234,7 +384,10 @@
     };
 
     chart.setOption(option);
-    window.addEventListener("resize", () => chart.resize());
+    window.addEventListener("resize", () => {
+      chartA.resize();
+      chart.resize();
+    });
   </script>
 </body>
 </html>

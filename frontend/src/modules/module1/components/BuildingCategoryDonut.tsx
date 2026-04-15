@@ -1,19 +1,18 @@
 import ReactECharts from 'echarts-for-react'
 import type { BuildingCategoryDatum } from '../types'
-import { HEAT_MAP_GRADIENT, MAP_GEO_THEME } from '../theme/module1VisualPalette'
 
 const CATEGORY_COLORS: Record<string, string> = {
-  民居: MAP_GEO_THEME.focus,
-  桥梁: HEAT_MAP_GRADIENT[2],
-  '综合用途/建筑群': MAP_GEO_THEME.pinDefault,
-  其他: HEAT_MAP_GRADIENT[1],
+  民居: '#D98B3D',
+  桥梁: '#E3A84E',
+  '综合用途/建筑群': '#C9792F',
+  其他: '#F0BC69',
 }
 const FALLBACK_COLORS = [
-  MAP_GEO_THEME.focus,
-  MAP_GEO_THEME.pinDefault,
-  HEAT_MAP_GRADIENT[2],
-  HEAT_MAP_GRADIENT[1],
-  MAP_GEO_THEME.ink,
+  '#D98B3D',
+  '#E3A84E',
+  '#C9792F',
+  '#F0BC69',
+  '#B86B2D',
 ]
 
 export function BuildingCategoryDonut(props: {

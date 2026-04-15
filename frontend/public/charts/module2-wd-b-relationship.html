@@ -284,10 +284,10 @@
         function buildOption() {
           const w = chart.getWidth();
           const h = chart.getHeight();
-          const x1 = w * 0.10;
-          const x2 = w * 0.34;
-          const x3 = w * 0.62;
-          const x4 = w * 0.90;
+          const x1 = w * 0.06;
+          const x2 = w * 0.28;
+          const x3 = w * 0.53;
+          const x4 = w * 0.8;
 
           const nodes = [
             ...layoutColumn(col1, x1, h, "roundRect", colors.col1, "left", 18),
@@ -310,6 +310,7 @@
               extraCssText: "box-shadow: 0 4px 16px rgba(0,0,0,0.1); border-radius: 6px;",
               formatter: function (p) {
                 const d = p.data || {};
+                if (p.dataType === "edge") return null;
                 if (typeof d.value === "number") {
                   return `<div style="font-weight:bold; margin-bottom:4px;">${d.name}</div><span style="color:#777;font-size:12px;">出现频率：<span style="color:#A34343;font-weight:bold">${d.value}</span></span>`;
                 }

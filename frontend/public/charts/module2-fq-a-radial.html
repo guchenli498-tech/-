@@ -7,10 +7,11 @@
   <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
   <style>
     :root {
-      --paper-bg: #F8F6F0;
+      --paper-bg: #f4efe6;
       --title-color: #2b333e;
-      --subtitle-color: #8c939d;
       --line-color: #6C7A89;
+      --edge: #ddd3c3;
+      --text: #5b4e41;
     }
 
     html, body {
@@ -26,16 +27,26 @@
     .wrap {
       width: 100%;
       height: 100%;
-      padding: 24px 32px;
+      padding: 14px 16px 12px;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
+      gap: 8px;
+    }
+    body[data-embed="1"] .wrap {
+      padding: 6px 8px;
     }
 
     .header {
-      margin-bottom: 10px;
       position: relative;
       padding-left: 14px;
+      border: 1px solid rgba(216, 207, 191, 0.9);
+      border-radius: 12px;
+      background: #efe8dc;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      padding-right: 14px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
     }
 
     .header::before {
@@ -51,211 +62,389 @@
 
     .title {
       font-size: 22px;
-      font-weight: bold;
-      letter-spacing: 2px;
-      color: var(--title-color);
-      margin: 0 0 4px 0;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #3b342b;
+      margin: 0;
+      line-height: 1.25;
+      font-family: Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif;
+    }
+    body[data-embed="1"] .header {
+      display: none;
+    }
+
+    .combo {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      gap: 14px;
+    }
+
+    .leftPane {
+      width: 62%;
+      min-width: 0;
+      border: 1px solid rgba(216, 207, 191, 0.9);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #f6f1e8 0%, #f3ede2 100%);
+      padding: 10px 10px 6px;
+      box-sizing: border-box;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 20px -20px rgba(59, 52, 43, 0.35);
+    }
+
+    .rightPane {
+      width: 38%;
+      min-width: 0;
+      border: 1px solid rgba(216, 207, 191, 0.9);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #f7f2e9 0%, #f2ecdf 100%);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 8px 20px -20px rgba(59, 52, 43, 0.35);
+    }
+
+    .wallHint {
+      font-size: 13px;
+      color: #6f6152;
+      letter-spacing: 0.8px;
+    }
+
+    .wallIllustration {
+      width: 86%;
+      height: 82%;
+      border: 1px dashed #ccbfae;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #fbf6ed 0%, #f5efe3 100%);
+      box-sizing: border-box;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .wallTypeLabel {
+      font-size: 16px;
+      font-weight: 700;
+      color: #4f4338;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .wallImageWrap {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(183, 157, 88, 0.4);
+      border-radius: 10px;
+      background: #f7f0e2;
+      overflow: hidden;
+    }
+
+    .wallImage {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+    }
+
+    .wallMeta {
+      font-size: 13px;
+      color: #6f6255;
+      text-align: center;
+      line-height: 1.4;
     }
 
     #main {
       width: 100%;
-      flex: 1;
-      min-height: 0;
-      overflow: hidden;
+      height: 100%;
+      min-height: 260px;
       background: transparent;
+    }
+
+    body[data-embed="1"] .rightPane {
+      display: none;
+    }
+    body[data-embed="1"] .leftPane {
+      width: 100%;
     }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="header">
-      <div class="title">粉墙 · 热工性能对比（图表一）</div>
+      <div class="title">粉墙 · 砌筑方式热工性能综合对比（图表一）</div>
     </div>
-    <div id="main"></div>
+
+    <div class="combo">
+      <section class="leftPane">
+        <div id="main"></div>
+      </section>
+      <section class="rightPane" aria-label="砌筑方式示意图">
+        <div class="wallHint">点击左图类目可切换右侧示意</div>
+        <div class="wallIllustration" id="wallIllustration"></div>
+      </section>
+    </div>
   </div>
 
   <script>
+    const isEmbed = new URLSearchParams(window.location.search).get("embed") === "1";
+    if (isEmbed) {
+      document.body.setAttribute("data-embed", "1");
+    }
+
+    const wallRoot = document.getElementById("wallIllustration");
+
     const chartDom = document.getElementById('main');
     const myChart = echarts.init(chartDom, null, {
       renderer: 'canvas',
       devicePixelRatio: window.devicePixelRatio
     });
 
-    const walls = [
-      '传统青砖\n空斗黄泥',
-      '水墨宏村\n外保温',
-      '际村自建房\n实砌做法',
-      '新型水泥砖\n空斗砌法'
+    const categories = [
+      '单墙',
+      '立砖实砌',
+      '一眠一斗',
+      '一眠二斗',
+      '一眠三斗',
+      '全斗墙',
+      '两平一侧'
     ];
 
-    const heatResistance = [0.379, 0.345, 0.129, 0.205];
-    const heatTransferCoeff = [1.892, 2.024, 3.588, 2.821];
+    // 文献表格数据（《徽州民居围护结构的防热机理和做法》表1）
+    const thermalConductivity = [0.65, 0.65, 0.55, 0.54, 0.54, 0.68, 0.59]; // λ
+    const thermalResistance = [0.23, 0.46, 0.55, 0.56, 0.56, 0.57, 0.51];   // R
+    const heatTransfer = [4.35, 2.17, 1.82, 1.79, 1.79, 1.75, 1.96];         // K
 
-    const colorR = '#4f8891'; 
-    const colorK = '#a1ba5b'; 
+    const areaColors = ["#67b8bf", "#f9d094", "#9cd683"];
+    const avgLineColors = ["#4a848a", "#ffbc78", "#85bf61"];
+    const names = ["导热系数", "热阻", "传热系数"];
+    const wallTypeGroup = ["青砖实砌墙", "青砖实砌墙", "青砖空斗墙", "青砖空斗墙", "青砖空斗墙", "青砖空斗墙", "青砖空斗墙"];
+    const wallImageMap = [
+      { file: "single-wall.svg", note: "" },
+      { file: "solid-wall.svg", note: "" },
+      { file: "one-sleep-one-dou.svg", note: "" },
+      { file: "one-sleep-two-dou.svg", note: "" },
+      { file: "one-sleep-three-dou.svg", note: "" },
+      { file: "all-dou-wall.svg", note: "" },
+      { file: "all-dou-wall.svg", note: "（两平一侧原图暂缺，先用全斗墙示意）" }
+    ];
 
-    const rMax = 0.45;
-    const kMax = 4.0;
-    const heatTransferScaled = heatTransferCoeff.map(v => (v / kMax) * rMax);
+    function avg(arr) {
+      return +(arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(2);
+    }
 
-    const seriesDataR = heatResistance.map((val, idx) => ({
-      value: val,
-      realValue: val
-    }));
+    const avgVals = [
+      avg(thermalConductivity),
+      avg(thermalResistance),
+      avg(heatTransfer)
+    ];
 
-    const seriesDataK = heatTransferScaled.map((val, idx) => ({
-      value: val,
-      realValue: heatTransferCoeff[idx]
-    }));
+    const maxY = Math.max(...heatTransfer) * 1.2;
+
+    function renderWallPattern(index) {
+      if (!wallRoot) return;
+      const safeIndex = Math.max(0, Math.min(categories.length - 1, Number(index) || 0));
+      const imageCfg = wallImageMap[index] || wallImageMap[0];
+      const typeName = categories[safeIndex] || "";
+      const groupName = wallTypeGroup[safeIndex] || "";
+      wallRoot.innerHTML = `
+        <div class="wallTypeLabel">${typeName}</div>
+        <div class="wallImageWrap">
+          <img class="wallImage" src="./module2-fq-wall-types/${(wallImageMap[safeIndex] || wallImageMap[0]).file}" alt="${typeName}砌筑示意图" />
+        </div>
+        <div class="wallMeta">${groupName}${(wallImageMap[safeIndex] || wallImageMap[0]).note}</div>
+      `;
+    }
+
+    function normalizeCategoryIndex(rawValue) {
+      if (typeof rawValue === "number" && !Number.isNaN(rawValue)) {
+        const idx = Math.round(rawValue);
+        if (idx >= 0 && idx < categories.length) return idx;
+      }
+      if (typeof rawValue === "string") {
+        const idx = categories.indexOf(rawValue);
+        if (idx >= 0) return idx;
+      }
+      return -1;
+    }
 
     const option = {
       backgroundColor: 'transparent',
       animationDuration: 1200,
       animationEasing: 'cubicOut',
-      color: [colorR, colorK],
+      color: areaColors,
 
       legend: {
-        top: 8,
-        left: 10,
-        itemWidth: 12,
-        itemHeight: 12,
+        bottom: 0,
+        left: 'center',
+        icon: 'roundRect',
+        itemWidth: 16,
+        itemHeight: 10,
         itemGap: 18,
-        icon: 'rect',
         textStyle: {
-          color: '#5f6f7e',
+          color: '#56493d',
           fontSize: 12,
-          fontWeight: 500,
+          fontWeight: 600,
           fontFamily: 'Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif'
         },
-        data: ['热阻 R', '传热系数 K (已归一化显示)']
+        data: names
       },
 
       tooltip: {
-        trigger: 'item',
+        trigger: 'axis',
+        axisPointer: { type: 'line', lineStyle: { color: '#b9ad9c' } },
         backgroundColor: 'rgba(255, 255, 255, 0.96)',
         borderColor: '#dce3ea',
         borderWidth: 1,
         padding: [12, 16],
         textStyle: { color: '#3a4651', fontSize: 13 },
-        formatter: function (p) {
-          // 排除掉中心占位圆的 tooltip
-          if (p.seriesName === 'center_bg') return ''; 
-          
-          if (p.seriesName === '热阻 R') {
-            return `<div style="font-weight:bold;margin-bottom:8px;">${p.name}</div>
-                    热阻 R：<b style="color:${colorR}">${p.data.realValue.toFixed(3)}</b> m²·K/W<br/>
-                    <span style="color:#8b8076;font-size:12px;">* R 值越大越优</span>`;
-          }
-          return `<div style="font-weight:bold;margin-bottom:8px;">${p.name}</div>
-                  传热系数 K：<b style="color:${colorK}">${p.data.realValue.toFixed(3)}</b> W/(m²·K)<br/>
-                  <span style="color:#8b8076;font-size:12px;">* K 值越小越优</span>`;
+        formatter: (params) => {
+          if (!params || !params.length) return "";
+          const idx = params[0].dataIndex;
+          const lines = params.map((it) => `${it.marker}${it.seriesName}: <b>${Number(it.value).toFixed(2)}</b>`);
+          return `<div style="margin-bottom:6px;font-weight:700;">${categories[idx]}</div>${lines.join("<br/>")}`;
         }
       },
 
-      polar: {
-        center: ['50%', '58%'],
-        radius: ['24%', '53%']
+      grid: {
+        left: 44,
+        right: 24,
+        top: 22,
+        bottom: 54
       },
 
-      angleAxis: {
+      xAxis: {
         type: 'category',
-        data: walls,
-        startAngle: 90,
-        axisLine: { show: false },
+        data: categories,
+        boundaryGap: false,
+        axisLine: { lineStyle: { color: '#c6bcad' } },
         axisTick: { show: false },
         axisLabel: {
           interval: 0,
-          color: '#4a4036',
-          fontSize: 13,
-          fontWeight: 500,
-          lineHeight: 18,
-          margin: 12, 
+          color: '#5c5044',
+          fontSize: 12,
+          fontWeight: 600,
+          lineHeight: 16,
+          margin: 12,
           align: 'center',
           fontFamily: 'Georgia, "KaiTi", "楷体", "华文楷体", STKaiti, serif'
         }
       },
 
-      radiusAxis: {
+      yAxis: {
+        type: 'value',
         min: 0,
-        max: rMax,
+        max: maxY,
         axisLine: { show: false },
         axisTick: { show: false },
-        axisLabel: { show: false },
-        splitNumber: 4,
+        axisLabel: {
+          color: '#857564',
+          fontSize: 11
+        },
         splitLine: {
-          show: true,
-          lineStyle: {
-            color: 'rgba(168, 158, 142, 0.25)',
-            type: 'dashed',
-            width: 1
-          }
+          lineStyle: { color: 'rgba(168, 158, 142, 0.18)', type: 'dashed' }
         }
       },
 
-      graphic: [
-        // 删除了原来固定像素的圆圈，只保留居中文字
-        {
-          type: 'text',
-          left: 'center',
-          top: '59%', // 根据 polar 的 center 同步调整
-          z: 5,
-          style: {
-            text: 'R↑ 越大越优\n\nK↓ 越小越优',
-            fill: '#556674',
-            font: 'bold 12px "KaiTi", "楷体", STKaiti, serif',
-            textAlign: 'center',
-            lineHeight: 12
-          }
-        }
-      ],
-
       series: [
-        // 核心修复：用一个不可交互的饼图作为背景白圈，它会跟随百分比完美缩放
-        {
-          name: 'center_bg',
-          type: 'pie',
-          radius: [0, '26%'], // 这里的 26% 对应 polar 的内径
-          center: ['50%', '58%'],
-          silent: true, // 禁用鼠标事件
-          z: 1, // 置于最底层
+        ["导热系数", thermalConductivity, 0],
+        ["热阻", thermalResistance, 1],
+        ["传热系数", heatTransfer, 2]
+      ].map(([name, data, idx]) => ({
+          name,
+          type: 'line',
+          stack: "wall-stack",
+          smooth: true,
+          symbol: "none",
+          lineStyle: { width: 0 },
+          areaStyle: { color: areaColors[idx], opacity: 0.88 },
           itemStyle: {
-            color: '#fcfbf8',
-            borderColor: '#dcd1c3',
-            borderWidth: 1
+            color: areaColors[idx]
           },
-          label: { show: false },
-          data: [{ value: 1 }]
-        },
+          emphasis: { focus: "series" },
+          data,
+          markLine: {
+            silent: true,
+            symbol: "none",
+            label: { show: false },
+            lineStyle: {
+              color: avgLineColors[idx],
+              type: "dashed",
+              width: 2
+            },
+            data: [{ yAxis: avgVals[idx] }]
+          }
+        })),
+      graphic: [
         {
-          name: '热阻 R',
-          type: 'bar',
-          coordinateSystem: 'polar',
-          barWidth: '35%', 
-          barGap: '15%', 
-          data: seriesDataR,
-          z: 2,
-          itemStyle: {
-            borderColor: '#f5f1e8',
-            borderWidth: 1
+          type: "line",
+          left: "22%",
+          top: "16%",
+          shape: { x1: 0, y1: 0, x2: 0, y2: 215 },
+          style: {
+            stroke: "#a79a89",
+            lineWidth: 1.5,
+            lineDash: [6, 5]
           }
         },
         {
-          name: '传热系数 K (已归一化显示)',
-          type: 'bar',
-          coordinateSystem: 'polar',
-          barWidth: '35%',
-          barGap: '15%',
-          data: seriesDataK,
-          z: 2,
-          itemStyle: {
-            borderColor: '#f5f1e8',
-            borderWidth: 1
+          type: "text",
+          left: "7%",
+          top: "9%",
+          style: {
+            text: "青砖实砌墙",
+            fill: "#6e6153",
+            font: '13px "KaiTi", "楷体", serif'
+          }
+        },
+        {
+          type: "text",
+          left: "27%",
+          top: "9%",
+          style: {
+            text: "青砖空斗墙",
+            fill: "#6e6153",
+            font: '13px "KaiTi", "楷体", serif'
           }
         }
       ]
     };
 
-    myChart.setOption(option);
+    setTimeout(() => {
+      myChart.resize();
+      myChart.setOption(option);
+      renderWallPattern(0);
+    }, 50);
+
+    // 主联动：跟随类目轴指示器，稳定获取当前横轴类目
+    myChart.on("updateAxisPointer", (event) => {
+      const xAxisInfo = event?.axesInfo?.find((it) => it.axisDim === "x");
+      if (!xAxisInfo) return;
+      const idx = normalizeCategoryIndex(xAxisInfo.value);
+      if (idx >= 0) {
+        renderWallPattern(idx);
+      }
+    });
+
+    // 点击仍保留（确保用户点击类目区也会更新）
+    myChart.getZr().on("click", (evt) => {
+      const pixel = [evt.offsetX, evt.offsetY];
+      if (!myChart.containPixel({ gridIndex: 0 }, pixel)) return;
+      const pointData = myChart.convertFromPixel({ xAxisIndex: 0 }, pixel);
+      const idx = Array.isArray(pointData) ? normalizeCategoryIndex(pointData[0]) : -1;
+      if (idx >= 0) renderWallPattern(idx);
+    });
 
     window.addEventListener('resize', function () {
       myChart.resize();

@@ -150,8 +150,8 @@ export function DynastyLineChart(props: {
         smooth: true,
         symbolSize: 4,
         symbol: 'circle',
-        lineStyle: { width: 3, color: '#E09A63' },
-        itemStyle: { color: '#E09A63' },
+        lineStyle: { width: 3, color: '#67B8BF' },
+        itemStyle: { color: '#67B8BF' },
         areaStyle:
           mode === 'area'
             ? {
@@ -159,8 +159,8 @@ export function DynastyLineChart(props: {
                   type: 'linear',
                   x: 0, y: 0, x2: 0, y2: 1,
                   colorStops: [
-                    { offset: 0, color: 'rgba(224,154,99,0.14)' },
-                    { offset: 1, color: 'rgba(224,154,99,0.02)' },
+                    { offset: 0, color: 'rgba(103,184,191,0.2)' },
+                    { offset: 1, color: 'rgba(103,184,191,0.04)' },
                   ],
                 },
               }

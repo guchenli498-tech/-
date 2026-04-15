@@ -246,6 +246,10 @@
       line-height: 1.2;
       transition: all .2s ease;
     }
+    /* 按需求去掉三雕区域多余操作按钮，仅保留状态提示文本 */
+    .graph-action {
+      display: none;
+    }
 
     .graph-action:hover {
       border-color: rgba(143, 114, 80, 0.45);
@@ -268,14 +272,14 @@
       min-height: 0;
       padding: 8px;
       display: grid;
-      grid-template-rows: minmax(0, 1fr) 34px 62px 34px 34px;
+      grid-template-rows: minmax(0, 1fr) 36px 78px 40px;
       gap: 8px;
       position: relative;
     }
 
     .carving-image-wrap {
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      border-radius: 12px;
       min-height: 0;
       background: #ebe1d5;
       overflow: hidden;
@@ -285,8 +289,9 @@
     .carving-image {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       display: block;
+      padding: 4px;
     }
 
     .carving-name {
@@ -299,14 +304,14 @@
     }
 
     .switch-btn {
-      width: 100%;
-      height: 34px;
-      border-radius: 0;
+      width: 50%;
+      height: 40px;
+      border-radius: 8px;
       border: 0;
-      border-bottom: 1px solid rgba(143, 114, 80, 0.26);
-      background: transparent;
+      border: 1px solid rgba(143, 114, 80, 0.26);
+      background: rgba(255,255,255,0.2);
       color: #655b50;
-      font-size: 13px;
+      font-size: 14px;
       letter-spacing: 2px;
       cursor: pointer;
       font-family: inherit;
@@ -315,23 +320,30 @@
 
     .switch-btn.active {
       background: rgba(143, 114, 80, 0.06);
-      border-bottom: 2px solid #8f7250;
+      border-color: #8f7250;
       color: #453a30;
       font-weight: 700;
     }
 
+    .switch-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+    }
+
     .center-brief {
-      font-size: 12px;
-      line-height: 1.45;
+      font-size: 14px;
+      line-height: 1.62;
       color: #5f5a53;
       background: #f8f3ea;
       border: 1px solid #e8e1d6;
       border-radius: var(--radius-md);
-      padding: 8px 10px;
+      padding: 10px 12px;
       overflow: hidden;
       display: -webkit-box;
-      -webkit-line-clamp: 3;
-      line-clamp: 3;
+      -webkit-line-clamp: 4;
+      line-clamp: 4;
       -webkit-box-orient: vertical;
     }
 
@@ -893,6 +905,7 @@
       align-items: baseline;
       flex-wrap: wrap;
       gap: 4px;
+      font-size: 15px;
     }
 
     .intro-tags {
@@ -1107,8 +1120,10 @@
         <div class="carving-name" id="carvingName">木雕</div>
         <div class="center-brief" id="carvingBrief"></div>
 
-        <button class="switch-btn active" id="btnIntro">介绍</button>
-        <button class="switch-btn" id="btnProcess">工艺流程</button>
+        <div class="switch-row">
+          <button class="switch-btn active" id="btnIntro">介绍</button>
+          <button class="switch-btn" id="btnProcess">工艺流程</button>
+        </div>
       </div>
 
       <div class="side-panel">
